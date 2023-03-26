@@ -25,6 +25,7 @@ export const SignInForm = ({
     onBlur,
     touched,
     isSubmitting,
+    errorRequest,
 } : {
     values: SignInValuesType;
     errors: FormikErrors<SignInValuesType>;
@@ -32,6 +33,7 @@ export const SignInForm = ({
     onBlur: (e: React.ChangeEvent<any>) => void;
     touched: FormikTouched<SignInValuesType>;
     isSubmitting: boolean;
+    errorRequest?: string | null;
 }) => {
     const canContinue = getIsValid(values, Step.SIGNIN);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -72,6 +74,9 @@ export const SignInForm = ({
                     </InputAdornment>,
             }}
         />
+        {errorRequest && <Typography variant="body2" color="error" sx={{pb: 1}}>
+            {errorRequest}
+        </Typography>}
         <Button 
             type="submit" 
             disabled={!canContinue || isSubmitting}

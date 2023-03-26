@@ -10,13 +10,17 @@ const router = Router();
 const signInSchema = {
     // Support bail functionality in schemas
     email: {
-        isEmail: { bail: true,}
+        isEmail: { 
+            bail: true, 
+            location: "params",
+        }
     },
     password: {
         isLength: {
-            errorMessage: 'Password should be at least 8 chars long!',
+            errorMessage: 'Password should be at least 1 chars long!',
             // Multiple options would be expressed as an array
-            options: { min: 8 },
+            options: { min: 1 },
+            location: "params",
         },
     },
 }
@@ -33,14 +37,19 @@ router.get('/',
             });
         }
         
-        const user = req.body;
+        const user = {
+            email: req.query.email as string,
+            password: req.query.password as string,
+        }
+        
+        let existingUser: (UserType | null);
 
         // find user in DB
         try {
-            const existingUser: (UserType | null) = await modelUser.findOne({email: user.email});
+            existingUser = await modelUser.findOne({email: user.email});
 
             if (!existingUser || (!comparePassword(user.password, existingUser.password))) {
-                return res.status(400).json({
+                return res.status(200).json({
                     status: 1,
                     error:  "Wrong credentials! If you don't have an account you can register now!"
                 })
@@ -57,7 +66,15 @@ router.get('/',
         
         return res.json({
             status: 0,
-            accessToken: accessToken
+            accessToken: accessToken,
+            user: {
+                firstName: existingUser.firstName,
+                lastName: existingUser.lastName,
+                profile: existingUser.profile ?? null,
+                email: existingUser.profile,
+                created: existingUser.created,
+                lastUpdated: existingUser.lastUpdated,
+            },
         });
     }
 );

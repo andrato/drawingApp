@@ -60,7 +60,7 @@ router.post('/', (0, express_validator_1.checkSchema)(signUpSchema), (req, res) 
     try {
         const existingUser = yield mongo_schema_1.modelUser.findOne({ email: user.email });
         if (existingUser) {
-            return res.status(400).json({
+            return res.status(200).json({
                 status: 1,
                 error: "There is already a user with this email address!"
             });

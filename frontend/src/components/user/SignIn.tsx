@@ -1,9 +1,11 @@
 import { DialogUser } from "./DialogUser";
 import { FormikHelpers, useFormik } from 'formik';
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { SigninSchema, SignInValuesType } from "./utils";
 import { SignInForm } from "./SignInForm";
 import { Typography } from "@mui/material";
+import { signIn } from "../../services/Auth";
+import { LocalStorageKeys } from "../../constants/LocalStorage";
 
 export const SignIn = (props: {
     open: boolean;
@@ -11,10 +13,29 @@ export const SignIn = (props: {
     onOpenSignup: () => void;
 }) => {
     const values = useRef<SignInValuesType>({email: "", password: ""});
-    const handleSubmit = (values: SignInValuesType, {resetForm}: FormikHelpers<SignInValuesType>) => {
-        resetForm();
-        props.onHandleClose();
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async (values: SignInValuesType, {resetForm}: FormikHelpers<SignInValuesType>) => {
+        try {
+            const {data} = await signIn({email: values.email, password: values.password});
+            console.log("Response is: ");
+            console.log(data);
+
+            if (data.status && data.error) {
+                setError(data.error)
+            }
+
+            if (!data.status) {
+                localStorage.setItem(LocalStorageKeys.USER_TOKEN, data.accessToken);
+                resetForm();
+                props.onHandleClose();
+            }
+        } catch (errors: any) {
+            console.log("Error is: ");
+            console.log(errors);
+        }
     }
+
     const formik = useFormik({
         initialValues: values.current,
         validationSchema: SigninSchema,
@@ -37,6 +58,7 @@ export const SignIn = (props: {
                     onBlur={formik.handleBlur}
                     touched={formik.touched}
                     isSubmitting={formik.isSubmitting}
+                    errorRequest={error}
                 />
             </form>
             <Typography variant="body2" sx={{textAlign: "center", py: 1}}>

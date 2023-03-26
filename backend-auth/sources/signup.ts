@@ -55,7 +55,7 @@ router.post('/',
             const existingUser: (UserType | null) = await modelUser.findOne({email: user.email});
 
             if (existingUser) {
-                return res.status(400).json({
+                return res.status(200).json({
                     status: 1,
                     error:  "There is already a user with this email address!"
                 })

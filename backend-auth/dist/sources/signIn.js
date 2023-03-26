@@ -23,17 +23,22 @@ exports.SignIn = router;
 const signInSchema = {
     // Support bail functionality in schemas
     email: {
-        isEmail: { bail: true, }
+        isEmail: {
+            bail: true,
+            location: "params",
+        }
     },
     password: {
         isLength: {
-            errorMessage: 'Password should be at least 8 chars long!',
+            errorMessage: 'Password should be at least 1 chars long!',
             // Multiple options would be expressed as an array
-            options: { min: 8 },
+            options: { min: 1 },
+            location: "params",
         },
     },
 };
 router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -41,12 +46,16 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
             errors: errors.array(),
         });
     }
-    const user = req.body;
+    const user = {
+        email: req.query.email,
+        password: req.query.password,
+    };
+    let existingUser;
     // find user in DB
     try {
-        const existingUser = yield mongo_schema_1.modelUser.findOne({ email: user.email });
+        existingUser = yield mongo_schema_1.modelUser.findOne({ email: user.email });
         if (!existingUser || (!(0, helpers_1.comparePassword)(user.password, existingUser.password))) {
-            return res.status(400).json({
+            return res.status(200).json({
                 status: 1,
                 error: "Wrong credentials! If you don't have an account you can register now!"
             });
@@ -62,7 +71,15 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
     const accessToken = jsonwebtoken_1.default.sign(user, process.env.ACCESS_TOKEN_SECRET);
     return res.json({
         status: 0,
-        accessToken: accessToken
+        accessToken: accessToken,
+        user: {
+            firstName: existingUser.firstName,
+            lastName: existingUser.lastName,
+            profile: (_a = existingUser.profile) !== null && _a !== void 0 ? _a : null,
+            email: existingUser.profile,
+            created: existingUser.created,
+            lastUpdated: existingUser.lastUpdated,
+        },
     });
 }));
 //# sourceMappingURL=signin.js.map

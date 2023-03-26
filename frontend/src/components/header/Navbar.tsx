@@ -2,7 +2,10 @@ import {
     Box, 
     Typography, 
     Button, 
-    BoxProps, 
+    BoxProps,
+    Avatar,
+    IconButton,
+    Tooltip, 
 } from "@mui/material";
 import {
     navColors,
@@ -16,6 +19,9 @@ import { SignUp } from "../user/SignUp";
 import { SignIn } from "../user/SignIn";
 import { Result } from "../user/Result";
 import { Step } from "../user/utils";
+import { LocalStorageKeys } from "../../constants/LocalStorage";
+import {KeyboardArrowDown} from '@mui/icons-material';
+import { NavUser } from "./NavUser";
 
 const StyledBoxLink = ({
     children, 
@@ -110,13 +116,14 @@ const NavbarPagesLinks = ({children, props} : {children: React.ReactNode, props?
     </Box>
 )
 
-const NavbarSignInOut = ({children, props} : {children: React.ReactNode, props?: BoxProps}) => (
+const NavbarAuth = ({children, props} : {children: React.ReactNode, props?: BoxProps}) => (
     <Box 
         {...props}
         sx={{
             display: "flex",
             justifyContent: "flex-end",
             width: "100%",
+            alignItems: "center",
         }}
     >
         {children}
@@ -124,10 +131,12 @@ const NavbarSignInOut = ({children, props} : {children: React.ReactNode, props?:
 )
 
 export function Navbar() {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [openSignIn, setOpenSignIn] = useState(false);
     const [openSignUp, setOpenSignUp] = useState(false);
     const [result, setResult] = useState<{openResult: boolean, step: Step | null}>({openResult: false, step: null});
+    const userToken = localStorage.getItem(LocalStorageKeys.USER_TOKEN);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleSignInClose = () => {
         setOpenSignIn(false);
@@ -178,7 +187,7 @@ export function Navbar() {
                     Draw
                 </StyledBoxLink>
             </NavbarPagesLinks>
-            <NavbarSignInOut>
+            {!userToken && <NavbarAuth>
                 <Button 
                     variant="outlined" 
                     size="small" 
@@ -228,7 +237,32 @@ export function Navbar() {
                     onOpenSignIn={() => setOpenSignIn(true)} 
                     onOpenSignUp={handleOpenSignUp}
                 />
-            </NavbarSignInOut>
+            </NavbarAuth>}
+            {userToken &&
+                <NavbarAuth>
+                    <Typography variant="body2" sx={{
+                        color: navColors.textNav, 
+                        fontWeight: "bold",
+                    }}>
+                        {`Welcome, Andra`}
+                    </Typography>
+                    <Tooltip title="Account settings">
+                        <IconButton
+                            onClick={(event) => setAnchorEl(event.currentTarget)}
+                            size="small"
+                            sx={{ ml: 2 }}
+                            aria-haspopup="true"
+                            aria-expanded={Boolean(anchorEl)  ? 'true' : undefined}
+                        >
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: navColors.textNavDraw}}>A</Avatar>
+                        </IconButton>
+                    </Tooltip>
+                    <NavUser
+                        anchorEl={anchorEl}
+                        onClose={() => {setAnchorEl(null)}}
+                    />      
+                </NavbarAuth>
+            }
         </NavbarContainer>
     </NavbarWrapper>)
 }
