@@ -1,6 +1,6 @@
 import { Router, Request, Response} from "express";
 import { generateHash } from "./helpers";
-import {modelUser} from "../schema";
+import {modelUser} from "../mongo_schema";
 import { defaultUser, UserType } from "./types";
 import { validationResult, checkSchema } from "express-validator";
 

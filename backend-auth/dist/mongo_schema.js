@@ -21,7 +21,16 @@ const userSchema = new mongoose_1.Schema({
             type: String,
         }
     },
+    created: {
+        type: Number,
+    },
+    lastUpdated: {
+        type: Number,
+    },
+    isAdmin: {
+        type: Boolean,
+    }
 }, { collection: 'users' });
 /* MODEL */
 exports.modelUser = (0, mongoose_1.model)('user', userSchema);
-//# sourceMappingURL=schema.js.map
+//# sourceMappingURL=mongo_schema.js.map

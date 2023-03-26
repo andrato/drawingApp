@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignUp = void 0;
 const express_1 = require("express");
 const helpers_1 = require("./helpers");
-const schema_1 = require("../schema");
+const mongo_schema_1 = require("../mongo_schema");
 const types_1 = require("./types");
 const express_validator_1 = require("express-validator");
 const router = (0, express_1.Router)();
@@ -58,7 +58,7 @@ router.post('/', (0, express_validator_1.checkSchema)(signUpSchema), (req, res) 
     const user = req.body;
     // Check if user exists
     try {
-        const existingUser = yield schema_1.modelUser.findOne({ email: user.email });
+        const existingUser = yield mongo_schema_1.modelUser.findOne({ email: user.email });
         if (existingUser) {
             return res.status(400).json({
                 status: 1,
@@ -78,7 +78,7 @@ router.post('/', (0, express_validator_1.checkSchema)(signUpSchema), (req, res) 
     console.log(JSON.stringify(saveUser));
     // save user
     try {
-        yield schema_1.modelUser.create(saveUser);
+        yield mongo_schema_1.modelUser.create(saveUser);
     }
     catch (err) {
         return res.status(500).json({
@@ -92,3 +92,4 @@ router.post('/', (0, express_validator_1.checkSchema)(signUpSchema), (req, res) 
         message: "Created successfully"
     });
 }));
+//# sourceMappingURL=signup.js.map

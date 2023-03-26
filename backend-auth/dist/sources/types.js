@@ -11,3 +11,4 @@ exports.defaultUser = {
     lastUpdated: Math.floor(Date.now()),
     isAdmin: false,
 };
+//# sourceMappingURL=types.js.map

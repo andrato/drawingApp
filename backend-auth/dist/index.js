@@ -38,3 +38,4 @@ app.use((0, cors_1.default)());
 app.use("/signin", signin_1.SignIn);
 app.use("/signup", signup_1.SignUp);
 app.listen(3000, () => { console.log("Listening on port 3000"); });
+//# sourceMappingURL=index.js.map

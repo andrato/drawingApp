@@ -16,7 +16,7 @@ exports.SignIn = void 0;
 const express_1 = require("express");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const helpers_1 = require("./helpers");
-const schema_1 = require("../schema");
+const mongo_schema_1 = require("../mongo_schema");
 const express_validator_1 = require("express-validator");
 const router = (0, express_1.Router)();
 exports.SignIn = router;
@@ -44,7 +44,7 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
     const user = req.body;
     // find user in DB
     try {
-        const existingUser = yield schema_1.modelUser.findOne({ email: user.email });
+        const existingUser = yield mongo_schema_1.modelUser.findOne({ email: user.email });
         if (!existingUser || (!(0, helpers_1.comparePassword)(user.password, existingUser.password))) {
             return res.status(400).json({
                 status: 1,
@@ -65,3 +65,4 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
         accessToken: accessToken
     });
 }));
+//# sourceMappingURL=signin.js.map

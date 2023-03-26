@@ -1,9 +1,9 @@
 import { Router, Request, Response} from "express";
 import jwt from "jsonwebtoken";
 import { comparePassword } from "./helpers";
-import {modelUser} from "../schema";
+import {modelUser} from "../mongo_schema";
 import { UserType } from "./types";
-import { checkSchema, matchedData, validationResult } from "express-validator";
+import { checkSchema, validationResult } from "express-validator";
 
 const router = Router();
 
