@@ -43,7 +43,7 @@ export const SignUp = (props: {
                 />
             </form>    
             <Typography variant="body2" sx={{textAlign: "center", py: 1}}>
-                If you already have an account, you can {" "}
+                {"If you already have an account, you can "}
                 <Typography 
                     component="span" 
                     variant="body2"  
@@ -56,9 +56,9 @@ export const SignUp = (props: {
                         }
                     }}
                 > 
-                    sign in
+                    {"sign in"}
                 </Typography> 
-                {" "} here!
+                {" here!"}
             </Typography>        
         </DialogUser>
     )

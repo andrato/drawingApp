@@ -13,14 +13,13 @@ import {
 } from "./constants";
 import Logo from "../../assets/logo.png";
 import { useMatch, useResolvedPath } from "react-router";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import React, { useState } from "react";
 import { SignUp } from "../user/SignUp";
 import { SignIn } from "../user/SignIn";
 import { Result } from "../user/Result";
 import { Step } from "../user/utils";
 import { LocalStorageKeys } from "../../constants/LocalStorage";
-import {KeyboardArrowDown} from '@mui/icons-material';
 import { NavUser } from "./NavUser";
 
 const StyledBoxLink = ({
@@ -80,7 +79,7 @@ const NavbarWrapper = ({children, props} : {children: React.ReactNode, props?: B
             height: `${navSizes.navHeight}px`,
             width: "100%",
             backgroundColor: `${navColors.navBackground}`,
-            borderBottom: isActive ? "0px" : `0.5px solid ${navColors.textNav}`,
+            borderBottom: isActive ? 0 : `0.5px solid ${navColors.textNav}`,
         }}
     >
         {children}

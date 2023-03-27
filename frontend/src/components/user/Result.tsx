@@ -18,7 +18,7 @@ export const Result = (props: {
 
     return <DialogUser {...rest} title={title}>  
         {step === Step.SUCCESS && <Typography variant="body1" sx={{textAlign: "center", py: 1}}>
-                Successfully registered! You can now {" "} 
+                {"Successfully registered! You can now "}
                 <Typography 
                     component="span" 
                     variant="body1"  
@@ -31,12 +31,12 @@ export const Result = (props: {
                         }
                     }}
                 > 
-                    Sign in
+                    {"Sign in"}
                 </Typography> 
-                {" "} to your account!
+                {" to your account!"}
             </Typography>}
         {step === Step.ERROR && <Typography variant="body1" sx={{textAlign: "center", py: 1}}>
-                Error at signup! {" "} 
+                {"Error at signup! "}
                 <Typography 
                     component="span" 
                     variant="body1"  
@@ -49,7 +49,7 @@ export const Result = (props: {
                         }
                     }}
                 > 
-                    Try again!
+                    {"Try again!"}
                 </Typography> 
             </Typography>}
     </DialogUser>

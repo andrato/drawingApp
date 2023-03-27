@@ -62,7 +62,7 @@ export const SignIn = (props: {
                 />
             </form>
             <Typography variant="body2" sx={{textAlign: "center", py: 1}}>
-                You don't have an account?{" "}
+                {"You don't have an account? "}
                 <Typography 
                     component="span" 
                     variant="body2"  
@@ -75,7 +75,7 @@ export const SignIn = (props: {
                         }
                     }}
                 > 
-                    Sign up!
+                    {"Sign up!"}
                 </Typography> 
             </Typography>
         </DialogUser>
