@@ -1,62 +1,7 @@
-import { Box, Card, CardMedia, Typography } from "@mui/material";
+import { Box, CardMedia, Typography } from "@mui/material";
+import { dataToTest } from "../common/testData";
 import { navColors } from "../header/constants";
 import { homeColors } from "./constants";
-import imgTest from "../../assets/1.png";
-import { height } from "@mui/system";
-
-
-const dataToTest = [{
-    id: 1,
-    img: imgTest,
-},
-{
-    id: 2,
-    img: imgTest,
-},
-{
-    id: 3,
-    img: imgTest,
-},
-{
-    id: 4,
-    img: imgTest,
-},
-{
-    id: 5,
-    img: imgTest,
-},
-{
-    id: 6,
-    img: imgTest,
-},
-{
-    id: 7,
-    img: imgTest,
-},
-{
-    id: 8,
-    img: imgTest,
-},
-{
-    id: 9,
-    img: imgTest,
-},
-{
-    id: 1,
-    img: imgTest,
-},
-{
-    id: 10,
-    img: imgTest,
-},
-{
-    id: 11,
-    img: imgTest,
-},
-{
-    id: 12,
-    img: imgTest,
-},]
 
 export const HomeCategory = ({
     category,

@@ -1,13 +1,9 @@
 import { Box } from "@mui/material"
-import { Page } from "../common/Page"
-import { homeSizes, homeColors } from "./constants"
+import { categories } from "../common/constants";
+import { Page } from "../../helpers/Page"
 import { HomeCategory } from "./HomeCategory";
 
-const categories = ["Top Art", "Top Amateur", "Gallery"];
-
 export const Home = () => {
-
-
     return (
         <Page>
             <Box sx={{
@@ -22,7 +18,6 @@ export const Home = () => {
                        return  <HomeCategory category={category} />
                     })
                 }
-
             </Box>
         </Page>
     )
