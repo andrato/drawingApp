@@ -5,7 +5,10 @@ import {
     BoxProps,
     Avatar,
     IconButton,
-    Tooltip, 
+    Tooltip,
+    useTheme,
+    useMediaQuery,
+    ButtonProps, 
 } from "@mui/material";
 import {
     navColors,
@@ -21,6 +24,7 @@ import { Result } from "../user/Result";
 import { Step } from "../user/utils";
 import { LocalStorageKeys } from "../../constants/LocalStorage";
 import { NavUser } from "./NavUser";
+import { NavMobile } from "./NavMobile";
 
 const StyledBoxLink = ({
     children, 
@@ -129,13 +133,64 @@ const NavbarAuth = ({children, props} : {children: React.ReactNode, props?: BoxP
     </Box>
 )
 
+export const SignInButton = ({setOpenSignIn, ...props}: {setOpenSignIn: () => void} & ButtonProps) => {
+    return <Button 
+        variant="contained" 
+        size="small" 
+        onClick={() => setOpenSignIn()}
+        sx={{
+            backgroundColor: `${navColors.textNavButton}`,
+            color: `${navColors.navBackground}`,
+            fontWeight: "bold",
+            fontSize: `${navSizes.fontSizeButtonsText}px`,
+            borderRadius: "18px",
+            textTransform: 'none',
+            ':hover': {
+                backgroundColor: `${navColors.textNavButtonHover}`,
+            },
+            p: "3px 12px",
+            ...(props?.sx ?? {})
+        }}
+    >
+        Sign in
+    </Button>
+}
+
+export const SignUpButton = ({setOpenSignUp, ...props}: {setOpenSignUp: () => void} & ButtonProps) => {
+    return <Button 
+        variant="outlined" 
+        size="small" 
+        onClick={() => setOpenSignUp()}
+        sx={{
+            color: `${navColors.textNavButton}`,
+            mx: 1,
+            fontWeight: "bold",
+            fontSize: `${navSizes.fontSizeButtonsText}px`,
+            border: `1px solid ${navColors.textNavButton}`,
+            borderRadius: "18px",
+            textTransform: 'none',
+            ':hover': {
+                color: `${navColors.textNavButtonHover}`,
+                borderColor: `${navColors.textNavButtonHover}`,
+            },
+            p: "3px 12px",
+            ...(props?.sx ?? {})
+        }}
+    >
+        Sign up
+    </Button>
+}
+
+export type ResultType = {openResult: boolean, step: Step | null};
+
 export function Navbar() {
-    // const navigate = useNavigate();
     const [openSignIn, setOpenSignIn] = useState(false);
     const [openSignUp, setOpenSignUp] = useState(false);
-    const [result, setResult] = useState<{openResult: boolean, step: Step | null}>({openResult: false, step: null});
+    const [result, setResult] = useState<ResultType>({openResult: false, step: null});
     const userToken = localStorage.getItem(LocalStorageKeys.USER_TOKEN);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const theme = useTheme();
+	const isMdScreenUp = useMediaQuery(theme.breakpoints.up(980));
 
     const handleSignInClose = () => {
         setOpenSignIn(false);
@@ -169,99 +224,74 @@ export function Navbar() {
             <a href="/">
                 <img className="image-img" src={Logo} height="50" style={{marginRight: "80px", marginTop: "5px"}}/>
             </a>
-            <NavbarPagesLinks>
-                <StyledBoxLink to="/topart">
-                    Top Art
-                </StyledBoxLink>
-                <StyledBoxLink to="/topamateur">
-                    Top Amateur
-                </StyledBoxLink>
-                <StyledBoxLink to="/gallery">
-                    Gallery
-                </StyledBoxLink>
-                <StyledBoxLink to="/users">
-                    Users
-                </StyledBoxLink>
-                <StyledBoxLink to="/draw" color={navColors.textNavDraw} fontWeight="bold">
-                    Draw
-                </StyledBoxLink>
-            </NavbarPagesLinks>
-            {!userToken && <NavbarAuth>
-                <Button 
-                    variant="outlined" 
-                    size="small" 
-                    onClick={() => setOpenSignUp(true)}
-                    sx={{
-                        color: `${navColors.textNavButton}`,
-                        mx: 1,
-                        fontWeight: "bold",
-                        fontSize: `${navSizes.fontSizeButtonsText}px`,
-                        border: `1px solid ${navColors.textNavButton}`,
-                        borderRadius: "18px",
-                        textTransform: 'none',
-                        ':hover': {
-                            color: `${navColors.textNavButtonHover}`,
-                            borderColor: `${navColors.textNavButtonHover}`,
-                        },
-                        p: "3px 12px",
-                    }}
-                >
-                    Sign up
-                </Button>
-                <SignUp open={openSignUp} onHandleClose={handleSignUpClose} onOpenSignIn={handleOpenSignIn}/>
-                <Button 
-                    variant="contained" 
-                    size="small" 
-                    onClick={() => setOpenSignIn(true)}
-                    sx={{
-                        backgroundColor: `${navColors.textNavButton}`,
-                        color: `${navColors.navBackground}`,
-                        fontWeight: "bold",
-                        fontSize: `${navSizes.fontSizeButtonsText}px`,
-                        borderRadius: "18px",
-                        textTransform: 'none',
-                        ':hover': {
-                            backgroundColor: `${navColors.textNavButtonHover}`,
-                        },
-                        p: "3px 12px",
-                    }}
-                >
-                    Sign in
-                </Button>
-                <SignIn open={openSignIn} onOpenSignup={handleOpenSignUp} onHandleClose={handleSignInClose}/>
-                <Result 
-                    open={result.openResult} 
-                    step={result.step} 
-                    onHandleClose={handleResultClose} 
-                    onOpenSignIn={() => setOpenSignIn(true)} 
+            {isMdScreenUp ? (<>
+                <NavbarPagesLinks>
+                    <StyledBoxLink to="/topart">
+                        Top Art
+                    </StyledBoxLink>
+                    <StyledBoxLink to="/topamateur">
+                        Top Amateur
+                    </StyledBoxLink>
+                    <StyledBoxLink to="/gallery">
+                        Gallery
+                    </StyledBoxLink>
+                    <StyledBoxLink to="/users">
+                        Users
+                    </StyledBoxLink>
+                    <StyledBoxLink to="/draw" color={navColors.textNavDraw} fontWeight="bold">
+                        Draw
+                    </StyledBoxLink>
+                </NavbarPagesLinks>
+                {!userToken && <NavbarAuth>
+                    <SignUpButton setOpenSignUp={handleOpenSignUp}/>
+                    <SignUp open={openSignUp} onHandleClose={handleSignUpClose} onOpenSignIn={handleOpenSignIn}/>
+                    <SignInButton setOpenSignIn={handleOpenSignIn}/>
+                    <SignIn open={openSignIn} onHandleClose={handleSignInClose} onOpenSignup={handleOpenSignUp}/>
+                    <Result 
+                        open={result.openResult} 
+                        step={result.step} 
+                        onHandleClose={handleResultClose} 
+                        onOpenSignIn={() => setOpenSignIn(true)} 
+                        onOpenSignUp={handleOpenSignUp}
+                    />
+                </NavbarAuth>}
+                {userToken &&
+                    <NavbarAuth>
+                        <Typography variant="body2" sx={{
+                            color: navColors.textNav, 
+                            fontWeight: "bold",
+                        }}>
+                            {`Welcome, Andra`}
+                        </Typography>
+                        <Tooltip title="Account settings">
+                            <IconButton
+                                onClick={(event) => setAnchorEl(event.currentTarget)}
+                                size="small"
+                                sx={{ ml: 2 }}
+                                aria-haspopup="true"
+                                aria-expanded={Boolean(anchorEl)  ? 'true' : undefined}
+                            >
+                                <Avatar sx={{ width: 32, height: 32, bgcolor: navColors.textNavDraw}}>A</Avatar>
+                            </IconButton>
+                        </Tooltip>
+                        <NavUser
+                            anchorEl={anchorEl}
+                            onClose={() => {setAnchorEl(null)}}
+                        />      
+                    </NavbarAuth>
+                }
+            </>) : (
+                <NavMobile 
+                    openSignIn={openSignIn} 
+                    openSignUp={openSignUp} 
+                    onOpenSignIn={handleOpenSignIn}
+                    onCloseSignIn={handleSignInClose}
                     onOpenSignUp={handleOpenSignUp}
+                    onCloseSignUp={handleSignUpClose}
+                    result={result}
+                    onResultClose={handleResultClose}
                 />
-            </NavbarAuth>}
-            {userToken &&
-                <NavbarAuth>
-                    <Typography variant="body2" sx={{
-                        color: navColors.textNav, 
-                        fontWeight: "bold",
-                    }}>
-                        {`Welcome, Andra`}
-                    </Typography>
-                    <Tooltip title="Account settings">
-                        <IconButton
-                            onClick={(event) => setAnchorEl(event.currentTarget)}
-                            size="small"
-                            sx={{ ml: 2 }}
-                            aria-haspopup="true"
-                            aria-expanded={Boolean(anchorEl)  ? 'true' : undefined}
-                        >
-                            <Avatar sx={{ width: 32, height: 32, bgcolor: navColors.textNavDraw}}>A</Avatar>
-                        </IconButton>
-                    </Tooltip>
-                    <NavUser
-                        anchorEl={anchorEl}
-                        onClose={() => {setAnchorEl(null)}}
-                    />      
-                </NavbarAuth>
-            }
+            )}
         </NavbarContainer>
     </NavbarWrapper>)
 }
