@@ -1,5 +1,5 @@
-import { Close, Logout, Menu } from "@mui/icons-material";
-import { Avatar, Box, BoxProps, Divider, Drawer, IconButton, ListItemIcon, Typography } from "@mui/material";
+import { Close, Menu } from "@mui/icons-material";
+import { Avatar, Box, BoxProps, Divider, Drawer, IconButton, Typography} from "@mui/material";
 import {
     navColors,
     navSizes
@@ -122,7 +122,7 @@ export const NavMobile = ({
                 anchor="right"
                 open={drawer}
                 onClose={() => setDrawer(false)}
-                sx={{
+                sx={(theme) => ({
                     ".MuiDrawer-paper": {
                         width: "250px",
                         backgroundColor: navColors.navBackground,
@@ -130,7 +130,12 @@ export const NavMobile = ({
                         display: "flex",
                         justifyContent: "space-between",
                     },
-                }}
+                    [theme.breakpoints.down("sm")]: {
+                        ".MuiDrawer-paper": {
+                            width: "100%",
+                        }
+                    }
+                })}
             >
                 <div>
                     <NavHeader>
