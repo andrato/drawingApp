@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
+import { CanvasRecorder } from "./utils/CanvasRecorder";
 
 export type Point = {
     x: number,
@@ -13,6 +14,39 @@ export function useOnDraw(onDraw: Function) {
     const mouseUpListenerRef = useRef<any>(null);
     const prevPointRef = useRef<Point|null>(null);
     const {getActiveButton} = useButtonsLeft();
+    const recorder = CanvasRecorder();
+
+    /* ***************************************** */
+    /*                Recording                  */
+    /* ***************************************** */
+    const startRecording = useCallback(() => {
+        if(canvasRef.current) {
+            console.log("starting recording")
+            recorder.createStream(canvasRef.current);
+            recorder.start();
+        } else {
+            console.log("failed to record");
+        }
+      }, [canvasRef])
+    
+    const stopRecording = useCallback(() => {
+        console.log("stopped recording")
+        recorder.stop();
+        const file = recorder.save();
+        // Do something with the file
+        const url = window.URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'test.webm';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+    }, [])
+
 
     /* ***************************************** */
     /*                Mouse events               */
@@ -109,6 +143,8 @@ export function useOnDraw(onDraw: Function) {
     return {
         setCanvasRef, 
         onMouseDown,
-        clearCanvas
+        clearCanvas,
+        startRecording,
+        stopRecording,
     };
 }

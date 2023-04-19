@@ -1,10 +1,11 @@
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { useOnDraw, Point } from "./useOnDraw";
 import { Box } from "@mui/material";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { 
     handleActionsCanvasType,
 } from "./constants";
+import { CanvasRecorder } from "./utils/CanvasRecorder";
 
 export type CanvasProps = {
     color: string, 
@@ -19,14 +20,27 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
     /* ********************************************************** */
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
-    const {setCanvasRef, onMouseDown, clearCanvas} = useOnDraw(onDraw);
+    const {setCanvasRef, onMouseDown, clearCanvas, startRecording, stopRecording} = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
 
+    /* ***************************************** */
+    /*                Recording                  */
+    /* ***************************************** */
+
+    useEffect(() => {
+        startRecording();
+        
+        return () => {
+            stopRecording();
+        }
+    },[]);
+
     useImperativeHandle(ref, () => ({
         handleClearCanvas() {
             clearCanvas();
+            stopRecording();
         },
     }));
 
@@ -107,7 +121,6 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
         ctx.beginPath();
         ctx.rect(start.x, start.y, end.x-start.x, end.y-start.y);
         ctx.stroke();
-
     }
 
     function handleDrawCircle (
