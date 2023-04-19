@@ -1,9 +1,5 @@
 import { Close, Menu } from "@mui/icons-material";
-import { Avatar, Box, BoxProps, Divider, Drawer, IconButton, Typography} from "@mui/material";
-import {
-    navColors,
-    navSizes
-} from "./constants";
+import { Avatar, Box, BoxProps, Divider, Drawer, IconButton, Typography, useTheme} from "@mui/material";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { LocalStorageKeys } from "../../utils/constants/LocalStorage";
 import { ResultType, SignInButton, SignUpButton } from "./Navbar";
@@ -57,22 +53,22 @@ const StyledLink = ({
         <Link href={to} style={{
             textDecoration: 'none', 
         }}>
-            <Box sx={{
+            <Box sx={(theme) => ({
                 px: 3,
-                backgroundColor: isActive ? `${navColors.activeElemBackground}` : "none",
+                backgroundColor: isActive ? theme.palette.backgroundCustom.active : "none",
                 whiteSpace: "nowrap",
                 ':hover': {
-                    backgroundColor: isActive ? `${navColors.activeElemBackground}` : `${navColors.textNavColorHover}`,
+                    backgroundColor: isActive ? theme.palette.backgroundCustom.active : theme.palette.backgroundCustom.hover,
                 },
                 py: "4px",
-            }}>
+            })}>
                 <Typography 
                     variant="body2"
-                    sx={{
-                        color: (!color || isActive) ? `${navColors.textNav}` : `${color}`,
-                        lineHeight: `${navSizes.linkHeight}px`,
+                    sx={(theme) => ({
+                        color: (!color || isActive) ? theme.palette.textCustom.primary : `${color}`,
+                        lineHeight: theme.customSizes.linkHeight,
                         fontWeight: isActive ? 'bold' : `${fontWeight}`,
-                    }}
+                    })}
                 >
                     {children}
                 </Typography>
@@ -101,6 +97,7 @@ export const NavMobile = ({
 }) => {
     const [drawer, setDrawer] = useState(false);
     const userToken = useRef<string | null>(null);
+    const theme = useTheme();
 
     useEffect(() => {
         userToken.current = localStorage.getItem(LocalStorageKeys.USER_TOKEN)
@@ -116,7 +113,7 @@ export const NavMobile = ({
                 size="large"
                 edge="start"
                 aria-label="menu"
-                sx={{ m: 0, color: navColors.textNav }}
+                sx={(theme) => ({ m: 0, color: theme.palette.textCustom.primary })}
                 onClick={() => setDrawer(true)}
             >
                 <Menu />
@@ -128,8 +125,8 @@ export const NavMobile = ({
                 sx={(theme) => ({
                     ".MuiDrawer-paper": {
                         width: "250px",
-                        backgroundColor: navColors.navBackground,
-                        color: navColors.textNav,
+                        backgroundColor: theme.palette.backgroundCustom.main,
+                        color: theme.palette.textCustom.primary,
                         display: "flex",
                         justifyContent: "space-between",
                     },
@@ -142,31 +139,31 @@ export const NavMobile = ({
             >
                 <div>
                     <NavHeader>
-                        {userToken ? (<NavbarAuth>
-                            <Avatar sx={{ width: 32, height: 32, bgcolor: navColors.textNavDraw, mr: 2}}>A</Avatar>
-                            <Typography variant="body2" sx={{
-                                color: navColors.textNav, 
+                        {userToken.current ? (<NavbarAuth>
+                            <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary, mr: 2})}>A</Avatar>
+                            <Typography variant="body2" sx={(theme) => ({
+                                color: theme.palette.textCustom.primary, 
                                 fontWeight: "bold",
-                            }}>
+                            })}>
                                 {`Welcome, Andra`}
                             </Typography>  
                         </NavbarAuth>) : (
-                            <Typography variant="body2" sx={{
-                                color: navColors.textNav, 
+                            <Typography variant="body2" sx={(theme) => ({
+                                color: theme.palette.textCustom.primary, 
                                 fontWeight: "bold",
                                 display: "flex",
                                 alignItems: "center",
                                 width: "100%",
-                            }}>
+                            })}>
                                 {`Welcome`}
                             </Typography> 
                         )}
                         <IconButton onClick={() => setDrawer(false)}>
-                            <Close fontSize="small" sx={{color: navColors.textNav,}}/>
+                            <Close fontSize="small" sx={(theme) => ({color: theme.palette.textCustom.primary,})}/>
                         </IconButton> 
 
                     </NavHeader>
-                    <Divider sx={{backgroundColor: navColors.textNav}}/>
+                    <Divider sx={(theme) => ({backgroundColor: theme.palette.textCustom.primary})}/>
                     <Box 
                         onClick={() => setDrawer(false)}
                         sx={{
@@ -187,12 +184,12 @@ export const NavMobile = ({
                         <StyledLink to="/users">
                             Users
                         </StyledLink>
-                        <StyledLink to="/draw" color={navColors.textNavDraw} fontWeight="bold">
+                        <StyledLink to="/draw" color={theme.palette.textCustom.secondary} fontWeight="bold">
                             Draw
                         </StyledLink>
                     </Box>
-                    {userToken && (<>
-                        <Divider sx={{backgroundColor: navColors.textNav}}/>
+                    {userToken.current && (<>
+                        <Divider sx={(theme) => ({backgroundColor: theme.palette.textCustom.primary})}/>
                         <Box 
                             onClick={() => setDrawer(false)}
                             sx={{
@@ -212,26 +209,26 @@ export const NavMobile = ({
                                     localStorage.removeItem(LocalStorageKeys.USER_TOKEN);
                                     setDrawer(false);
                                 }}
-                                sx={{
+                                sx={(theme) => ({
                                     px: 3, 
                                     py: "4px",
                                     ':hover': {
-                                        backgroundColor: `${navColors.textNavColorHover}`,
+                                        backgroundColor: theme.palette.textCustom.primary,
                                     },
-                                }
+                                })
                             }>
                                 <Typography 
                                     component="span" 
                                     variant="body2" 
-                                    sx={{
-                                        lineHeight: `${navSizes.linkHeight}px`,
-                                    }}
+                                    sx={(theme) => ({
+                                        lineHeight: theme.customSizes.linkHeight,
+                                    })}
                                 > Logout </Typography>
                             </Box>
                         </Box>
                     </>)}
                 </div>
-                {!userToken && <div>
+                {!userToken.current && <div>
                     <Box sx={{
                         mb: 3,
                         display: "flex",

@@ -1,8 +1,5 @@
 
 import { IconButton, IconButtonProps, Input } from "@mui/material";
-import { 
-    drawColors,
-} from "../constants";
 import { useButtonsLeft } from "./useButtonsLeft";
 import {
     Create,
@@ -34,18 +31,18 @@ const IconButtonStyled = ({
             size="small"
             onClick={(e) => onHandleClickLeft(e)}
             id={id}
-            sx={{
-                color: `${drawColors.textColor}`,
+            sx={(theme) => ({
+                color: theme.palette.textCustom.primary,
                 textTransform: 'none',
                 fontSize: "16px",
                 borderRadius: "4px",
                 mb: "4px",
                 cursor: "default",
-                backgroundColor: isSelected ? `${drawColors.menuButtonClickedColor}` : `${drawColors.menusColor}`,
+                backgroundColor: isSelected ? theme.palette.canvas.menuBtnActive : theme.palette.canvas.menuBg,
                 ':hover': {
-                    backgroundColor: isSelected ? `${drawColors.menuButtonClickedColor}` : `${drawColors.menuButtonHoverColor}`,
+                    backgroundColor: isSelected ? theme.palette.canvas.menuBtnActive : theme.palette.canvas.menuBtnHover,
                 },
-            }}
+            })}
         >
             {children}
         </IconButton>

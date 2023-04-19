@@ -1,8 +1,5 @@
 
 import { Button, ButtonProps } from "@mui/material";
-import { 
-    drawColors,
-} from "../constants";
 import {
     Save,
     Publish,
@@ -14,15 +11,15 @@ const ButtonStyled = ({children, ...props} : {children: React.ReactNode} & Butto
     <Button
         {...props}
         size="small"
-        sx={{
-            color: `${drawColors.textColor}`,
+        sx={(theme) => ({
+            color: theme.palette.textCustom.primary,
             textTransform: 'none',
             fontSize: "12px",
             mr: "4px",
             ':hover': {
-                backgroundColor: `${drawColors.menuButtonHoverColor}`,
+                backgroundColor: theme.palette.canvas.menuBtnHover,
             }
-        }}
+        })}
     >
         {children}
     </Button>

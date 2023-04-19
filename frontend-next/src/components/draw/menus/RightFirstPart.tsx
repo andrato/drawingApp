@@ -1,7 +1,6 @@
 import { Box, Slider, Input, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useButtonsLeft } from "./useButtonsLeft";
-import { drawColors, drawSizes } from "../constants";
 
 type Props = {
     setLineWidth: Function,
@@ -29,12 +28,12 @@ function PencilSettings (props: Props) {
             display: "flex",
             flexDirection: "column",
         }}>
-            <Typography sx={{
+            <Typography sx={(theme) => ({
                 width: "100%",
-                fontSize: `${drawSizes.fontSizeMenuText}px`,
-                color: `${drawColors.textColor}`,
+                fontSize: theme.customSizes.drawFontSizeMenuText,
+                color: theme.palette.textCustom.primary,
 
-            }}>Size: </Typography>
+            })}>Size: </Typography>
             <Box sx={{
                 display: "flex",
 
@@ -44,25 +43,25 @@ function PencilSettings (props: Props) {
                     onChange={handleSliderChange}
                     valueLabelDisplay="auto"
                     aria-labelledby="input-slider"
-                    sx={{
+                    sx={(theme) => ({
                         mr: 2,
-                        color: `${drawColors.sliderColor}`,
+                        color: theme.palette.canvas.slider,
                         '& .MuiSlider-thumb': {
                             width: "12px",
                             height: "12px",
                         },
-                    }}
+                    })}
                 />
                 <Input
                     value={lineWidth}
                     size="small"
                     onChange={handleSliderChange}
                     onBlur={handleBlur}
-                    sx={{
+                    sx={(theme) => ({
                         width: "40px",
                         '> input': {
-                            backgroundColor: `${drawColors.textColor}`,
-                            color: `${drawColors.backgroundColor}`,
+                            backgroundColor: theme.palette.textCustom.primary,
+                            color: theme.palette.canvas.bgColor,
                             px: "4px",
                             fontSize: "12px",
                         },
@@ -73,7 +72,7 @@ function PencilSettings (props: Props) {
                         '> input[type=number]': {
                             MozAppearance: "textfield",
                         },
-                    }}
+                    })}
                     inputProps={{
                         min: 0,
                         max: 100,

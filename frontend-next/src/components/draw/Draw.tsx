@@ -1,12 +1,9 @@
 import { useRef, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { 
-    drawColors,
-    drawSizes,
     handleActionsCanvasType,
-} from "./constants";
+} from "./types";
 import { DrawContainer } from "./DrawContainer";
-import { navSizes } from "../header/constants";
 import { MenuLeft } from "./menus/MenuLeft";
 import { MenuTop } from "./menus/MenuTop";
 import { MenuRight } from "./menus/MenuRight";
@@ -20,7 +17,9 @@ export function Draw() {
     const handleActionsCanvas = useRef<handleActionsCanvasType>(defaultValues);
     const [color, setColor] = useState("#000000");
     const [lineWidth, setLineWidth] = useState(1);
-    const subtractHeight = drawSizes.topMenuHeight + drawSizes.borderHeight + "px";
+    const theme = useTheme();
+    const subtractHeight = Number((theme.customSizes.drawTopMenuHeight).slice(0,-2)) +
+                        Number((theme.customSizes.drawBorderHeight).slice(0,-2)) + "px";
 
     /* Dialog stuff */
     const [open, setOpen] = useState(false);
@@ -47,20 +46,20 @@ export function Draw() {
     }
 
     return (
-    <Box sx={{
-        height: `calc(100% - ${navSizes.navHeight}px)`,
+    <Box sx={(theme) => ({
+        height: `calc(100% - ${theme.customSizes.navbarHeight})`,
         width: "100%",
-        backgroundColor: `${drawColors.backgroundColor}`
-    }}>
-        <Box sx={{
-            height: `${drawSizes.topMenuHeight}px`,
-            backgroundColor: `${drawColors.menusColor}`,
-            borderBottom: `${drawSizes.borderHeight}px solid ${drawColors.backgroundColor}`,
+        backgroundColor: theme.palette.canvas.bgColor,
+    })}>
+        <Box sx={(theme) => ({
+            height: theme.customSizes.drawTopMenuHeight,
+            backgroundColor: theme.palette.canvas.menuBg,
+            borderBottom: `${theme.customSizes.drawBorderHeight} solid ${theme.palette.canvas.bgColor}`,
             px: "4px",
             display: "flex",
             alignItems: "center",
             flexDirection: "row",
-        }}>
+        })}>
             <MenuTop resetDrawing={showDialog} />
         </Box>
 
@@ -68,24 +67,24 @@ export function Draw() {
             height: `calc(100% - ${subtractHeight})`, 
             display: "flex",
         }}>
-            <Box sx={{
-                width: `${drawSizes.leftMenuWidth}px`,
-                backgroundColor: `${drawColors.menusColor}`,
+            <Box sx={(theme) => ({
+                width: theme.customSizes.drawLeftMenuWidth,
+                backgroundColor: theme.palette.canvas.menuBg,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 py: "4px",
                 position: "relative",
                 zIndex: 1,
-            }}>
+            })}>
                 <MenuLeft color={color} setColor={setColorForDrawing}/>
             </Box>
-            <Box sx={{
-                width: `calc(100% - ${drawSizes.leftMenuWidth}px - ${drawSizes.rightMenuWidth}px)`, 
+            <Box sx={(theme) => ({
+                width: `calc(100% - ${theme.customSizes.drawLeftMenuWidth} - ${theme.customSizes.drawRightMenuWidth})`, 
                 height: "100%",
                 position: "relative",
                 overflow: "scroll",
-            }}>
+            })}>
                 <DrawContainer 
                     width={500} 
                     height={500} 
@@ -94,11 +93,11 @@ export function Draw() {
                     ref={handleActionsCanvas}
                 />
             </Box>
-            <Box sx={{
-                width: `${drawSizes.rightMenuWidth}px`,
-                backgroundColor: `${drawColors.menusColor}`,
+            <Box sx={(theme) => ({
+                width: theme.customSizes.drawRightMenuWidth,
+                backgroundColor: theme.palette.canvas.menuBg,
                 zIndex: 1,
-            }}>
+            })}>
                 <MenuRight setLineWidth={setLineWidth}/>
             </Box>
         </Box>

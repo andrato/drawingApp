@@ -1,6 +1,5 @@
 import { Box, CardMedia, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, useMediaQuery, useTheme } from "@mui/material";
 import { dataToTest } from "../common/testData";
-import { navColors } from "../header/constants";
 import { useEffect, useState } from "react";
 import { SortBy, sortByOptions } from "../common/constants";
 import { filtersColors } from "./constants";
@@ -67,14 +66,14 @@ export function TopArt() {
                     <InputLabel 
                         id="demo-simple-select-standard-label"
                         size="small"
-                        sx={{
+                        sx={(theme) => ({
                             fontSize: "0.9rem",
-                            color: navColors.textNav,
+                            color: theme.palette.textCustom.primary,
                             '&.Mui-focused': {
-                                color: filtersColors.textFocus,
-                                borderColor: filtersColors.textFocus,
-                            }
-                        }}
+                                color: theme.palette.textCustom.focus,
+                                borderColor: theme.palette.textCustom.focus,
+                            },
+                        })}
                     >Sort By
                     </InputLabel>
                     <Select
@@ -85,19 +84,22 @@ export function TopArt() {
                         onChange={(event) => setSortBy(event.target.value as SortBy)}
                         label="Sort by"
                         color="success"
-                        inputProps={{
-
-                        }}
-                        sx={{
-                            bgcolor: filtersColors.backgoundInput,
+                        // inputProps={{
+                        //     color: "red",
+                        //     sx: {
+                        //         bgcolor: filtersColors.backgoundInput,
+                        //     }
+                        // }}
+                        sx={(theme) => ({
+                            backgroundColor: theme.palette.backgroundCustom.dark,
                             mb: 3,
                             width: "180px",
                             fontSize: "0.9rem",
-                            color: navColors.textNav,
+                            color: theme.palette.textCustom.primary,
                             'svg': {
-                                color: navColors.textNav,
+                                color: theme.palette.primary.main,
                             },
-                        }}
+                        })}
                     >
                         {sortByOptions.map((option) => {
                             return <MenuItem value={option} sx={{fontSize: "0.9rem"}}>{option}</MenuItem>
@@ -131,7 +133,7 @@ export function TopArt() {
                 showLastButton 
                 defaultPage={pageNumber}
                 onChange={handlePageChange}
-                sx={{
+                sx={(theme) => ({
                     display: "flex",
                     justifyContent: "center",
                     mb: 1,
@@ -139,13 +141,13 @@ export function TopArt() {
                         mb: 1,
                     },
                     '.MuiPaginationItem-root': {
-                        color: navColors.textNav,
+                        color: theme.palette.textCustom.primary,
 
                         ':selected': {
-                            backgroundColor: "#d7d7d7", // ToDo: try change color
+                            backgroundColor: theme.palette.textCustom.primary,
                         } 
                     },
-                }} 
+                })} 
             />
         </Page>
     )

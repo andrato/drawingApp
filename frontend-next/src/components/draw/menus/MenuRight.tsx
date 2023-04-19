@@ -1,11 +1,5 @@
-import { Box, Typography } from "@mui/material";
-import { useState, useEffect, useRef, MouseEventHandler } from "react";
-import { 
-    drawColors, drawSizes,
-} from "../constants";
-import { 
-    navSizes,
-} from "../../header/constants";
+import { Box, Typography, useTheme } from "@mui/material";
+import { useState, useEffect, useRef } from "react";
 import { BoxProps } from "@mui/system";
 import { useButtonsRight } from "./useButtonsRight";
 import { ButtonBodySettings, ColorSettings, HistorySettings } from "./RightFirstPart";
@@ -26,34 +20,34 @@ const StyledMenuButton = ({
 } & BoxProps) => {
     const { getActiveButtonSettings, getActiveButtonLayers } = useButtonsRight();
     const getActiveButtons = isLayersButton ? getActiveButtonLayers : getActiveButtonSettings;
-
+    const theme = useTheme();
     const isSelected = getActiveButtons() === id;
 
     const border = isSelected ? {
-        border: `1px solid ${drawColors.menuButtonClickedColor}`,
+        border: `1px solid ${theme.palette.canvas.menuBtnActive}`,
         borderBottom: "0px",
     } : {
-        border: `0.5px solid ${drawColors.menuButtonClickedColor}`
+        border: `0.5px solid ${theme.palette.canvas.menuBtnActive}`
     }
 
     return (<Box 
         {...props}
         id={id} 
         onClick={(e) => handleClick(e)}
-        sx={{
+        sx={(theme) => ({
             width: width,
-            backgroundColor: isSelected ? drawColors.menusColor : drawColors.menuButtonHoverColor,
+            backgroundColor: isSelected ? theme.palette.canvas.menuBg : theme.palette.canvas.menuBtnHover,
             ...border,
             borderTop: "0px",
-        }}
+        })}
     >
         <Typography
-            sx={{
-                color: `${drawColors.textColor}`,
+            sx={(theme) => ({
+                color: theme.palette.textCustom.primary,
                 textAlign: "center",
-                fontSize: `${drawSizes.fontSizeMenuText}px`,
+                fontSize: theme.customSizes.drawFontSizeMenuText,
                 py: "4px",
-            }}
+            })}
         >
             {children}
         </Typography>
@@ -70,7 +64,10 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
     const { setActiveButtonSettings, setActiveButtonLayers, getActiveButtonSettings } = useButtonsRight();
     const buttonsSettings = getActiveButtonSettings();
     const refResize = useRef<any>(null);
-    const subtract = navSizes.navHeight + drawSizes.topMenuHeight + drawSizes.borderHeight;
+    const theme = useTheme();
+    const subtract = Number((theme.customSizes.navbarHeight).slice(0, -2)) + 
+                    Number((theme.customSizes.drawTopMenuHeight).slice(0, -2)) + 
+                    Number((theme.customSizes.drawBorderHeight).slice(0, -2));
 
     useEffect(() => {
         const elementResize = refResize.current;
@@ -160,15 +157,15 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
 
         <Box 
             ref={refResize}
-            sx={{
+            sx={(theme) => ({
                 width: "inherit",
-                height: `${drawSizes.borderHeight}px`,
-                backgroundColor: `${drawColors.backgroundColor}`,
+                height: theme.customSizes.drawBorderHeight,
+                backgroundColor: theme.palette.canvas.bgColor,
                 cursor: "row-resize",
                 zIndex: 2,
                 top: mouseDown ? `${top}px` : "",
                 position: mouseDown ? "absolute" : "relative",
-            }} 
+            })} 
         />
 
         <Box id="secondPart" sx={{

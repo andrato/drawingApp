@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { 
     handleActionsCanvasType,
-} from "./constants";
+} from "./types";
 import { CanvasRecorder } from "./utils/CanvasRecorder";
 
 export type CanvasProps = {

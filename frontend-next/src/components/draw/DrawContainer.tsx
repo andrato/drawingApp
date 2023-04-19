@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import React, { forwardRef } from 'react';
 import { 
     handleActionsCanvasType,
-} from "./constants";
+} from "./types";
 
 export const DrawContainer = forwardRef((props: CanvasProps, ref: React.Ref<handleActionsCanvasType>) => {
   return (

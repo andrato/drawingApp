@@ -10,11 +10,6 @@ import {
     useMediaQuery,
     ButtonProps, 
 } from "@mui/material";
-import {
-    navColors,
-    navSizes, 
-} from "./constants";
-import Image from 'next/image'
 import React, { useEffect, useRef, useState } from "react";
 import { SignUp } from "../user/SignUp";
 import { SignIn } from "../user/SignIn";
@@ -43,28 +38,27 @@ const StyledBoxLink = ({
     <Link href={to} style={{
         textDecoration: 'none', 
     }}>
-        <Box sx={{
+        <Box sx={(theme) => ({
             px: 3,
             display: "flex",
             justifyContent: "center",
-            borderRight: `1px solid ${navColors.textNav}`,
-            height: `${navSizes.linkHeight}px`,
-            // width: `${linkWidth}`,
-            backgroundColor: isActive ? `${navColors.activeElemBackground}` : "none",
+            borderRight: `1px solid ${theme.palette.textCustom.primary}`,
+            height: theme.customSizes.linkHeight,
+            backgroundColor: isActive ? theme.palette.backgroundCustom.active : "none",
             whiteSpace: "nowrap",
             ':hover': {
-                backgroundColor: isActive ? `${navColors.activeElemBackground}` : `${navColors.textNavColorHover}`,
+                backgroundColor: isActive ? theme.palette.backgroundCustom.active : theme.palette.backgroundCustom.hover,
             }
-        }}>
+        })}>
             <Typography 
                 variant="body2"
-                sx={{
-                    color: (!color || isActive) ? `${navColors.textNav}` : `${color}`,
-                    lineHeight: `${navSizes.linkHeight}px`,
+                sx={(theme) => ({
+                    color: (!color || isActive) ? `${theme.palette.textCustom.primary}` : `${color}`,
+                    lineHeight: theme.customSizes.linkHeight,
                     textTransform: 'uppercase',
-                    fontSize: `${navSizes.fontSizeText}px`,
+                    fontSize: theme.customSizes.fontSizeText,
                     fontWeight: isActive ? 'bold' : `${fontWeight}`,
-                }}
+                })}
             >
                 {children}
             </Typography>
@@ -80,12 +74,12 @@ const NavbarWrapper = ({children, props} : {children: React.ReactNode, props?: B
 
     return (<Box 
         {...props}
-        sx={{
-            height: `${navSizes.navHeight}px`,
+        sx={(theme) => ({
+            height: theme.customSizes.navbarHeight,
             width: "100%",
-            backgroundColor: `${navColors.navBackground}`,
-            borderBottom: isActive ? 0 : `0.5px solid ${navColors.textNav}`,
-        }}
+            backgroundColor: theme.palette.backgroundCustom.main,
+            borderBottom: isActive ? 0 : `0.5px solid ${theme.palette.textCustom.primary}`,
+        })}
     >
         {children}
     </Box>)
@@ -108,13 +102,13 @@ const NavbarContainer = ({children, props} : {children: React.ReactNode, props?:
 const NavbarPagesLinks = ({children, props} : {children: React.ReactNode, props?: BoxProps}) => (
     <Box 
         {...props}
-        sx={{
+        sx={(theme) => ({
             display: "flex",
             alignItems: "center",
             '> a:first-of-type': {
-                borderLeft: `1px solid ${navColors.textNav}`,
+                borderLeft: `1px solid ${theme.palette.textCustom.primary}`,
             },
-        }}
+        })}
     >
         {children}
     </Box>
@@ -139,19 +133,19 @@ export const SignInButton = ({setOpenSignIn, ...props}: {setOpenSignIn: () => vo
         variant="contained" 
         size="small" 
         onClick={() => setOpenSignIn()}
-        sx={{
-            backgroundColor: `${navColors.textNavButton}`,
-            color: `${navColors.navBackground}`,
+        sx={(theme) => ({
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.backgroundCustom.main,
             fontWeight: "bold",
-            fontSize: `${navSizes.fontSizeButtonsText}px`,
+            fontSize: theme.customSizes.fontSizeButtonsText,
             borderRadius: "18px",
             textTransform: 'none',
             ':hover': {
-                backgroundColor: `${navColors.textNavButtonHover}`,
+                backgroundColor: theme.palette.primary.light,
             },
             p: "3px 12px",
             ...(props?.sx ?? {})
-        }}
+        })}
     >
         Sign in
     </Button>
@@ -162,21 +156,21 @@ export const SignUpButton = ({setOpenSignUp, ...props}: {setOpenSignUp: () => vo
         variant="outlined" 
         size="small" 
         onClick={() => setOpenSignUp()}
-        sx={{
-            color: `${navColors.textNavButton}`,
+        sx={(theme) => ({
+            color: theme.palette.primary.main,
             mx: 1,
             fontWeight: "bold",
-            fontSize: `${navSizes.fontSizeButtonsText}px`,
-            border: `1px solid ${navColors.textNavButton}`,
+            fontSize: theme.customSizes.fontSizeButtonsText,
+            border: `1px solid ${theme.palette.primary.main}`,
             borderRadius: "18px",
             textTransform: 'none',
             ':hover': {
-                color: `${navColors.textNavButtonHover}`,
-                borderColor: `${navColors.textNavButtonHover}`,
+                color: theme.palette.primary.light,
+                borderColor: theme.palette.primary.light,
             },
             p: "3px 12px",
             ...(props?.sx ?? {})
-        }}
+        })}
     >
         Sign up
     </Button>
@@ -228,14 +222,6 @@ export function Navbar() {
         <NavbarContainer>
             <a href="/">
                 <img className="image-img" src={'/logo.png'} height="50" style={{marginRight: "80px", marginTop: "5px"}}/>
-                {/* <Image
-                    src="/logo.png"
-                    alt="Vercel Logo"
-                    width={50}
-                    height={50}
-                    style={{marginRight: "80px", marginTop: "5px"}}
-                    priority
-                /> */}
             </a>
             {isMdScreenUp ? (<>
                 <NavbarPagesLinks>
@@ -251,7 +237,7 @@ export function Navbar() {
                     <StyledBoxLink to="/users">
                         Users
                     </StyledBoxLink>
-                    <StyledBoxLink to="/draw" color={navColors.textNavDraw} fontWeight="bold">
+                    <StyledBoxLink to="/draw" color={theme.palette.textCustom.secondary} fontWeight="bold">
                         Draw
                     </StyledBoxLink>
                 </NavbarPagesLinks>
@@ -270,10 +256,10 @@ export function Navbar() {
                 </NavbarAuth>}
                 {userToken.current &&
                     <NavbarAuth>
-                        <Typography variant="body2" sx={{
-                            color: navColors.textNav, 
+                        <Typography variant="body2" sx={(theme) => ({
+                            color: theme.palette.textCustom.primary, 
                             fontWeight: "bold",
-                        }}>
+                        })}>
                             {`Welcome, Andra`}
                         </Typography>
                         <Tooltip title="Account settings">
@@ -284,7 +270,7 @@ export function Navbar() {
                                 aria-haspopup="true"
                                 aria-expanded={Boolean(anchorEl)  ? 'true' : undefined}
                             >
-                                <Avatar sx={{ width: 32, height: 32, bgcolor: navColors.textNavDraw}}>A</Avatar>
+                                <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary})}>A</Avatar>
                             </IconButton>
                         </Tooltip>
                         <NavUser

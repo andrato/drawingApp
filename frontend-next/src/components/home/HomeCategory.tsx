@@ -1,7 +1,5 @@
 import { Box, CardMedia, Typography } from "@mui/material";
 import { dataToTest } from "../common/testData";
-import { homeColors } from "./constants";
-import { navColors } from "../header/constants";
 
 export const HomeCategory = ({
     category,
@@ -9,16 +7,16 @@ export const HomeCategory = ({
     category: string;
 }) => {
     return (
-        <Box sx={{
-            bgcolor: homeColors.backgound, 
+        <Box sx={(theme) => ({
+            bgcolor: theme.palette.backgroundCustom.dark,
             height: "31%",
-        }}>
+        })}>
             <Box sx={{
                 m: 1,
                 mx: 4,
                 height: "calc(100% - 16px)"
             }}>
-                <Typography color={navColors.textNav}>
+                <Typography sx={(theme) => ({color: theme.palette.textCustom.primary})}>
                     {category}
                 </Typography>
                 <Box sx={{
