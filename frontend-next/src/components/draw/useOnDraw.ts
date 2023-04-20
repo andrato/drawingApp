@@ -16,6 +16,15 @@ export function useOnDraw(onDraw: Function) {
     const {getActiveButton} = useButtonsLeft();
     const recorder = CanvasRecorder();
 
+    useEffect(() => {
+        const ctx = canvasRef?.current?.getContext('2d');
+
+        if(!ctx) { return; }
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }, [canvasRef])
+
     /* ***************************************** */
     /*                Recording                  */
     /* ***************************************** */
@@ -25,26 +34,22 @@ export function useOnDraw(onDraw: Function) {
             recorder.createStream(canvasRef.current);
             recorder.start();
         } else {
-            console.log("failed to record");
+            console.error("naspa")
         }
       }, [canvasRef])
     
     const stopRecording = useCallback(() => {
-        console.log("stopped recording")
+        console.log("stopped recording");
+        recorder.save("ceva");
         recorder.stop();
-        const file = recorder.save();
-        // Do something with the file
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = 'test.webm';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 100);
+    }, []);
+
+    const saveRecording = useCallback(() => {
+        recorder.save("intermediar");
+    }, [])
+
+    const pauseRecording = useCallback(() => {
+        recorder.pause();
     }, [])
 
 
@@ -53,13 +58,16 @@ export function useOnDraw(onDraw: Function) {
     /* ***************************************** */
     function onMouseDown() {
         isDrawingRef.current = true;
+        startRecording();
     }
 
     function initMouseMoveListener() {
         if (!canvasRef.current) return;
 
         const mouseMoveListener = (e: MouseEvent) => {
-            if (!isDrawingRef.current) return;
+            if (!isDrawingRef.current) {
+                return;
+            }
             const point = computePointInCanvas(e.clientX, e.clientY) as Point;
             const ctx = canvasRef?.current?.getContext('2d');
             const buttonActive = getActiveButton();
@@ -82,9 +90,11 @@ export function useOnDraw(onDraw: Function) {
 
     function initMouseUpListener() {
         const mouseUpListener = () => {
-            isDrawingRef.current = false;
-
-            prevPointRef.current = null;
+            if (isDrawingRef.current) {
+                isDrawingRef.current = false;
+                prevPointRef.current = null;
+                pauseRecording();
+            }
         }
 
         mouseUpListenerRef.current = mouseUpListener;
@@ -137,7 +147,11 @@ export function useOnDraw(onDraw: Function) {
 
         if (!ctx) return;
 
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        stopRecording();
     }
 
     return {
@@ -146,5 +160,6 @@ export function useOnDraw(onDraw: Function) {
         clearCanvas,
         startRecording,
         stopRecording,
+        saveRecording,
     };
 }

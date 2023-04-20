@@ -3,41 +3,60 @@ import React from 'react'
 interface CanvasRecorder {
   start: () => void;
   stop: () => void;
-  save: () => Blob;
+  save: (fileName: string) => void;
+  pause: () => void;
+  download: () => Blob;
   createStream: <T extends HTMLCanvasElement>(canvas: T) => void;
   captureMediaStream: <T extends MediaStream>(mediaStream: T) => void;
-//   checkMediaRecording:  <T extends HTMLCanvasElement>(canvas: T) => void;
-//   recordScreen: () => void;
 }
 
 export const CanvasRecorder = (): CanvasRecorder => {
-    const start = startRecording;
-    const stop = stopRecording;
-    const save = download;
     let stream: MediaStream;
     let recordedBlobs: Blob[] = [];
     let supportedType: string | null = null;
     let mediaRecorder: MediaRecorder | null = null;
 
-    const createStream = <T extends HTMLCanvasElement>(canvas: T) => {
-        stream = canvas.captureStream(150);
+    /* private functions */
+    const handleStop = () => {
+        const superBuffer = download();
     }
 
-    const captureMediaStream =  <T extends MediaStream>(mediaStream: T) => {
-        stream = mediaStream;
+    const handleDataAvailable = (event: any) => {
+        if (event.data && event.data.size > 0) {
+            recordedBlobs.push(event.data);
+        }
     }
 
-    // const recordScreen = async () => {
-    //     stream = await navigator.mediaDevices.getDisplayMedia({
-    //         video: { mediaSource: 'screen' }
-    //     })  
-    // }
+    const resetEverything = () => {
+        recordedBlobs = [];
+        supportedType = null;
+        mediaRecorder = null;
+    }
 
-    // const checkMediaRecording = <T extends HTMLCanvasElement>(canvas: T) => {
+    /* public functions */
+    function stop() {
+        if (mediaRecorder?.state === "recording") {
+            mediaRecorder.stop();
+            resetEverything();
+        }
+    }
 
-    // }
+    const pause = () => {
+        if (mediaRecorder?.state === "recording") {
+            mediaRecorder.pause();
+        }
+    }
 
-    function startRecording() {
+    const start = () => {
+        if (mediaRecorder?.state === "recording") {
+            return;
+        }
+
+        if (mediaRecorder?.state === "paused") {
+            mediaRecorder.resume();
+            return;
+        }
+
         let types = [
             'video/webm',
             'video/webm,codecs=vp9',
@@ -55,15 +74,15 @@ export const CanvasRecorder = (): CanvasRecorder => {
             }
         }
         if (supportedType === null) {
-            console.log('No supported type found for MediaRecorder')
+            console.error('No supported type found for MediaRecorder');
+            return;
         }
 
         let options = {
-            mimeType: supportedType ?? "",
-            videoBitsPerSecond: 25000000000, // 2.5Mbps
+            mimeType: supportedType,
+            videoBitsPerSecond: 2500000, // 25000000000 = 2.5 Mbps
         }
 
-        recordedBlobs = [];
         try {
             mediaRecorder = new MediaRecorder(stream, options);
         } catch (e) {
@@ -71,38 +90,61 @@ export const CanvasRecorder = (): CanvasRecorder => {
             alert('MediaRecorder is not supported by this browser.');
             return;
         }
+
         mediaRecorder.onstop = handleStop;
         mediaRecorder.ondataavailable = handleDataAvailable;
         mediaRecorder.start(100); // collect 100ms of data blobs
     }
 
-    function handleDataAvailable(event: any) {
-        if (event.data && event.data.size > 0) {
-            recordedBlobs.push(event.data);
+    const createStream = <T extends HTMLCanvasElement>(canvas: T) => {
+        if (!stream) {
+            stream = canvas.captureStream(50); //fps
         }
     }
-    function handleStop(event: any) {
-        const superBuffer = new Blob(recordedBlobs, { type: supportedType ?? "" });
+
+    const captureMediaStream =  <T extends MediaStream>(mediaStream: T) => {
+        stream = mediaStream;
     }
 
-    function stopRecording() {
-        mediaRecorder && mediaRecorder.stop();
-    }
-
-    function download() {
-        if (null === supportedType) {
-            console.log("naspa");
-        }
-        
+    const download = () => {
         return new Blob(recordedBlobs, { type: supportedType ?? ""})
+    }
+
+    const save = (fileName: string) => {
+        if (null === supportedType) {
+            console.error("type no supported");
+            return null;
+        }
+
+        const file = download();
+
+        // Save the file
+        const url = window.URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `${fileName}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
     }
 
     return {
         start,
         stop,
         save,
+        pause,
+        download,
         createStream,
         captureMediaStream,
-        // checkMediaRecording,
     }
 }
+
+// const recordScreen = async () => {
+//     stream = await navigator.mediaDevices.getDisplayMedia({
+//         video: { mediaSource: 'screen' }
+//     })  
+// }

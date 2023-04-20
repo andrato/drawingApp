@@ -20,7 +20,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
     /* ********************************************************** */
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
-    const {setCanvasRef, onMouseDown, clearCanvas, startRecording, stopRecording} = useOnDraw(onDraw);
+    const {setCanvasRef, onMouseDown, clearCanvas} = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
@@ -29,25 +29,17 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
     /*                Recording                  */
     /* ***************************************** */
 
-    useEffect(() => {
-        startRecording();
-        
-        return () => {
-            stopRecording();
-        }
-    },[]);
-
     useImperativeHandle(ref, () => ({
         handleClearCanvas() {
             clearCanvas();
-            stopRecording();
+            // stopRecording();
+            // saveRecording();
         },
     }));
 
     /* ******************************s**************************** */
     /*                          DRAW STUFF                        */
     /* ********************************************************** */
-    
     function onDraw(ctx: CanvasRenderingContext2D | null | undefined, point: Point, prevPoint: Point ) {
         switch (getActiveButton()) {
             case 'pencil': 
