@@ -182,13 +182,14 @@ export function Navbar() {
     const [openSignIn, setOpenSignIn] = useState(false);
     const [openSignUp, setOpenSignUp] = useState(false);
     const [result, setResult] = useState<ResultType>({openResult: false, step: null});
-    const userToken = useRef<string | null>(null);
+    const [userToken, setUserToken] = useState<string | null> (null)
+    // const userToken = useRef<string | null>(null);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const theme = useTheme();
 	const isMdScreenUp = useMediaQuery(theme.breakpoints.up(980));
 
     useEffect(() => {
-        userToken.current = localStorage.getItem(LocalStorageKeys.USER_TOKEN)
+        setUserToken(localStorage.getItem(LocalStorageKeys.USER_TOKEN));
     }, [])
 
     const handleSignInClose = () => {
@@ -241,7 +242,7 @@ export function Navbar() {
                         Draw
                     </StyledBoxLink>
                 </NavbarPagesLinks>
-                {!userToken.current && <NavbarAuth>
+                {!userToken && <NavbarAuth>
                     <SignUpButton setOpenSignUp={handleOpenSignUp}/>
                     <SignUp open={openSignUp} onHandleClose={handleSignUpClose} onOpenSignIn={handleOpenSignIn}/>
                     <SignInButton setOpenSignIn={handleOpenSignIn}/>
@@ -254,7 +255,7 @@ export function Navbar() {
                         onOpenSignUp={handleOpenSignUp}
                     />
                 </NavbarAuth>}
-                {userToken.current &&
+                {userToken &&
                     <NavbarAuth>
                         <Typography variant="body2" sx={(theme) => ({
                             color: theme.palette.textCustom.primary, 
