@@ -38,7 +38,7 @@ const config: Configuration = {
   devServer: {
     static: path.join(__dirname, 'build'),
     compress: true,
-    port: 8080,
+    port: 3000,
   },
 };
 

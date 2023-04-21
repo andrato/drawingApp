@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface CanvasRecorder {
   start: () => void;
   stop: () => void;
