@@ -204,10 +204,11 @@ export const NavMobile = ({
                             <StyledLink to="/settings">
                                 Settings
                             </StyledLink>
-                        <Box 
+                            <Box 
                                 onClick={() => {
                                     localStorage.removeItem(LocalStorageKeys.USER_TOKEN);
                                     setDrawer(false);
+                                    window.location.reload();
                                 }}
                                 sx={(theme) => ({
                                     px: 3, 

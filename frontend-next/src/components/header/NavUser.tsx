@@ -59,7 +59,12 @@ export const NavUser = ({
             </ListItemIcon>
             <Typography component="span" variant="body2"> Settings </Typography>
         </MenuItem>
-        <MenuItem onClick={() => {localStorage.removeItem(LocalStorageKeys.USER_TOKEN); onClose();}}>
+        <MenuItem onClick={() => {
+            localStorage.removeItem(LocalStorageKeys.USER_TOKEN);
+            localStorage.removeItem(LocalStorageKeys.USER_INFO); 
+            onClose(); 
+            window.location.reload();
+        }}>
             <ListItemIcon>
                 <Logout fontSize="small" />
             </ListItemIcon>

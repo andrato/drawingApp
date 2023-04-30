@@ -36,6 +36,7 @@ const signUpSchema = {
     email: {
         isEmail: {
             bail: true,
+            errorMessage: 'Invalid email!',
         },
     },
     password: {
@@ -75,7 +76,6 @@ router.post('/', (0, express_validator_1.checkSchema)(signUpSchema), (req, res) 
     }
     // save password encrypted
     const saveUser = Object.assign(Object.assign(Object.assign({}, types_1.defaultUser), user), { password: (0, helpers_1.generateHash)(user.password) });
-    console.log(JSON.stringify(saveUser));
     // save user
     try {
         yield mongo_schema_1.modelUser.create(saveUser);

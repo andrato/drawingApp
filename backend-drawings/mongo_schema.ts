@@ -26,6 +26,9 @@ const drawingSchema = new Schema({
 	videoPath: {
         type: String,
     },
+    imagePath: {
+        type: String,
+    }
 
 }, { collection: 'drawings'});
 

@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { SignUpSchema, SignUpValuesType, Step } from "./utils";
 import { SignUpForm } from "./SignUpForm";
 import { Typography } from "@mui/material";
+import { signUp } from "@/services/Auth";
 
 export const SignUp = (props: {
     open: boolean;
@@ -11,12 +12,27 @@ export const SignUp = (props: {
     onOpenSignIn: () => void
 }) => {
     const values = useRef<SignUpValuesType>({firstName: "", lastName:"", email: "", password: ""});
-    const handleSubmit = (values: SignUpValuesType, {resetForm}: FormikHelpers<SignUpValuesType>) => {
+    const handleSubmit = async (values: SignUpValuesType, {resetForm}: FormikHelpers<SignUpValuesType>) => {
         // ToDo: send to backend and wait for the response
+        console.log(values);
+        try {
+            const {data} = await signUp(values);
+
+            if (data.status && data.error) {
+                console.log("error");
+                props.onHandleClose(Step.ERROR);
+            }
+
+            if (!data.status) {
+                resetForm();
+                props.onHandleClose(Step.SUCCESS);
+            }
+        } catch (err: any) {
+            console.error("Error is: " + JSON.stringify(err));
+            props.onHandleClose(Step.ERROR);
+        }
 
         // close modal and display error / success message
-        resetForm();
-        props.onHandleClose(Step.SUCCESS);
     }
     const formik = useFormik({
         initialValues: values.current,

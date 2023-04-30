@@ -25,6 +25,7 @@ const signUpSchema = {
     email: {
         isEmail: {
             bail: true,
+            errorMessage: 'Invalid email!',
         },
     },
     password: {
@@ -70,7 +71,6 @@ router.post('/',
 
         // save password encrypted
         const saveUser: UserType = {...defaultUser, ...user, password: generateHash(user.password)};
-        console.log(JSON.stringify(saveUser));
 
         // save user
         try {

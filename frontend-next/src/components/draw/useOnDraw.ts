@@ -26,34 +26,6 @@ export function useOnDraw(onDraw: Function) {
     }, [canvasRef])
 
     /* ***************************************** */
-    /*                Recording                  */
-    /* ***************************************** */
-    const startRecording = useCallback(() => {
-        if(canvasRef.current) {
-            console.log("starting recording")
-            recorder.createStream(canvasRef.current);
-            recorder.start();
-        } else {
-            console.error("naspa")
-        }
-      }, [canvasRef])
-    
-    const stopRecording = useCallback(() => {
-        console.log("stopped recording");
-        recorder.save("ceva");
-        recorder.stop();
-    }, []);
-
-    const saveRecording = useCallback(() => {
-        return recorder.save("intermediar");
-    }, [])
-
-    const pauseRecording = useCallback(() => {
-        recorder.pause();
-    }, [])
-
-
-    /* ***************************************** */
     /*                Mouse events               */
     /* ***************************************** */
     function onMouseDown() {
@@ -154,6 +126,35 @@ export function useOnDraw(onDraw: Function) {
         stopRecording();
     }
 
+    const saveImage = () => {
+        return new Promise(resolve => canvasRef?.current?.toBlob(resolve, "image/jpeg"));
+    };
+
+    /* ***************************************** */
+    /*                Recording                  */
+    /* ***************************************** */
+    const startRecording = useCallback(() => {
+        if(canvasRef.current) {
+            recorder.createStream(canvasRef.current);
+            recorder.start();
+        } else {
+            console.error("naspa")
+        }
+      }, [canvasRef])
+    
+    const stopRecording = useCallback(() => {
+        recorder.save("ceva");
+        recorder.stop();
+    }, []);
+
+    const saveRecording = useCallback(() => {
+        return recorder.save("intermediar");
+    }, [])
+
+    const pauseRecording = useCallback(() => {
+        recorder.pause();
+    }, [])
+
     return {
         setCanvasRef, 
         onMouseDown,
@@ -161,5 +162,6 @@ export function useOnDraw(onDraw: Function) {
         startRecording,
         stopRecording,
         saveRecording,
+        saveImage,
     };
 }

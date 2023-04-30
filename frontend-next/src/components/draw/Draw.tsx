@@ -13,6 +13,7 @@ import { postDrawing } from "@/services/Drawings";
 const defaultValues = {
     handleClearCanvas: () => {},
     getDrawingVideo: () => {},
+    getDrawingImage: () => {},
 };
 
 export function Draw() {
@@ -42,18 +43,22 @@ export function Draw() {
         handleActionsCanvas.current.handleClearCanvas();
     }
 
-    function saveDrawing() {
-        console.log("save drawing");
+    async function saveDrawing() {
+        const name = "ceva";
         const drawingVideoFile = handleActionsCanvas.current.getDrawingVideo();
+        const drawingImageFile = await handleActionsCanvas.current.getDrawingImage();
 
         if (!drawingVideoFile) {
             console.log("video e null");
             return;
         }
 
+        console.log(drawingImageFile);
+
         // we have the videoFile => send it to backend
         const formData = new FormData();
-        formData.append('videoFile', drawingVideoFile);
+        formData.append('files', drawingVideoFile, name);
+        formData.append('files', drawingImageFile, name);
         postDrawing(formData);
     }
 

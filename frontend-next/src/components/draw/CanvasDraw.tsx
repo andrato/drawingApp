@@ -5,7 +5,6 @@ import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { 
     handleActionsCanvasType,
 } from "./types";
-import { CanvasRecorder } from "./utils/CanvasRecorder";
 
 export type CanvasProps = {
     color: string, 
@@ -20,24 +19,25 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
     /* ********************************************************** */
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
-    const {setCanvasRef, onMouseDown, clearCanvas, saveRecording} = useOnDraw(onDraw);
+    const {setCanvasRef, onMouseDown, clearCanvas, saveRecording, saveImage} = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
 
     /* ***************************************** */
-    /*                Recording                  */
+    /*                For parent                 */
     /* ***************************************** */
-
     useImperativeHandle(ref, () => ({
         handleClearCanvas() {
             clearCanvas();
-            // stopRecording();
-            // saveRecording();
         },
 
         getDrawingVideo() {
             return saveRecording();
+        },
+
+        getDrawingImage() {
+            return saveImage();
         }
     }));
 

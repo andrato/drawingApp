@@ -18,21 +18,27 @@ export const SignIn = (props: {
     const handleSubmit = async (values: SignInValuesType, {resetForm}: FormikHelpers<SignInValuesType>) => {
         try {
             const {data} = await signIn({email: values.email, password: values.password});
-            console.log("Response is: ");
-            console.log(data);
 
             if (data.status && data.error) {
                 setError(data.error)
             }
 
             if (!data.status) {
+                const userInfo = {
+                    id: data.user.id,
+                    email: data.user.email,
+                    firstName: data.user.firstName,
+                    lastName: data.user.lastName,
+                };
+
                 localStorage.setItem(LocalStorageKeys.USER_TOKEN, data.accessToken);
+                localStorage.setItem(LocalStorageKeys.USER_INFO, JSON.stringify(userInfo));
                 resetForm();
                 props.onHandleClose();
+                window.location.reload();
             }
-        } catch (errors: any) {
-            console.log("Error is: ");
-            console.log(errors);
+        } catch (err: any) {
+            console.error("Error is: " + JSON.stringify(err));
         }
     }
 

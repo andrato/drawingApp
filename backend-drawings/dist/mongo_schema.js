@@ -28,6 +28,9 @@ const drawingSchema = new mongoose_1.Schema({
     videoPath: {
         type: String,
     },
+    imagePath: {
+        type: String,
+    }
 }, { collection: 'drawings' });
 /* MODEL */
 exports.modelDrawing = (0, mongoose_1.model)('drawing', drawingSchema);

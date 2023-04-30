@@ -42,7 +42,7 @@ router.get('/',
             password: req.query.password as string,
         }
         
-        let existingUser: (UserType | null);
+        let existingUser: (UserType & {_id: string}| null);
 
         // find user in DB
         try {
@@ -68,10 +68,11 @@ router.get('/',
             status: 0,
             accessToken: accessToken,
             user: {
+                id: existingUser._id,
                 firstName: existingUser.firstName,
                 lastName: existingUser.lastName,
                 profile: existingUser.profile ?? null,
-                email: existingUser.profile,
+                email: existingUser.email,
                 created: existingUser.created,
                 lastUpdated: existingUser.lastUpdated,
             },

@@ -73,10 +73,11 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
         status: 0,
         accessToken: accessToken,
         user: {
+            id: existingUser._id,
             firstName: existingUser.firstName,
             lastName: existingUser.lastName,
             profile: (_a = existingUser.profile) !== null && _a !== void 0 ? _a : null,
-            email: existingUser.profile,
+            email: existingUser.email,
             created: existingUser.created,
             lastUpdated: existingUser.lastUpdated,
         },

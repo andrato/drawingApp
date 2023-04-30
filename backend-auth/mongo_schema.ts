@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import mongoose from 'mongoose';
 
 /* SCHEMAS */
 const userSchema = new Schema({

@@ -16,6 +16,7 @@ type SigninResponseSuccessType = {
     status: 0;
     accessToken: string;
     user: {
+        id: string,
         firstName: string,
         lastName: string,
         profile?: UserProfileType | null,
@@ -24,11 +25,15 @@ type SigninResponseSuccessType = {
         lastUpdated: string,
     },
 };
-type SigninResponseErrorType = {
+type ResponseErrorType = {
     status: 1,
     error?: string,
     errors?: ErrorType[],
 };
+type SignupResponseSuccessType = {
+    status: 0;
+    message: string;
+}
 
 const config = {
     headers:{
@@ -37,5 +42,10 @@ const config = {
 };
 
 export const signIn = (user: {email: string, password: string}) => {
-    return axios.get<SigninResponseSuccessType | SigninResponseErrorType>(HOST + "signin", {...config, params: user});
+    return axios.get<SigninResponseSuccessType | ResponseErrorType>(HOST + "signin", {...config, params: user});
+}
+
+export const signUp = (user: {firstName: string, lastName: string, email: string, password: string}) => {
+    console.log("user is: " + JSON.stringify(user));
+    return axios.post<SignupResponseSuccessType | ResponseErrorType>(HOST + "signup", user, {...config});
 }
