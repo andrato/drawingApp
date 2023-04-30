@@ -108,28 +108,30 @@ export const CanvasRecorder = (): CanvasRecorder => {
 
     const download = () => {
         return new Blob(recordedBlobs, { type: supportedType ?? ""})
+        // return new File(recordedBlobs, "randomName", { type: supportedType ?? ""});
+
+        // // Save the file
+        // const url = window.URL.createObjectURL(file);
+        // const a = document.createElement('a');
+        // a.style.display = 'none';
+        // a.href = url;
+        // a.download = `${fileName}.webm`;
+        // document.body.appendChild(a);
+        // a.click();
+        // setTimeout(() => {
+        //     document.body.removeChild(a);
+        //     window.URL.revokeObjectURL(url);
+        // }, 100);
     }
 
     const save = (fileName: string) => {
         if (null === supportedType) {
+            alert("Type no supported!");
             console.error("type no supported");
             return null;
         }
 
-        const file = download();
-
-        // Save the file
-        const url = window.URL.createObjectURL(file);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `${fileName}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 100);
+        return new File(recordedBlobs, fileName, { type: supportedType });
     }
 
     return {

@@ -45,7 +45,7 @@ export function useOnDraw(onDraw: Function) {
     }, []);
 
     const saveRecording = useCallback(() => {
-        recorder.save("intermediar");
+        return recorder.save("intermediar");
     }, [])
 
     const pauseRecording = useCallback(() => {

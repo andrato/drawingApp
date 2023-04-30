@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const HOST = "http://localhost:8080/";
+const HOST = "http://localhost:3002/";
 
 type ErrorType = {
     msg: string;
@@ -24,11 +24,20 @@ type DrawingResponseErrorType = {
 
 const config = {
     headers:{
-      'Content-Type': 'application/json',
+        "Content-Type": "multipart/form-data",
     }
 };
 
 export const getDrawing = (id: string) => {
-    // return axios.get<DrawingResponseSuccessType | DrawingResponseErrorType>(HOST + "signin", {...config, params: user});
-     
+    // return axios.get<DrawingResponseSuccessType | DrawingResponseErrorType>(HOST + "signin", {...config, params: user});  
+}
+
+export const postDrawing = (formData: FormData) => {
+    console.log("data is: " + JSON.stringify(formData));
+
+    for (const value of formData.values()) {
+        console.log(value);
+      }
+
+    return axios.post(HOST + "save", formData, {...config});
 }

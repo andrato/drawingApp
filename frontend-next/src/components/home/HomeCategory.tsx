@@ -24,6 +24,9 @@ export const HomeCategory = ({
                     width: "100%",
                     display: "flex", 
                     overflow: "scroll",
+                    "::-webkit-scrollbar": {
+                        display: "none",
+                    },
                     alignItems: "center"
                 }}>
                     {dataToTest.map((item) => {

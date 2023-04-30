@@ -25,12 +25,20 @@ const ButtonStyled = ({children, ...props} : {children: React.ReactNode} & Butto
     </Button>
 )
 
-export function MenuTop ({resetDrawing}: {resetDrawing: Function}) {
-   
+export function MenuTop ({
+    resetDrawing, 
+    saveDrawing
+}: {
+    resetDrawing: () => void, 
+    saveDrawing: () => void
+}) {
     return (
         <>
             <>
-                <ButtonStyled startIcon={<Save />}>
+                <ButtonStyled 
+                    startIcon={<Save />}
+                    onClick={saveDrawing}
+                >
                     Save
                 </ButtonStyled>
                 <ButtonStyled startIcon={<Publish />}>
@@ -41,7 +49,7 @@ export function MenuTop ({resetDrawing}: {resetDrawing: Function}) {
                 </ButtonStyled>
                 <ButtonStyled 
                     startIcon={<RestartAlt />}
-                    onClick={() => resetDrawing()}
+                    onClick={resetDrawing}
                 >
                     Clear All
                 </ButtonStyled>

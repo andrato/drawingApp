@@ -20,7 +20,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
     /* ********************************************************** */
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
-    const {setCanvasRef, onMouseDown, clearCanvas} = useOnDraw(onDraw);
+    const {setCanvasRef, onMouseDown, clearCanvas, saveRecording} = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
@@ -35,6 +35,10 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
             // stopRecording();
             // saveRecording();
         },
+
+        getDrawingVideo() {
+            return saveRecording();
+        }
     }));
 
     /* ******************************s**************************** */

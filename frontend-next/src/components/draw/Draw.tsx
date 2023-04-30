@@ -8,9 +8,11 @@ import { MenuLeft } from "./menus/MenuLeft";
 import { MenuTop } from "./menus/MenuTop";
 import { MenuRight } from "./menus/MenuRight";
 import { DrawingDialog } from "@/utils/helpers/DrawingDialog";
+import { postDrawing } from "@/services/Drawings";
 
 const defaultValues = {
     handleClearCanvas: () => {},
+    getDrawingVideo: () => {},
 };
 
 export function Draw() {
@@ -40,6 +42,21 @@ export function Draw() {
         handleActionsCanvas.current.handleClearCanvas();
     }
 
+    function saveDrawing() {
+        console.log("save drawing");
+        const drawingVideoFile = handleActionsCanvas.current.getDrawingVideo();
+
+        if (!drawingVideoFile) {
+            console.log("video e null");
+            return;
+        }
+
+        // we have the videoFile => send it to backend
+        const formData = new FormData();
+        formData.append('videoFile', drawingVideoFile);
+        postDrawing(formData);
+    }
+
     /* Functions */
     function setColorForDrawing (color: string) {
         setColor(color);
@@ -60,7 +77,7 @@ export function Draw() {
             alignItems: "center",
             flexDirection: "row",
         })}>
-            <MenuTop resetDrawing={showDialog} />
+            <MenuTop resetDrawing={showDialog} saveDrawing={saveDrawing} />
         </Box>
 
         <Box sx={{
