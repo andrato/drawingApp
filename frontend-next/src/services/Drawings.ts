@@ -30,8 +30,16 @@ export const getDrawing = (id: string) => {
 }
 
 export const postDrawing = (formData: FormData) => {
-    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"userId": "guest"}')?.id;
+    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
 
-    console.log("userId: " + userId);
     return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "save", formData, {...config, params: {userId: userId} });
+}
+
+export const checkDrawing = (userId: string, name: string) => {
+    const drawing = {
+        userId, 
+        name,
+    }
+
+    return axios.get<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "check", {...config, params: drawing});
 }

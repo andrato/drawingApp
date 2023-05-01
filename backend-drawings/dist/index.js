@@ -19,6 +19,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const save_1 = require("./sources/save");
+const check_1 = require("./sources/check");
 dotenv_1.default.config();
 /* connect to mongo */
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,5 +38,6 @@ app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
 // define app routes
 app.use("/save", save_1.Save);
+app.use("/check", check_1.Check);
 app.listen(process.env.PORT, () => { console.log(`Listening on port ${process.env.PORT}`); });
 //# sourceMappingURL=index.js.map

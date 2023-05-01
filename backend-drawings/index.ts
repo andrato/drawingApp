@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Save } from "./sources/save";
+import { Check } from "./sources/check";
 
 dotenv.config();
 
@@ -26,5 +27,6 @@ app.use(cors());
 
 // define app routes
 app.use("/save", Save);
+app.use("/check", Check);
 
 app.listen(process.env.PORT, () => {console.log(`Listening on port ${process.env.PORT}`)});

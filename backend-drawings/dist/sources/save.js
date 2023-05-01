@@ -16,9 +16,9 @@ exports.Save = void 0;
 const express_1 = require("express");
 const multer_1 = __importDefault(require("multer"));
 const fs_1 = __importDefault(require("fs"));
-const helpers_1 = require("./helpers");
+const helpers_1 = require("./utils/helpers");
 const mongo_schema_1 = require("../mongo_schema");
-const types_1 = require("./types");
+const types_1 = require("./utils/types");
 const router = (0, express_1.Router)();
 exports.Save = router;
 const storage = multer_1.default.diskStorage({
@@ -32,10 +32,10 @@ const storage = multer_1.default.diskStorage({
             fs_1.default.mkdirSync(imageDir, { recursive: true });
         }
         if (file.mimetype === "image/jpeg") {
-            cb(null, videoDir);
+            cb(null, imageDir);
             return;
         }
-        cb(null, imageDir);
+        cb(null, videoDir);
     },
     filename: (req, file, cb) => {
         var _a;
@@ -49,18 +49,19 @@ const storage = multer_1.default.diskStorage({
 });
 const upload = (0, multer_1.default)({ storage: storage });
 router.post('/', upload.array('files'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     const files = req.files;
-    const newDrawing = Object.assign(Object.assign({}, types_1.defaultDrawingInProgress), { userId: req.params.userId, name: `${(_a = files[0]) === null || _a === void 0 ? void 0 : _a.destination}_${files[0].originalname}`, video: {
-            destination: (_b = files[0]) === null || _b === void 0 ? void 0 : _b.destination,
-            filename: (_c = files[0]) === null || _c === void 0 ? void 0 : _c.filename,
-            path: (_d = files[0]) === null || _d === void 0 ? void 0 : _d.path,
-            size: (_e = files[0]) === null || _e === void 0 ? void 0 : _e.size,
+    const userId = String(req.query.userId);
+    const newDrawing = Object.assign(Object.assign({}, types_1.defaultDrawingInProgress), { userId: userId, name: `${userId}_${files[0].originalname}`, video: {
+            destination: (_a = files[0]) === null || _a === void 0 ? void 0 : _a.destination,
+            filename: (_b = files[0]) === null || _b === void 0 ? void 0 : _b.filename,
+            path: (_c = files[0]) === null || _c === void 0 ? void 0 : _c.path,
+            size: (_d = files[0]) === null || _d === void 0 ? void 0 : _d.size,
         }, image: {
-            destination: (_f = files[1]) === null || _f === void 0 ? void 0 : _f.destination,
-            filename: (_g = files[1]) === null || _g === void 0 ? void 0 : _g.filename,
-            path: (_h = files[1]) === null || _h === void 0 ? void 0 : _h.path,
-            size: (_j = files[1]) === null || _j === void 0 ? void 0 : _j.size,
+            destination: (_e = files[1]) === null || _e === void 0 ? void 0 : _e.destination,
+            filename: (_f = files[1]) === null || _f === void 0 ? void 0 : _f.filename,
+            path: (_g = files[1]) === null || _g === void 0 ? void 0 : _g.path,
+            size: (_h = files[1]) === null || _h === void 0 ? void 0 : _h.size,
         } });
     let existingDrawing = null;
     // if we find drawing in db, we update it
@@ -74,8 +75,6 @@ router.post('/', upload.array('files'), (req, res) => __awaiter(void 0, void 0, 
         });
     }
     if (existingDrawing) {
-        console.log("will update");
-        const updateDrawing = Object.assign(Object.assign({}, existingDrawing), { lastUpdated: newDrawing.lastUpdated, video: newDrawing.video, image: newDrawing.image });
         try {
             yield mongo_schema_1.modelDrawing.updateOne({ name: newDrawing.name }, {
                 $set: {
@@ -101,6 +100,7 @@ router.post('/', upload.array('files'), (req, res) => __awaiter(void 0, void 0, 
         return res.status(200).json({
             status: 0,
             message: "created drawing",
+            // drawingId: drawingNew._id;
         });
     }
     catch (err) {

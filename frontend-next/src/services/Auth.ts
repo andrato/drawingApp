@@ -46,6 +46,5 @@ export const signIn = (user: {email: string, password: string}) => {
 }
 
 export const signUp = (user: {firstName: string, lastName: string, email: string, password: string}) => {
-    console.log("user is: " + JSON.stringify(user));
     return axios.post<SignupResponseSuccessType | ResponseErrorType>(HOST + "signup", user, {...config});
 }

@@ -1,25 +1,45 @@
 import { useState } from "react"
 import { DialogDrawing } from "./DialogDrawing"
 import { Button, TextField, Typography } from "@mui/material";
+import { checkDrawing } from "@/services/Drawings";
+import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 
 export const StartingDialog = ({name, onFilenameChange}: {name: string | null, onFilenameChange: (name: string) => void}) => {
     const [open, setIsOpen] = useState<boolean>(!Boolean(name));
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = async (event: any) => {
+        setLoading(true);
         event.stopPropagation();
         event.preventDefault();
         event.nativeEvent.stopImmediatePropagation();
 
         const data = new FormData(event.target);
-        const name = String(data.get("filename"));
+        const nameValue = String(data.get("filename"));
 
-        if (!name || name.length === 0) {
-            setError("Name cannot be null");
-        } else {
-            onFilenameChange(name);
-            setIsOpen(false);
+        if (!nameValue || nameValue.length === 0) {
+            setError("Name cannot be empty");
+            return;
+        } 
+
+        try {
+            const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? "{id: 'guest")?.id;
+            const {data} = await checkDrawing(userId, nameValue);
+
+            if (data.status) {
+                setError(data?.error ?? "Please choose another name!");
+                setLoading(false);
+                return;
+            }
+        } catch (err) {
+            setError("An error occured! Please try again later!");
+            setLoading(false);
+            return;
         }
+
+        onFilenameChange(nameValue);
+        setIsOpen(false);
     };
 
     return <DialogDrawing
@@ -36,6 +56,7 @@ export const StartingDialog = ({name, onFilenameChange}: {name: string | null, o
                 variant="filled"
                 size="small"
                 name="filename"
+                value={name}
                 sx={{width: "100%", mb: error ? 1 : 3}}
             />
             {error && <Typography variant="body2" color="error" sx={{mb: 3}}>
@@ -45,6 +66,7 @@ export const StartingDialog = ({name, onFilenameChange}: {name: string | null, o
                 type="submit"
                 variant="contained"
                 color="success"
+                disabled={loading}
                 sx={{
                     width: "100%",
                 }}

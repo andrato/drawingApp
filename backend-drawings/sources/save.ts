@@ -1,9 +1,9 @@
 import { Router, Request, Response} from "express";
 import multer from "multer";
 import fs from 'fs';
-import { generateFilename } from "./helpers";
+import { generateFilename } from "./utils/helpers";
 import { modelDrawing, modelDrawingInProgress } from "../mongo_schema";
-import { DrawingType, defaultDrawingInProgress } from "./types";
+import { DrawingType, defaultDrawingInProgress } from "./utils/types";
 
 const router = Router();
 
@@ -21,10 +21,10 @@ const storage = multer.diskStorage({
         }
 
         if(file.mimetype === "image/jpeg") {
-            cb(null, videoDir);
+            cb(null, imageDir);
             return;
         }
-        cb(null, imageDir);
+        cb(null, videoDir);
     },
     filename: (req, file, cb) => {
         const userId = (req.query.userId ?? 'guest') as string;
@@ -41,11 +41,12 @@ const upload = multer({storage: storage});
 router.post('/', upload.array('files'),
     async (req: Request, res: Response) => {
         const files = req.files as Express.Multer.File[];
+        const userId= String(req.query.userId);
 
         const newDrawing: DrawingType = {
             ...defaultDrawingInProgress,
-            userId: req.params.userId,
-            name: `${files[0]?.destination}_${files[0].originalname}`,
+            userId: userId,
+            name: `${userId}_${files[0].originalname}`,
             video: {
                 destination: files[0]?.destination,
                 filename: files[0]?.filename,
@@ -73,15 +74,6 @@ router.post('/', upload.array('files'),
         }
 
         if (existingDrawing) {
-            console.log("will update");
-
-            const updateDrawing: DrawingType & {_id: string}  = {
-                ...existingDrawing,
-                lastUpdated: newDrawing.lastUpdated,
-                video: newDrawing.video,
-                image: newDrawing.image,
-            }
-
             try {
                 await modelDrawing.updateOne({name: newDrawing.name}, {
                     $set: {
