@@ -2,10 +2,10 @@ import { CanvasDraw, CanvasProps } from './CanvasDraw';
 import { Box } from "@mui/material";
 import React, { forwardRef } from 'react';
 import { 
-    handleActionsCanvasType,
+  HandleActionsCanvasType,
 } from "./types";
 
-export const DrawContainer = forwardRef((props: CanvasProps, ref: React.Ref<handleActionsCanvasType>) => {
+export const DrawContainer = forwardRef((props: CanvasProps, ref: React.Ref<HandleActionsCanvasType>) => {
   return (
     <Box sx={{
         width: "100%",

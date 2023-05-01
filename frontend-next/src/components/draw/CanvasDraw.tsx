@@ -3,7 +3,7 @@ import { useOnDraw, Point } from "./useOnDraw";
 import { Box } from "@mui/material";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { 
-    handleActionsCanvasType,
+    HandleActionsCanvasType,
 } from "./types";
 
 export type CanvasProps = {
@@ -13,7 +13,7 @@ export type CanvasProps = {
     height: number
   }
 
-export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleActionsCanvasType>) => {
+export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleActionsCanvasType>) => {
     /* ********************************************************** */
     /*                           VARIABLES                        */
     /* ********************************************************** */
@@ -38,7 +38,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<handleA
 
         getDrawingImage() {
             return saveImage();
-        }
+        },
     }));
 
     /* ******************************s**************************** */

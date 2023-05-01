@@ -1,17 +1,15 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Box, useTheme } from "@mui/material";
 import { 
-    handleActionsCanvasType,
+    HandleActionsCanvasType,
 } from "./types";
 import { DrawContainer } from "./DrawContainer";
 import { MenuLeft } from "./menus/MenuLeft";
 import { MenuTop } from "./menus/MenuTop";
 import { MenuRight } from "./menus/MenuRight";
-import { DrawingDialog } from "@/utils/helpers/DrawingDialog";
-import { postDrawing } from "@/services/Drawings";
 import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 import { StartingDialog } from "./utils/StartingDialog";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 
 const defaultValues = {
     handleClearCanvas: () => {},
@@ -30,7 +28,7 @@ const DrawingContainer = ({children}: {children: ReactNode}) => (
 )
 
 export function Draw() {
-    const handleActionsCanvas = useRef<handleActionsCanvasType>(defaultValues);
+    const handleActionsCanvas = useRef<HandleActionsCanvasType>(defaultValues);
     const [color, setColor] = useState("#000000");
     const [lineWidth, setLineWidth] = useState(1);
     const theme = useTheme();
@@ -39,11 +37,6 @@ export function Draw() {
     const [filename, setFilename] = useState<string | null>(null);
     const router = useRouter();
 
-    /* Dialog stuff */
-    const [open, setOpen] = useState(false);
-    const dialogTitleReset = "Are you sure you want to start over?";
-    const dialogDescriptionReset = "Once you 'Agree' with this, all your work will be lost. Please make sure you know what you are doing!";
- 
     useEffect(() => {
         const warningText =
           'If you leave the page, you will not be able to continue the drawing later. Are you sure do you want to continue?';
@@ -67,37 +60,7 @@ export function Draw() {
           router.events.off('routeChangeStart', handleBrowseAway);
           localStorage.removeItem(LocalStorageKeys.FILENAME);
         };
-      }, []);
-
-    function showDialog() {
-        setOpen(true);
-    }
-
-    function closeDialog() {
-        setOpen(false);
-    } 
-
-    function resetDrawing() {
-        setOpen(false);
-        handleActionsCanvas.current.handleClearCanvas();
-    }
-
-    async function saveDrawing() {
-        const name = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN_2";
-        const drawingVideoFile = handleActionsCanvas.current.getDrawingVideo();
-        const drawingImageFile = await handleActionsCanvas.current.getDrawingImage();
-
-        if (!drawingVideoFile) {
-            console.log("video is null");
-            return;
-        }
-
-        // we have the videoFile => send it to backend
-        const formData = new FormData();
-        formData.append('files', drawingVideoFile, name);
-        formData.append('files', drawingImageFile, name);
-        postDrawing(formData);
-    }
+    }, []);
 
     /* Functions */
     function setColorForDrawing (color: string) {
@@ -124,7 +87,7 @@ export function Draw() {
                 alignItems: "center",
                 flexDirection: "row",
             })}>
-                <MenuTop resetDrawing={showDialog} saveDrawing={saveDrawing} />
+                <MenuTop {...handleActionsCanvas.current} />
             </Box>
 
             <Box sx={{
@@ -165,14 +128,6 @@ export function Draw() {
                     <MenuRight setLineWidth={setLineWidth}/>
                 </Box>
             </Box>
-
-            <DrawingDialog
-                open={open} 
-                title={dialogTitleReset} 
-                description={dialogDescriptionReset} 
-                onClose={closeDialog} 
-                actionHandler={resetDrawing}
-            /> 
         </DrawingContainer>
     )
 }
