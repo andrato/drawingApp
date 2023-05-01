@@ -33,7 +33,7 @@ router.get('/',
         if (!errors.isEmpty()) {
             return res.status(400).json({ 
                 status: 1,
-                errors: errors.array() ,
+                errors: errors.array(),
             });
         }
         

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Box, useTheme } from "@mui/material";
 import { 
     handleActionsCanvasType,
@@ -9,12 +9,25 @@ import { MenuTop } from "./menus/MenuTop";
 import { MenuRight } from "./menus/MenuRight";
 import { DrawingDialog } from "@/utils/helpers/DrawingDialog";
 import { postDrawing } from "@/services/Drawings";
+import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
+import { StartingDialog } from "./utils/StartingDialog";
+import { Router, useRouter } from "next/router";
 
 const defaultValues = {
     handleClearCanvas: () => {},
     getDrawingVideo: () => {},
     getDrawingImage: () => {},
 };
+
+const DrawingContainer = ({children}: {children: ReactNode}) => (
+    <Box sx={(theme) => ({
+        height: `calc(100% - ${theme.customSizes.navbarHeight})`,
+        width: "100%",
+        backgroundColor: theme.palette.canvas.bgColor,
+    })}>
+        {children}
+    </Box>
+)
 
 export function Draw() {
     const handleActionsCanvas = useRef<handleActionsCanvasType>(defaultValues);
@@ -23,12 +36,39 @@ export function Draw() {
     const theme = useTheme();
     const subtractHeight = Number((theme.customSizes.drawTopMenuHeight).slice(0,-2)) +
                         Number((theme.customSizes.drawBorderHeight).slice(0,-2)) + "px";
+    const [filename, setFilename] = useState<string | null>(null);
+    const router = useRouter();
 
     /* Dialog stuff */
     const [open, setOpen] = useState(false);
     const dialogTitleReset = "Are you sure you want to start over?";
     const dialogDescriptionReset = "Once you 'Agree' with this, all your work will be lost. Please make sure you know what you are doing!";
  
+    useEffect(() => {
+        const warningText =
+          'If you leave the page, you will not be able to continue the drawing later. Are you sure do you want to continue?';
+
+        const handleWindowClose = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            return (e.returnValue = warningText);
+        };
+
+        const handleBrowseAway = () => {
+            if (window.confirm(warningText)) return;
+            router.events.emit('routeChangeError');
+            throw 'routeChange aborted.';
+        };
+
+        window.addEventListener('beforeunload', handleWindowClose);
+        router.events.on('routeChangeStart', handleBrowseAway);
+
+        return () => {
+          window.removeEventListener('beforeunload', handleWindowClose);
+          router.events.off('routeChangeStart', handleBrowseAway);
+          localStorage.removeItem(LocalStorageKeys.FILENAME);
+        };
+      }, []);
+
     function showDialog() {
         setOpen(true);
     }
@@ -38,22 +78,19 @@ export function Draw() {
     } 
 
     function resetDrawing() {
-        console.log("resetDrawing");
         setOpen(false);
         handleActionsCanvas.current.handleClearCanvas();
     }
 
     async function saveDrawing() {
-        const name = "ceva";
+        const name = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN_2";
         const drawingVideoFile = handleActionsCanvas.current.getDrawingVideo();
         const drawingImageFile = await handleActionsCanvas.current.getDrawingImage();
 
         if (!drawingVideoFile) {
-            console.log("video e null");
+            console.log("video is null");
             return;
         }
-
-        console.log(drawingImageFile);
 
         // we have the videoFile => send it to backend
         const formData = new FormData();
@@ -67,70 +104,75 @@ export function Draw() {
         setColor(color);
     }
 
+    if (null === filename) {
+        return <DrawingContainer>
+            <StartingDialog name={filename} onFilenameChange={(name: string) => {
+                localStorage.setItem(LocalStorageKeys.FILENAME, name);
+                setFilename(name);
+            }}/>
+        </DrawingContainer>
+    }
+
     return (
-    <Box sx={(theme) => ({
-        height: `calc(100% - ${theme.customSizes.navbarHeight})`,
-        width: "100%",
-        backgroundColor: theme.palette.canvas.bgColor,
-    })}>
-        <Box sx={(theme) => ({
-            height: theme.customSizes.drawTopMenuHeight,
-            backgroundColor: theme.palette.canvas.menuBg,
-            borderBottom: `${theme.customSizes.drawBorderHeight} solid ${theme.palette.canvas.bgColor}`,
-            px: "4px",
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "row",
-        })}>
-            <MenuTop resetDrawing={showDialog} saveDrawing={saveDrawing} />
-        </Box>
-
-        <Box sx={{
-            height: `calc(100% - ${subtractHeight})`, 
-            display: "flex",
-        }}>
+        <DrawingContainer>
             <Box sx={(theme) => ({
-                width: theme.customSizes.drawLeftMenuWidth,
+                height: theme.customSizes.drawTopMenuHeight,
                 backgroundColor: theme.palette.canvas.menuBg,
+                borderBottom: `${theme.customSizes.drawBorderHeight} solid ${theme.palette.canvas.bgColor}`,
+                px: "4px",
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
-                py: "4px",
-                position: "relative",
-                zIndex: 1,
+                flexDirection: "row",
             })}>
-                <MenuLeft color={color} setColor={setColorForDrawing}/>
+                <MenuTop resetDrawing={showDialog} saveDrawing={saveDrawing} />
             </Box>
-            <Box sx={(theme) => ({
-                width: `calc(100% - ${theme.customSizes.drawLeftMenuWidth} - ${theme.customSizes.drawRightMenuWidth})`, 
-                height: "100%",
-                position: "relative",
-                overflow: "scroll",
-            })}>
-                <DrawContainer 
-                    width={500} 
-                    height={500} 
-                    color={color} 
-                    lineWidth={lineWidth} 
-                    ref={handleActionsCanvas}
-                />
-            </Box>
-            <Box sx={(theme) => ({
-                width: theme.customSizes.drawRightMenuWidth,
-                backgroundColor: theme.palette.canvas.menuBg,
-                zIndex: 1,
-            })}>
-                <MenuRight setLineWidth={setLineWidth}/>
-            </Box>
-        </Box>
 
-        <DrawingDialog
-            open={open} 
-            title={dialogTitleReset} 
-            description={dialogDescriptionReset} 
-            onClose={closeDialog} 
-            actionHandler={resetDrawing}
-        /> 
-    </Box>
+            <Box sx={{
+                height: `calc(100% - ${subtractHeight})`, 
+                display: "flex",
+            }}>
+                <Box sx={(theme) => ({
+                    width: theme.customSizes.drawLeftMenuWidth,
+                    backgroundColor: theme.palette.canvas.menuBg,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    py: "4px",
+                    position: "relative",
+                    zIndex: 1,
+                })}>
+                    <MenuLeft color={color} setColor={setColorForDrawing}/>
+                </Box>
+                <Box sx={(theme) => ({
+                    width: `calc(100% - ${theme.customSizes.drawLeftMenuWidth} - ${theme.customSizes.drawRightMenuWidth})`, 
+                    height: "100%",
+                    position: "relative",
+                    overflow: "scroll",
+                })}>
+                    <DrawContainer 
+                        width={500} 
+                        height={500} 
+                        color={color} 
+                        lineWidth={lineWidth} 
+                        ref={handleActionsCanvas}
+                    />
+                </Box>
+                <Box sx={(theme) => ({
+                    width: theme.customSizes.drawRightMenuWidth,
+                    backgroundColor: theme.palette.canvas.menuBg,
+                    zIndex: 1,
+                })}>
+                    <MenuRight setLineWidth={setLineWidth}/>
+                </Box>
+            </Box>
+
+            <DrawingDialog
+                open={open} 
+                title={dialogTitleReset} 
+                description={dialogDescriptionReset} 
+                onClose={closeDialog} 
+                actionHandler={resetDrawing}
+            /> 
+        </DrawingContainer>
     )
 }

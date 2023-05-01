@@ -207,6 +207,7 @@ export const NavMobile = ({
                             <Box 
                                 onClick={() => {
                                     localStorage.removeItem(LocalStorageKeys.USER_TOKEN);
+                                    localStorage.removeItem(LocalStorageKeys.USER_INFO);
                                     setDrawer(false);
                                     window.location.reload();
                                 }}

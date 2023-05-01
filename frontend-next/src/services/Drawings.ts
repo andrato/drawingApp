@@ -1,3 +1,4 @@
+import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 import axios from "axios"
 
 const HOST = "http://localhost:3002/";
@@ -10,11 +11,7 @@ type ErrorType = {
 
 type DrawingResponseSuccessType = {
     status: 0;
-    drawing: {
-        created: string,
-        categories: string[],
-
-    },
+    message: string;
 };
 type DrawingResponseErrorType = {
     status: 1,
@@ -33,11 +30,8 @@ export const getDrawing = (id: string) => {
 }
 
 export const postDrawing = (formData: FormData) => {
-    console.log("data is: " + JSON.stringify(formData));
+    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"userId": "guest"}')?.id;
 
-    for (const value of formData.values()) {
-        console.log(value);
-      }
-
-    return axios.post(HOST + "save", formData, {...config});
+    console.log("userId: " + userId);
+    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "save", formData, {...config, params: {userId: userId} });
 }

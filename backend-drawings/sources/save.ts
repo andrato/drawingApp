@@ -1,20 +1,17 @@
 import { Router, Request, Response} from "express";
 import multer from "multer";
 import fs from 'fs';
+import { generateFilename } from "./helpers";
+import { modelDrawing, modelDrawingInProgress } from "../mongo_schema";
+import { DrawingType, defaultDrawingInProgress } from "./types";
 
 const router = Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const videoDir = './uploads/videos';
-        const imageDir = './uploads/images';
+        const videoDir = './uploads/inprogress/videos';
+        const imageDir = './uploads/inprogress/images';
 
-        // // when creating the dir for user
-        // // we'll also create the videos/ and images/ dir
-        // if (!fs.existsSync(dir)) {
-        //     fs.mkdirSync(dir+'/videos/', { recursive: true });
-        //     fs.mkdirSync(dir+'/images/', { recursive: true });
-        // }
         if (!fs.existsSync(videoDir)) {
             fs.mkdirSync(videoDir, { recursive: true });
         }
@@ -30,45 +27,97 @@ const storage = multer.diskStorage({
         cb(null, imageDir);
     },
     filename: (req, file, cb) => {
+        const userId = (req.query.userId ?? 'guest') as string;
+
         if(file.mimetype === "image/jpeg") {
-            cb(null, file.originalname+".jpeg");
+            cb(null, generateFilename(file.originalname, 'jpeg', userId));
             return;
         }
-        cb(null, file.originalname+".mp4");
+        cb(null, generateFilename(file.originalname, 'mp4', userId));
     }
 });
 const upload = multer({storage: storage});
 
 router.post('/', upload.array('files'),
     async (req: Request, res: Response) => {
-        console.log('form data', req.file);
-        console.log('form data', req.files);
+        const files = req.files as Express.Multer.File[];
 
-        // if (req.file?.originalname){
-        //     await getImage(req.file.originalname);
-        // }
-        
-        return res.json({status: 200, message: 'Video saved'})
+        const newDrawing: DrawingType = {
+            ...defaultDrawingInProgress,
+            userId: req.params.userId,
+            name: `${files[0]?.destination}_${files[0].originalname}`,
+            video: {
+                destination: files[0]?.destination,
+                filename: files[0]?.filename,
+                path: files[0]?.path,
+                size: files[0]?.size,
+            },
+            image: {
+                destination: files[1]?.destination,
+                filename: files[1]?.filename,
+                path: files[1]?.path,
+                size: files[1]?.size,
+            }
+        };
+
+        let existingDrawing: (DrawingType & {_id: string} | null) = null;
+
+        // if we find drawing in db, we update it
+        try {
+            existingDrawing = await modelDrawingInProgress.findOne({name: newDrawing.name});
+        } catch (err) {
+            return res.status(500).json({
+                status: 1, 
+                error: err,
+            })
+        }
+
+        if (existingDrawing) {
+            console.log("will update");
+
+            const updateDrawing: DrawingType & {_id: string}  = {
+                ...existingDrawing,
+                lastUpdated: newDrawing.lastUpdated,
+                video: newDrawing.video,
+                image: newDrawing.image,
+            }
+
+            try {
+                await modelDrawing.updateOne({name: newDrawing.name}, {
+                    $set: {
+                        "lastUpdated": newDrawing.lastUpdated,
+                        "video": newDrawing.video,
+                        "image": newDrawing.image,
+                    }
+                });
+
+                return res.status(200).json({
+                    status: 0, 
+                    message: "updated drawing",
+                })
+            } catch (err) {
+                return res.status(500).json({
+                    status: 1, 
+                    error: "Update failed",
+                })
+            }
+        }
+
+        try {
+            await modelDrawingInProgress.create(newDrawing);
+
+            return res.status(200).json({
+                status: 0, 
+                message: "created drawing",
+                // drawingId: drawingNew._id;
+            })
+        } catch (err) {
+            return res.status(500).json({
+                status: 1, 
+                error: "Creating failed",
+            })
+        }
     }
 );
 
 export {router as Save};
-
-
-// const signInSchema = {
-//     // Support bail functionality in schemas
-//     email: {
-//         isEmail: { 
-//             bail: true, 
-//             location: "params",
-//         }
-//     },
-//     password: {
-//         isLength: {
-//             errorMessage: 'Password should be at least 1 chars long!',
-//             // Multiple options would be expressed as an array
-//             options: { min: 1 },
-//             location: "params",
-//         },
-//     },
-// }

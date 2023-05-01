@@ -107,4 +107,7 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   // "include": ["./env.d.ts"],
+  "lib": [
+    "es5", "es6", "dom", "dom.iterable"
+  ]
 }

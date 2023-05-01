@@ -1,3 +1,4 @@
+import { LocalStorageKeys } from '@/utils/constants/LocalStorage';
 import React from 'react'
 
 interface CanvasRecorder {
@@ -124,14 +125,16 @@ export const CanvasRecorder = (): CanvasRecorder => {
         // }, 100);
     }
 
-    const save = (fileName: string) => {
+    const save = () => {
         if (null === supportedType) {
             alert("Type no supported!");
             console.error("type no supported");
             return null;
         }
 
-        return new File(recordedBlobs, fileName, { type: supportedType });
+        const filename = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN";
+
+        return new File(recordedBlobs, filename, { type: supportedType });
     }
 
     return {
