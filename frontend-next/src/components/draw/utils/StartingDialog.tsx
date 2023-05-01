@@ -4,7 +4,7 @@ import { Button, TextField, Typography } from "@mui/material";
 import { checkDrawing } from "@/services/Drawings";
 import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 
-export const StartingDialog = ({name, onFilenameChange}: {name: string | null, onFilenameChange: (name: string) => void}) => {
+export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string | null, onFilenameChange: (name: string) => void, onClose: () => void}) => {
     const [open, setIsOpen] = useState<boolean>(!Boolean(name));
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -20,6 +20,7 @@ export const StartingDialog = ({name, onFilenameChange}: {name: string | null, o
 
         if (!nameValue || nameValue.length === 0) {
             setError("Name cannot be empty");
+            setLoading(false);
             return;
         } 
 
@@ -45,6 +46,7 @@ export const StartingDialog = ({name, onFilenameChange}: {name: string | null, o
     return <DialogDrawing
         open={open}
         title="New drawing"
+        onHandleClose={onClose}
     > 
         <form onSubmit={handleSubmit}>
             <Typography variant="body2" sx={{mb: 1}}>

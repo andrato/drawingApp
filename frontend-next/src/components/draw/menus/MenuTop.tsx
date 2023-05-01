@@ -8,9 +8,13 @@ import {
 } from '@mui/icons-material';
 import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 import { HandleActionsCanvasType } from "../types";
-import { postDrawing } from "@/services/Drawings";
-import { useState } from "react";
+import { postDrawing, publishDrawing } from "@/services/Drawings";
+import { useRef, useState } from "react";
 import { DrawingDialog } from "@/utils/helpers/DrawingDialog";
+import { FormikHelpers, useFormik } from "formik";
+import { SaveValuesSchema, SaveValuesType, defaultSaveValues } from "./utils";
+import { SaveValuesForm } from "./SaveValuesForm";
+import { DialogDrawing } from "../utils/DialogDrawing";
 
 const ButtonStyled = ({children, ...props} : {children: React.ReactNode} & ButtonProps) => (
     <Button
@@ -34,12 +38,16 @@ export function MenuTop ({
     handleClearCanvas,
     getDrawingVideo,
     getDrawingImage,
-}: HandleActionsCanvasType) {
-    /* Dialog stuff */
+    setForceNavigate,
+}: HandleActionsCanvasType & {setForceNavigate: Function}) {
+    const [openSave, setOpenSave] = useState(false);
+    const [errorSave, setErrorSave] = useState<string|null>(null);
+    const values = useRef<SaveValuesType>({...defaultSaveValues, title: localStorage.getItem(LocalStorageKeys.FILENAME) ?? ""});
     const [open, setOpen] = useState(false);
     const dialogTitleReset = "Are you sure you want to start over?";
     const dialogDescriptionReset = "Once you 'Agree' with this, all your work will be lost. Please make sure you know what you are doing!";
-        
+
+    /* Dialog stuff */
     const showDialog = () => {
         setOpen(true);
     }
@@ -48,22 +56,24 @@ export function MenuTop ({
         setOpen(false);
     } 
 
-
     /* button actions from the top menu */
     const resetDrawing = () => {
         setOpen(false);
         handleClearCanvas();
     }
 
-    const publishDrawing = () => {
-
-    }
-
     const saveDrawing = async () => {
         const name = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN_2";
-        const drawingVideoFile = getDrawingVideo();
-        const drawingImageFile = await getDrawingImage();
+        let drawingVideoFile, drawingImageFile;
 
+        try {
+            drawingVideoFile = getDrawingVideo();
+            drawingImageFile = await getDrawingImage();
+        } catch (err) {
+            console.error ("Error occured when getting data");
+            return;
+        }
+        
         if (!drawingVideoFile) {
             console.log("video is null");
             return;
@@ -73,7 +83,54 @@ export function MenuTop ({
         const formData = new FormData();
         formData.append('files', drawingVideoFile, name);
         formData.append('files', drawingImageFile, name);
-        postDrawing(formData);
+
+        try {
+            return await postDrawing(formData);
+        } catch (err) {
+            console.error ("Error occured when sending data");
+            return;
+        }
+    }
+
+    const publish = async (values: SaveValuesType, {resetForm}: FormikHelpers<SaveValuesType>) => {
+        // request de saveDrawing
+        const save = await saveDrawing();
+
+        if (!save) {
+            setErrorSave("Video and/or image could not be saved! Please wait a little bit, and try again!");
+            return;
+        }
+
+        // request doar cu values => asta o sa mute din drawingsInProgress in drawings
+        let result;
+        try {
+            const title = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN_2";
+            result = await publishDrawing({...values, previousTitle: title});
+        } catch (err) {
+            setErrorSave("Failed to publish! Try again later!");
+            return;
+        }
+
+        if(result.data.status) {
+            setErrorSave("Failed to publish!");
+            return;
+        }
+
+        setOpenSave(false);
+        setForceNavigate(true);
+    }
+
+    /* for final save */
+    const formik = useFormik({
+        initialValues: values.current,
+        validationSchema: SaveValuesSchema,
+        onSubmit: publish,
+        validateOnBlur: true,
+    })
+
+    const handleClose = () => {
+        setOpenSave(false);
+        // formik.resetForm();
     }
 
     return (
@@ -85,10 +142,15 @@ export function MenuTop ({
                 >
                     Save
                 </ButtonStyled>
-                <ButtonStyled startIcon={<Publish />}>
+                <ButtonStyled 
+                    startIcon={<Publish />}
+                    onClick={() => setOpenSave(true)}
+                >
                     Publish
                 </ButtonStyled>
-                <ButtonStyled startIcon={<NoteAdd />}>
+                <ButtonStyled 
+                    startIcon={<NoteAdd />}
+                >
                     New file
                 </ButtonStyled>
                 <ButtonStyled 
@@ -105,6 +167,25 @@ export function MenuTop ({
                 onClose={closeDialog} 
                 actionHandler={resetDrawing}
             /> 
+
+            <DialogDrawing
+                open={openSave}
+                title="Save drawing"
+                onHandleClose={handleClose}
+            >
+                <form auto-complete="off" onSubmit={formik.handleSubmit}>
+                    <SaveValuesForm 
+                        values={formik.values}
+                        errors={formik.errors}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        setFieldValue={formik.setFieldValue}
+                        touched={formik.touched}
+                        isSubmitting={formik.isSubmitting}
+                        errorRequest={errorSave}
+                    />
+                </form>
+            </DialogDrawing> 
         </>
     )
 }

@@ -5,7 +5,7 @@ const drawingSchemaInProgress = new Schema({
     userId: String,
     created: Number,
     lastUpdated: Number,
-    name: String,
+    title: String,
     displayName: String,
 	topArt: {
         type: Boolean,
@@ -33,7 +33,7 @@ const drawingSchema = new Schema({
     userId: String,
     created: Number,
     lastUpdated: Number,
-    name: String,
+    title: String,
     displayName: String,
     categories: [String],
     likes: Number,

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, createRef, useEffect, useRef, useState } from "react";
 import { Box, useTheme } from "@mui/material";
 import { 
     HandleActionsCanvasType,
@@ -35,6 +35,7 @@ export function Draw() {
     const subtractHeight = Number((theme.customSizes.drawTopMenuHeight).slice(0,-2)) +
                         Number((theme.customSizes.drawBorderHeight).slice(0,-2)) + "px";
     const [filename, setFilename] = useState<string | null>(null);
+    const forceNavigate = useRef<boolean>(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -42,11 +43,17 @@ export function Draw() {
           'If you leave the page, you will not be able to continue the drawing later. Are you sure do you want to continue?';
 
         const handleWindowClose = (e: BeforeUnloadEvent) => {
+            if (forceNavigate.current) {
+                return;
+            }
             e.preventDefault();
             return (e.returnValue = warningText);
         };
 
         const handleBrowseAway = () => {
+            if (forceNavigate.current) {
+                return;
+            }
             if (window.confirm(warningText)) return;
             router.events.emit('routeChangeError');
             throw 'routeChange aborted.';
@@ -56,11 +63,16 @@ export function Draw() {
         router.events.on('routeChangeStart', handleBrowseAway);
 
         return () => {
-          window.removeEventListener('beforeunload', handleWindowClose);
-          router.events.off('routeChangeStart', handleBrowseAway);
-          localStorage.removeItem(LocalStorageKeys.FILENAME);
+            window.removeEventListener('beforeunload', handleWindowClose);
+            router.events.off('routeChangeStart', handleBrowseAway);
+            localStorage.removeItem(LocalStorageKeys.FILENAME);
         };
     }, []);
+
+    const setNavigate = (value: boolean) => {
+        forceNavigate.current = value;
+        router.back();
+    }
 
     /* Functions */
     function setColorForDrawing (color: string) {
@@ -69,10 +81,16 @@ export function Draw() {
 
     if (null === filename) {
         return <DrawingContainer>
-            <StartingDialog name={filename} onFilenameChange={(name: string) => {
-                localStorage.setItem(LocalStorageKeys.FILENAME, name);
-                setFilename(name);
-            }}/>
+            <StartingDialog 
+                name={filename} 
+                onFilenameChange={(name: string) => {
+                    localStorage.setItem(LocalStorageKeys.FILENAME, name);
+                    setFilename(name);
+                }}
+                onClose={() => {
+                    setNavigate(true);
+                }}
+            />
         </DrawingContainer>
     }
 
@@ -87,7 +105,7 @@ export function Draw() {
                 alignItems: "center",
                 flexDirection: "row",
             })}>
-                <MenuTop {...handleActionsCanvas.current} />
+                <MenuTop {...handleActionsCanvas.current} setForceNavigate={setNavigate}/>
             </Box>
 
             <Box sx={{

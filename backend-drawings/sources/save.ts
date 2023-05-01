@@ -1,7 +1,7 @@
 import { Router, Request, Response} from "express";
 import multer from "multer";
 import fs from 'fs';
-import { generateFilename } from "./utils/helpers";
+import { IMAGE_EXT, VIDEO_EXT, generateFilename } from "./utils/helpers";
 import { modelDrawing, modelDrawingInProgress } from "../mongo_schema";
 import { DrawingType, defaultDrawingInProgress } from "./utils/types";
 
@@ -30,10 +30,10 @@ const storage = multer.diskStorage({
         const userId = (req.query.userId ?? 'guest') as string;
 
         if(file.mimetype === "image/jpeg") {
-            cb(null, generateFilename(file.originalname, 'jpeg', userId));
+            cb(null, generateFilename(file.originalname, IMAGE_EXT, userId));
             return;
         }
-        cb(null, generateFilename(file.originalname, 'mp4', userId));
+        cb(null, generateFilename(file.originalname, VIDEO_EXT, userId));
     }
 });
 const upload = multer({storage: storage});
@@ -46,7 +46,7 @@ router.post('/', upload.array('files'),
         const newDrawing: DrawingType = {
             ...defaultDrawingInProgress,
             userId: userId,
-            name: `${userId}_${files[0].originalname}`,
+            title: `${userId}_${files[0].originalname}`,
             video: {
                 destination: files[0]?.destination,
                 filename: files[0]?.filename,
@@ -65,7 +65,7 @@ router.post('/', upload.array('files'),
 
         // if we find drawing in db, we update it
         try {
-            existingDrawing = await modelDrawingInProgress.findOne({name: newDrawing.name});
+            existingDrawing = await modelDrawingInProgress.findOne({title: newDrawing.title});
         } catch (err) {
             return res.status(500).json({
                 status: 1, 
@@ -75,7 +75,7 @@ router.post('/', upload.array('files'),
 
         if (existingDrawing) {
             try {
-                await modelDrawing.updateOne({name: newDrawing.name}, {
+                await modelDrawing.updateOne({title: newDrawing.title}, {
                     $set: {
                         "lastUpdated": newDrawing.lastUpdated,
                         "video": newDrawing.video,
@@ -101,7 +101,6 @@ router.post('/', upload.array('files'),
             return res.status(200).json({
                 status: 0, 
                 message: "created drawing",
-                // drawingId: drawingNew._id;
             })
         } catch (err) {
             return res.status(500).json({

@@ -2,4 +2,6 @@
 */.vscode
 */.env
 */uploads
-./uploads/
+uploads/
+./dist
+*/dist

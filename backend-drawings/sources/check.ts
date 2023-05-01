@@ -42,7 +42,7 @@ router.get('/',
 
         // if we find drawing in db, we update it
         try {
-            existingDrawing = await modelDrawing.findOne({name: name});
+            existingDrawing = await modelDrawing.findOne({title: name});
         } catch (err) {
             return res.status(500).json({
                 status: 1, 
@@ -58,7 +58,7 @@ router.get('/',
         }
 
         try {
-            existingDrawing = await modelDrawingInProgress.findOne({name: name});
+            existingDrawing = await modelDrawingInProgress.findOne({title: name});
         } catch (err) {
             return res.status(500).json({
                 status: 1, 

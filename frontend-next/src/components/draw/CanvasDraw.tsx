@@ -10,8 +10,8 @@ export type CanvasProps = {
     color: string, 
     lineWidth: number, 
     width: number, 
-    height: number
-  }
+    height: number,
+}
 
 export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleActionsCanvasType>) => {
     /* ********************************************************** */

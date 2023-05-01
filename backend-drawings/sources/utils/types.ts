@@ -2,7 +2,7 @@ export const defaultDrawingInProgress: DrawingType = {
     userId: "",
     created: Date.now(),
     lastUpdated: Date.now(),
-    name: "",
+    title: "",
     video: {
         destination: "",
         filename: "",
@@ -28,10 +28,10 @@ export type DrawingType = {
     userId: string;
     created: number;
     lastUpdated: number;
+    title: string;
     categories?: string[];
     likes?: number, 
     comments?: number,
-    name: string;
     video: FileType,
     image: FileType,
 }

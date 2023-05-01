@@ -19,20 +19,35 @@ type DrawingResponseErrorType = {
     errors?: ErrorType[],
 };
 
-const config = {
+const configMultipart = {
     headers:{
         "Content-Type": "multipart/form-data",
     }
 };
 
-export const getDrawing = (id: string) => {
-    // return axios.get<DrawingResponseSuccessType | DrawingResponseErrorType>(HOST + "signin", {...config, params: user});  
-}
+const config = {
+    headers:{
+        'Content-Type': 'application/json',
+    }
+};
 
 export const postDrawing = (formData: FormData) => {
     const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
 
-    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "save", formData, {...config, params: {userId: userId} });
+    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "save", formData, {...configMultipart, params: {userId: userId} });
+}
+
+export const publishDrawing = (drawing : {
+    title: string ; 
+    previousTitle: string;
+    description?: string;
+    categories: string[];
+}) => {
+    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
+
+    const allData = {...drawing, userId};
+
+    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "publish", allData, {...config});
 }
 
 export const checkDrawing = (userId: string, name: string) => {
@@ -42,4 +57,8 @@ export const checkDrawing = (userId: string, name: string) => {
     }
 
     return axios.get<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "check", {...config, params: drawing});
+}
+
+export const getDrawing = (id: string) => {
+    // return axios.get<DrawingResponseSuccessType | DrawingResponseErrorType>(HOST + "signin", {...config, params: user});  
 }
