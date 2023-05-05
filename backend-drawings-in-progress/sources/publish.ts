@@ -1,6 +1,6 @@
 import { Router, Request, Response} from "express";
 import { modelDrawing, modelDrawingInProgress } from "../mongo_schema";
-import { DrawingType, defaultDrawingInProgress } from "./utils/types";
+import { DrawingType } from "./utils/types";
 import { checkSchema, validationResult } from "express-validator";
 import { upload } from "./utils/upload";
 import mongoose from "mongoose";
@@ -17,6 +17,12 @@ const checkPublishSchema = {
     title: {
         isLength: {
             errorMessage: 'title param missing!',
+            options: { min: 1 },
+        },
+    },
+    displayTitle: {
+        isLength: {
+            errorMessage: 'displayTitle param missing!',
             options: { min: 1 },
         },
     },
@@ -80,6 +86,7 @@ router.post('/',
                 created: Date.now(),
                 lastUpdated: Date.now(),
                 title: existingDrawing.title,
+                displayTitle: req.body.displayTitle,
                 categories: req.body.categories ?? [],
                 description: req.body.description ?? '',
                 likes: 0, 

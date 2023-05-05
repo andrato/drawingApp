@@ -56,7 +56,7 @@ router.post('/', checkSchema(checkSaveSchema), upload.array('files'),
             const mongoId = new mongoose.Types.ObjectId(drawingId);
 
             try {
-                existingDrawing = await modelDrawingInProgress.findOne({_id: mongoId});
+                existingDrawing = await modelDrawingInProgress.findOne({_id: mongoId, title: title});
             } catch (err) {
                 return res.status(500).json({
                     status: 1, 
@@ -64,45 +64,45 @@ router.post('/', checkSchema(checkSaveSchema), upload.array('files'),
                 })
             }
 
-            // if existingDrawing has different name => we must erase from volume
-            if (existingDrawing && existingDrawing.title !== title) {
-                try {
-                    await deleteFile(existingDrawing.title+"."+IMAGE_EXT, "images");
-                } catch (err) {
-                    // nothing
-                }
+            // // if existingDrawing has different name => we must erase from volume
+            // if (existingDrawing && existingDrawing.title !== title) {
+            //     try {
+            //         await deleteFile(existingDrawing.title+"."+IMAGE_EXT, "images");
+            //     } catch (err) {
+            //         // nothing
+            //     }
 
-                try {
-                    await deleteFile(existingDrawing.title+"."+VIDEO_EXT, "videos");
-                } catch (err) {
-                    // nothing
-                }
+            //     try {
+            //         await deleteFile(existingDrawing.title+"."+VIDEO_EXT, "videos");
+            //     } catch (err) {
+            //         // nothing
+            //     }
 
-                try {
-                    await modelDrawingInProgress.updateOne({_id: mongoId}, {
-                        $set: {
-                            "title": newDrawing.title,
-                            "lastUpdated": newDrawing.lastUpdated,
-                            "video.$[].location": newDrawing.video.location,
-                            "video.$[].filename": newDrawing.video.filename,
-                            "video.$[].size": newDrawing.video.size,
-                            "image.$[].location": newDrawing.image.location,
-                            "image.$[].filename": newDrawing.image.filename,
-                            "image.$[].size": newDrawing.image.size,
-                        }
-                    });
+            //     try {
+            //         await modelDrawingInProgress.updateOne({_id: mongoId}, {
+            //             $set: {
+            //                 "title": newDrawing.title,
+            //                 "lastUpdated": newDrawing.lastUpdated,
+            //                 "video.$[].location": newDrawing.video.location,
+            //                 "video.$[].filename": newDrawing.video.filename,
+            //                 "video.$[].size": newDrawing.video.size,
+            //                 "image.$[].location": newDrawing.image.location,
+            //                 "image.$[].filename": newDrawing.image.filename,
+            //                 "image.$[].size": newDrawing.image.size,
+            //             }
+            //         });
 
-                    return res.status(200).json({
-                        status: 0, 
-                        message: "updated drawing",
-                    })
-                } catch (err) {
-                    return res.status(500).json({
-                        status: 1, 
-                        error: "Update failed",
-                    })
-                }
-            }
+            //         return res.status(200).json({
+            //             status: 0, 
+            //             message: "updated drawing",
+            //         })
+            //     } catch (err) {
+            //         return res.status(500).json({
+            //             status: 1, 
+            //             error: "Update failed",
+            //         })
+            //     }
+            // }
 
             if (existingDrawing) {
                 try {

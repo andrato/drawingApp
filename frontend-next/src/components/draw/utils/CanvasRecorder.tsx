@@ -1,5 +1,4 @@
 import { LocalStorageKeys } from '@/utils/constants/LocalStorage';
-import React from 'react'
 
 interface CanvasRecorder {
   start: () => void;

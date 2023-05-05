@@ -271,7 +271,7 @@ export function Navbar() {
                                 aria-haspopup="true"
                                 aria-expanded={Boolean(anchorEl)  ? 'true' : undefined}
                             >
-                                <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary})}>A</Avatar>
+                                <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary, color: theme.palette.backgroundCustom.main})}>A</Avatar>
                             </IconButton>
                         </Tooltip>
                         <NavUser

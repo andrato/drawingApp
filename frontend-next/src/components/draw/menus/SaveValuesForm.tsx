@@ -4,7 +4,6 @@ import { Box, Button, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Se
 import { FormikErrors, FormikTouched } from 'formik';
 import { getIsValid, SaveValuesType } from "./utils";
 import { ReactNode } from "react";
-import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 
 const TextFieldStyled = (props: TextFieldProps) => {
     return <TextField 
@@ -77,7 +76,20 @@ export const SaveValuesForm = ({
             label={"Title"}
             error={Boolean(errors.title) && Boolean(touched.title)}
             helperText={errors.title}
+            defaultValue={values["displayTitle"]}
+            InputProps={{
+                name: "displayTitle",
+                type: "text",
+                onChange,
+                onBlur,
+            }}
+        />
+        <TextFieldStyled 
+            label={"File Name"}
+            error={Boolean(errors.title) && Boolean(touched.title)}
+            helperText={errors.title}
             defaultValue={values["title"]}
+            disabled
             InputProps={{
                 name: "title",
                 type: "text",

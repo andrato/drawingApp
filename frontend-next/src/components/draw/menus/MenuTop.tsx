@@ -109,23 +109,7 @@ export function MenuTop ({
         }
     }
 
-    const publish = async (values: SaveValuesType, {resetForm}: FormikHelpers<SaveValuesType>) => {
-        // check new name
-        try {
-            const {data} = await checkDrawing({name: values.title, checkDrawingInProgress: false});
-
-            if (data.status) {
-                setErrorSave(data?.error ?? "Name already used! Please choose another name!");
-                return;
-            }
-        } catch (err) {
-            setErrorSave("An error occured! Please try again later!");
-            return;
-        }
-
-        // save name in localStorage
-        localStorage.setItem(LocalStorageKeys.FILENAME, values.title);
-
+    const publish = async (values: SaveValuesType) => {
         // request saveDrawing
         const save = await saveDrawing();
 

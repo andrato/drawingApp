@@ -32,7 +32,7 @@ const drawingSchema = new Schema({
     created: Number,
     lastUpdated: Number,
     title: String,
-    displayName: String,
+    displayTitle: String,
     categories: [String],
     likes: Number,
 	comments: Number,

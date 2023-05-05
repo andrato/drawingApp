@@ -140,7 +140,7 @@ export const NavMobile = ({
                 <div>
                     <NavHeader>
                         {userToken.current ? (<NavbarAuth>
-                            <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary, mr: 2})}>A</Avatar>
+                            <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary, mr: 2, color: theme.palette.backgroundCustom.main})}>A</Avatar>
                             <Typography variant="body2" sx={(theme) => ({
                                 color: theme.palette.textCustom.primary, 
                                 fontWeight: "bold",
