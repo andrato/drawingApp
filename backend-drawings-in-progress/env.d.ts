@@ -1,13 +1,8 @@
-// declare global {
-    namespace NodeJS {
-        export interface ProcessEnv{ 
-            ACCESS_TOKEN_SECRET: string;
-            REFRESH_TOKEN_SECRET: string;
-            PASSWORD_SECRET: string;
-            MONGO_AUTH: string;
-        }
+namespace NodeJS {
+    export interface ProcessEnv{ 
+        PORT: number;
+        MONGO_AUTH: string;
+        SPACES_ACCESS_KEY: string;
+        SPACES_SECRET_KEY: string;
     }
-// }
-
-// // dummy export so we don't have errors
-// export {}
+}

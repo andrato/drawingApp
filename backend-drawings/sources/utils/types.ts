@@ -4,20 +4,23 @@ export const defaultDrawingInProgress: DrawingType = {
     lastUpdated: Date.now(),
     title: "",
     video: {
-        location: "",
+        destination: "",
         filename: "",
+        path: "",
         size: 0,
     },
     image: {
-        location: "",
+        destination: "",
         filename: "",
+        path: "",
         size: 0,
     },
 }
 
 type FileType = {
-    location: string;
+    destination: string;
     filename: string;
+    path: string;
     size: number;
 }
 

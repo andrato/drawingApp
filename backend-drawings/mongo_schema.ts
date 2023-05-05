@@ -16,13 +16,15 @@ const drawingSchemaInProgress = new Schema({
         default: false,
     }, 
 	video: {
-        location: String,
+        destination: String,
         filename: String,
+        path: String,
         size: Number,
     },
     image: {
-        location: String,
+        destination: String,
         filename: String,
+        path: String,
         size: Number,
     },
 }, { collection: 'drawings_inprogress'});

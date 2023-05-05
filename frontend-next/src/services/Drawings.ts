@@ -1,7 +1,7 @@
 import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 import axios from "axios"
 
-const HOST = "http://localhost:3002/";
+const HOST = "http://localhost:8002";
 
 type ErrorType = {
     msg: string;
@@ -34,7 +34,7 @@ const config = {
 export const postDrawing = (formData: FormData) => {
     const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
 
-    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "save", formData, {...configMultipart, params: {userId: userId} });
+    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/save", formData, {...configMultipart, params: {userId: userId} });
 }
 
 export const publishDrawing = (drawing : {
@@ -47,7 +47,7 @@ export const publishDrawing = (drawing : {
 
     const allData = {...drawing, userId};
 
-    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "publish", allData, {...config});
+    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/publish", allData, {...config});
 }
 
 export const checkDrawing = (userId: string, name: string) => {
@@ -56,7 +56,7 @@ export const checkDrawing = (userId: string, name: string) => {
         name,
     }
 
-    return axios.get<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "check", {...config, params: drawing});
+    return axios.get<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/check", {...config, params: drawing});
 }
 
 export const getDrawing = (id: string) => {
