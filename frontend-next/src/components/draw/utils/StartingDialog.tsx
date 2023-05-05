@@ -15,6 +15,10 @@ export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string 
         event.preventDefault();
         event.nativeEvent.stopImmediatePropagation();
 
+        // remove localStorageKeys - should be removed, but just to be sure!
+        localStorage.removeItem(LocalStorageKeys.DRAWING_ID);
+        localStorage.removeItem(LocalStorageKeys.FILENAME);
+
         const data = new FormData(event.target);
         const nameValue = String(data.get("filename"));
 
@@ -25,8 +29,7 @@ export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string 
         } 
 
         try {
-            const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? "{id: 'guest")?.id;
-            const {data} = await checkDrawing(userId, nameValue);
+            const {data} = await checkDrawing({name: nameValue});
 
             if (data.status) {
                 setError(data?.error ?? "Please choose another name!");

@@ -66,6 +66,7 @@ export function Draw() {
             window.removeEventListener('beforeunload', handleWindowClose);
             router.events.off('routeChangeStart', handleBrowseAway);
             localStorage.removeItem(LocalStorageKeys.FILENAME);
+            localStorage.removeItem(LocalStorageKeys.DRAWING_ID);
         };
     }, []);
 

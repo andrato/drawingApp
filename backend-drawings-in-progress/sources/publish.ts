@@ -1,16 +1,16 @@
 import { Router, Request, Response} from "express";
 import { modelDrawing, modelDrawingInProgress } from "../mongo_schema";
-import { DrawingType } from "./utils/types";
+import { DrawingType, defaultDrawingInProgress } from "./utils/types";
 import { checkSchema, validationResult } from "express-validator";
-import {promises as fsPromises} from 'fs';
-import { IMAGE_EXT, VIDEO_EXT } from "./utils/helpers";
+import { upload } from "./utils/upload";
+import mongoose from "mongoose";
 
 const router = Router();
 
 const checkPublishSchema = {
-    userId: {
+    drawingId: {
         isLength: {
-            errorMessage: 'userId is missing!',
+            errorMessage: 'drawingId is missing!',
             options: { min: 1 },
         },
     },
@@ -19,12 +19,6 @@ const checkPublishSchema = {
             errorMessage: 'title param missing!',
             options: { min: 1 },
         },
-    },
-    previousTitle: {
-        isLength: {
-            errorMessage: 'previousTitle param missing!',
-            options: { min: 1 },
-        }
     },
     categories: {
         isArray: {
@@ -35,8 +29,10 @@ const checkPublishSchema = {
         },
     },
 }
+
 router.post('/',
     checkSchema(checkPublishSchema),
+    upload.array('files'),
     async (req: Request, res: Response) => {
         const errors = validationResult(req);
 
@@ -47,109 +43,68 @@ router.post('/',
             });
         }
 
-        const previousTitle = req.body.previousTitle;
-        const title = req.body.title;
-        const userId = req.body.userId;
+        const drawingId = req.body.drawingId;
 
-        const previousName = `${userId}_${previousTitle}`;
-        const name = `${userId}_${title}`;
-
+        // move to drawings and erase from DrawingInProgress
         let existingDrawing: (DrawingType | null) = null;
+        const mongoId = new mongoose.Types.ObjectId(drawingId);
+
+        if (drawingId === 'undefined') {
+            return res.status(500).json({
+                status: 1, 
+                error: "No drawing found! Make sure you draw something before save/publish!",
+            });
+        }
 
         // check if there is already a drawing with a name
         try {
-            existingDrawing = await modelDrawing.findOne({title: name});
-        } catch (err) {
-            return res.status(200).json({
-                status: 1, 
-                error: "Choose a different name! You have already a drawing with the same name!",
-            })
-        }
-
-        // check for drawing in modelDrawingInProgress db
-        try {
-            existingDrawing = await modelDrawingInProgress.findOne({title: previousName});
+            existingDrawing = await modelDrawingInProgress.findOne({_id: mongoId});
         } catch (err) {
             return res.status(500).json({
                 status: 1, 
-                error: err,
+                error: "An error occured! Please try again later!",
             })
         }
 
-        // if drawing does not exist => user probably didn't draw anything
         if (!existingDrawing) {
-            return res.status(200).json({
-                status: 1, 
-                error: "There is nothing to publish",
-            });
-        }
-
-        let finalVideoPath, finalImagePath, finalVideoFilename, finalImageFilename;
-
-        // Rename drawing video and image if it's the case
-        if (name !== previousName) {
-            const prevPathVideo = existingDrawing.video.path;
-            const pathVideo = `${existingDrawing.video.destination}/${name}.${VIDEO_EXT}`;
-
-            const prevPathImage = existingDrawing.image.path;
-            const pathImage = `${existingDrawing.image.destination}/${name}.${IMAGE_EXT}`;
-
-            finalVideoPath = pathVideo;
-            finalVideoFilename = `${name}.${VIDEO_EXT}`;
-
-            finalImagePath = pathImage;
-            finalImageFilename = `${name}.${IMAGE_EXT}`;
-
-            try {
-                await fsPromises.rename(prevPathVideo, pathVideo);
-                await fsPromises.rename(prevPathImage, pathImage);
-            } catch (err) {
-                console.log(JSON.stringify(err));
-
-                return res.status(200).json({
-                    status: 0, 
-                    error: "Failed to save",
-                });
-            }
-        }
-
-        // add to the drawings db (final drawings)
-        const newEntry = {
-            ...existingDrawing,
-            created: Date.now(),
-            lastUpdated: Date.now(),
-            title: name,
-            categories: req.body.categories,
-            description: req.body.description ?? "",
-            video: {
-                ...existingDrawing.video,
-                ...(finalVideoFilename ? {filename: finalVideoFilename} : {}),
-                ...(finalVideoPath ? {path: finalVideoPath} : {}),
-            },
-            image: {
-                ...existingDrawing.image,
-                ...(finalImageFilename ? {filename: finalImageFilename} : {}),
-                ...(finalImagePath ? {path: finalImagePath} : {}),
-            },
-        }
-
-        try {
-            await modelDrawing.create(newEntry);
-        } catch (err) {
             return res.status(500).json({
                 status: 1, 
-                error: "Error when adding in drawings final",
+                error: "No drawing found! Make sure you draw something before save/publish!",
             })
         }
 
-        // remove from drawings in progress db
+        // add drawing in Drawing and remove it from DrawingsInProgress
         try {
-            await modelDrawingInProgress.deleteOne({title: previousName});
+            const newDrawing = {
+                userId: existingDrawing.userId,
+                created: Date.now(),
+                lastUpdated: Date.now(),
+                title: existingDrawing.title,
+                categories: req.body.categories ?? [],
+                description: req.body.description ?? '',
+                likes: 0, 
+                comments: 0,
+                topArt: false,
+                topAmateur: false,
+                video: existingDrawing.video,
+                image: existingDrawing.image,
+            }
+
+            await modelDrawing.create(newDrawing);
         } catch (err) {
             return res.status(500).json({
                 status: 1, 
-                error: "Error when deleting from drawing in progress",
-            });
+                error: "An error occured while saving! Please try again later",
+            })
+        }
+
+        try {
+            await modelDrawingInProgress.deleteOne({_id: mongoId});
+        } catch (err) {
+            return res.status(200).json({
+                status: 0, 
+                error: "Error while deleting from modelDrawingInProgress",
+            })
         }
 
         return res.status(200).json({

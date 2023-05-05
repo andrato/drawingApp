@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema, model, Types } from "mongoose";
 
 /* SCHEMAS */
 const drawingSchemaInProgress = new Schema({

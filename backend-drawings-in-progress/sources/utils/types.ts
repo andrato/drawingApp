@@ -15,6 +15,7 @@ export const defaultDrawingInProgress: DrawingType = {
     },
 }
 
+
 type FileType = {
     location: string;
     filename: string;
@@ -27,8 +28,10 @@ export type DrawingType = {
     lastUpdated: number;
     title: string;
     categories?: string[];
-    likes?: number, 
-    comments?: number,
-    video: FileType,
-    image: FileType,
+    likes?: number;
+    comments?: number;
+    topArt?: boolean;
+    topAmateur?: boolean;
+    video: FileType;
+    image: FileType;
 }

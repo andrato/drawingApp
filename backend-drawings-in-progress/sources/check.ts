@@ -20,6 +20,13 @@ const checkDrawingSchema = {
             location: "params",
         },
     },
+    checkDrawingInProgress: {
+        isIn: { 
+            options: [['true','false']],
+            location: "params",
+            errorMessage: 'checkDrawingInProgress param wrong or missing!',
+        },
+    },
 }
 router.get('/',
     checkSchema(checkDrawingSchema),
@@ -35,6 +42,7 @@ router.get('/',
 
         const drawingName = req.query.name;
         const userId = req.query.userId;
+        const checkDrawingInProgress = req.query.checkDrawingInProgress;
 
         const name = `${userId}_${drawingName}`;
 
@@ -57,20 +65,22 @@ router.get('/',
             });
         }
 
-        try {
-            existingDrawing = await modelDrawingInProgress.findOne({title: name});
-        } catch (err) {
-            return res.status(500).json({
-                status: 1, 
-                error: err,
-            })
-        }
-
-        if (existingDrawing !== null) {
-            return res.status(200).json({
-                status: 1, 
-                error: "There is already a drawing with this name. Please select another one!",
-            });
+        if (checkDrawingInProgress === 'true') {
+            try {
+                existingDrawing = await modelDrawingInProgress.findOne({title: name});
+            } catch (err) {
+                return res.status(500).json({
+                    status: 1, 
+                    error: err,
+                })
+            }
+    
+            if (existingDrawing !== null) {
+                return res.status(200).json({
+                    status: 1, 
+                    error: "There is already a drawing with this name. Please select another one!",
+                });
+            }
         }
 
         return res.status(200).json({

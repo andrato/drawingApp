@@ -127,7 +127,6 @@ export const CanvasRecorder = (): CanvasRecorder => {
 
     const save = () => {
         if (null === supportedType) {
-            alert("Type no supported!");
             console.error("type no supported");
             return null;
         }

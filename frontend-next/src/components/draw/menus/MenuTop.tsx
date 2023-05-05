@@ -8,13 +8,14 @@ import {
 } from '@mui/icons-material';
 import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 import { HandleActionsCanvasType } from "../types";
-import { postDrawing, publishDrawing } from "@/services/Drawings";
+import { DrawingResponseErrorType, checkDrawing, postDrawing, publishDrawing } from "@/services/Drawings";
 import { useRef, useState } from "react";
 import { DrawingDialog } from "@/utils/helpers/DrawingDialog";
 import { FormikHelpers, useFormik } from "formik";
 import { SaveValuesSchema, SaveValuesType, defaultSaveValues } from "./utils";
 import { SaveValuesForm } from "./SaveValuesForm";
 import { DialogDrawing } from "../utils/DialogDrawing";
+import { AxiosError } from "axios";
 
 const ButtonStyled = ({children, ...props} : {children: React.ReactNode} & ButtonProps) => (
     <Button
@@ -62,7 +63,7 @@ export function MenuTop ({
         handleClearCanvas();
     }
 
-    const saveDrawing = async () => {
+    const formData = async () => {
         const name = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN_2";
         let drawingVideoFile, drawingImageFile;
 
@@ -84,8 +85,24 @@ export function MenuTop ({
         formData.append('files', drawingVideoFile, name);
         formData.append('files', drawingImageFile, name);
 
+        return formData;
+    }
+
+    const saveDrawing = async () => {
+        const postData = await formData();
+
+        if (!postData) {
+            return;
+        }
+
         try {
-            return await postDrawing(formData);
+            const {data} = await postDrawing(postData);
+
+            if (data?.drawingId) {
+                localStorage.setItem(LocalStorageKeys.DRAWING_ID, data?.drawingId);
+            }
+
+            return data;
         } catch (err) {
             console.error ("Error occured when sending data");
             return;
@@ -93,7 +110,23 @@ export function MenuTop ({
     }
 
     const publish = async (values: SaveValuesType, {resetForm}: FormikHelpers<SaveValuesType>) => {
-        // request de saveDrawing
+        // check new name
+        try {
+            const {data} = await checkDrawing({name: values.title, checkDrawingInProgress: false});
+
+            if (data.status) {
+                setErrorSave(data?.error ?? "Name already used! Please choose another name!");
+                return;
+            }
+        } catch (err) {
+            setErrorSave("An error occured! Please try again later!");
+            return;
+        }
+
+        // save name in localStorage
+        localStorage.setItem(LocalStorageKeys.FILENAME, values.title);
+
+        // request saveDrawing
         const save = await saveDrawing();
 
         if (!save) {
@@ -104,10 +137,11 @@ export function MenuTop ({
         // request doar cu values => asta o sa mute din drawingsInProgress in drawings
         let result;
         try {
-            const title = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN_2";
-            result = await publishDrawing({...values, previousTitle: title});
+            result = await publishDrawing(values);
         } catch (err) {
-            setErrorSave("Failed to publish! Try again later!");
+            const error = err as AxiosError<DrawingResponseErrorType>;
+            const displayError = error?.response?.data?.error ?? "Failed to publish! Try again later!";
+            setErrorSave(displayError);
             return;
         }
 
