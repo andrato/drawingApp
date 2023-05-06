@@ -183,7 +183,6 @@ export function Navbar() {
     const [openSignUp, setOpenSignUp] = useState(false);
     const [result, setResult] = useState<ResultType>({openResult: false, step: null});
     const [userToken, setUserToken] = useState<string | null> (null)
-    // const userToken = useRef<string | null>(null);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const theme = useTheme();
 	const isMdScreenUp = useMediaQuery(theme.breakpoints.up(980));
@@ -221,9 +220,13 @@ export function Navbar() {
     return (
     <NavbarWrapper>
         <NavbarContainer>
-            <a href="/">
-                <img className="image-img" src={'/logo.png'} height="50" style={{marginRight: "80px", marginTop: "5px"}}/>
-            </a>
+            <Box component={Link} href="/" sx={{
+                'img:hover': {
+                    cursor: "pointer",
+                }
+            }}>
+                <img className="image-img" src={'/logo.png'} height="50" style={{marginRight: "80px", marginTop: "5px", cursor: "pointer", zIndex: 5,}}/>
+            </Box>
             {isMdScreenUp ? (<>
                 <NavbarPagesLinks>
                     <StyledBoxLink to="/topart">

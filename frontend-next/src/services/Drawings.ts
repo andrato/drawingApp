@@ -1,7 +1,7 @@
 import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 import axios from "axios"
 
-const HOST = "http://localhost:8002";
+const HOST = "http://localhost:8003";
 
 export type ErrorType = {
     msg: string;
@@ -9,23 +9,50 @@ export type ErrorType = {
     [key: string]: string;
 }
 
+type FileType = {
+    location: string;
+    filename: string;
+    size: number;
+}
+
+export type DrawingType = {
+    id: string;
+    userId: string;
+    created: number;
+    lastUpdated: number;
+    title: string;
+    displayTitle: string;
+    categories?: string[];
+    likes?: number;
+    comments?: number;
+    topArt?: boolean;
+    topAmateur?: boolean;
+    video: FileType;
+    image: FileType;
+}
+
+export type DrawingTypePartial = {
+    id: string,
+    created: string,
+    displayTitle: string,
+    image: FileType,
+}
+
+
+export type DrawingsResponseSuccessType = {
+    status: 0;
+    drawings: DrawingTypePartial[];
+};
+
 export type DrawingResponseSuccessType = {
     status: 0;
-    drawingId?: string,
-    message: string;
+    drawing: DrawingType;
 };
 
 export type DrawingResponseErrorType = {
     status: 1,
-    drawingId?: string,
     error?: string,
     errors?: ErrorType[],
-};
-
-const configMultipart = {
-    headers:{
-        "Content-Type": "multipart/form-data",
-    }
 };
 
 const config = {
@@ -34,43 +61,23 @@ const config = {
     }
 };
 
-export const postDrawing = (formData: FormData) => {
-    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
-    const drawingId = localStorage.getItem(LocalStorageKeys.DRAWING_ID) ?? undefined;
-
-    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/save", formData, {...configMultipart, params: {userId: userId, drawingId: drawingId} });
+export const getDrawings = () => {
+    return axios.get<DrawingsResponseSuccessType>(HOST + "/", {...config});
 }
 
-export const publishDrawing = (drawing : {
-    title: string ; 
-    description?: string;
-    categories: string[];
-}) => {
-    const drawingId = localStorage.getItem(LocalStorageKeys.DRAWING_ID) ?? undefined;
-
-    const allData = {...drawing, drawingId};
-
-    return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/publish", allData, {...config});
-}
-
-// export const publishDrawing = (formData: FormData) => {
-//     const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
-
-//     return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/publish", formData, {...configMultipart, params: {userId: userId} });
-// }
-
-export const checkDrawing = (params: {name: string, checkDrawingInProgress?: boolean}) => {
-    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
-
-    const drawing = {
-        checkDrawingInProgress: true,
-        userId, 
-        ...params,
+export const getDrawingByCategory = (category: string) => {
+    if (category === "Gallery") {
+        return getDrawings();
     }
 
-    return axios.get<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/check", {...config, params: drawing});
+    let computedCateg = "topArt";
+    if (category === "Top Amateur") {
+        computedCateg = "topAmateur";
+    }
+
+    return axios.get<DrawingsResponseSuccessType>(HOST + "/category", {...config, params: {category: computedCateg}});
 }
 
 export const getDrawing = (id: string) => {
-    // return axios.get<DrawingResponseSuccessType | DrawingResponseErrorType>(HOST + "signin", {...config, params: user});  
+    return axios.get<DrawingResponseSuccessType>(HOST + "/drawing", {...config, params: {drawingId: id}});
 }

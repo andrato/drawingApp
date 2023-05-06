@@ -1,37 +1,21 @@
-export const defaultDrawingInProgress: DrawingType = {
-    userId: "",
-    created: Date.now(),
-    lastUpdated: Date.now(),
-    title: "",
-    video: {
-        destination: "",
-        filename: "",
-        path: "",
-        size: 0,
-    },
-    image: {
-        destination: "",
-        filename: "",
-        path: "",
-        size: 0,
-    },
-}
-
 type FileType = {
-    destination: string;
+    location: string;
     filename: string;
-    path: string;
     size: number;
 }
 
 export type DrawingType = {
+    _id: string;
     userId: string;
     created: number;
     lastUpdated: number;
     title: string;
+    displayTitle?: string;
     categories?: string[];
-    likes?: number, 
-    comments?: number,
-    video: FileType,
-    image: FileType,
+    likes?: number;
+    comments?: number;
+    topArt?: boolean;
+    topAmateur?: boolean;
+    video: FileType;
+    image: FileType;
 }

@@ -2,6 +2,7 @@ import { Layout } from '@/utils/Layout';
 import type { AppProps } from 'next/app';
 import "./global.css";
 import {ThemeProvider, createTheme } from '@mui/material';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const drawTheme = createTheme({
     palette: {
@@ -18,8 +19,8 @@ const drawTheme = createTheme({
             focus: "#92c939",
         },
         primary: {
-            main: "#7FAF30",
-            light: "#689224",
+            main: "#3fa0e0",
+            light: "#77c3f6",
         },
         canvas: {
             menuBg: "#545454",
@@ -44,11 +45,14 @@ const drawTheme = createTheme({
     }
 });
 
+const queryClient = new QueryClient()
+
 export default function App({ Component, pageProps }: AppProps) {    
     return <ThemeProvider theme={drawTheme}>
-        <Layout>
-            <Component {...pageProps} />
-        </Layout>
+        <QueryClientProvider client={queryClient}>
+            <Layout>
+                <Component {...pageProps} />
+            </Layout>
+        </QueryClientProvider>
     </ThemeProvider>
-    
 }

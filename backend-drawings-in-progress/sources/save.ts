@@ -1,10 +1,9 @@
 import { Router, Request, Response} from "express";
 import { modelDrawingInProgress } from "../mongo_schema";
 import { DrawingType, defaultDrawingInProgress } from "./utils/types";
-import { deleteFile, upload } from "./utils/upload";
+import { upload } from "./utils/upload";
 import { checkSchema, validationResult } from "express-validator";
 import mongoose from "mongoose";
-import { IMAGE_EXT, VIDEO_EXT } from "./utils/helpers";
 
 const router = Router();
 

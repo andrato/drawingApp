@@ -93,8 +93,16 @@ router.post('/',
                 comments: 0,
                 topArt: false,
                 topAmateur: false,
-                video: existingDrawing.video,
-                image: existingDrawing.image,
+                video: {
+                    filename: existingDrawing.video.filename,
+                    location: existingDrawing.video.location,
+                    size: existingDrawing.video.size,
+                },
+                image: {
+                    filename: existingDrawing.image.filename,
+                    location: existingDrawing.image.location,
+                    size: existingDrawing.image.size,
+                },
             }
 
             await modelDrawing.create(newDrawing);

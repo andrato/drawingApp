@@ -2,7 +2,6 @@ import { Box, CardMedia, FormControl, Grid, InputLabel, MenuItem, Pagination, Se
 import { dataToTest } from "../common/testData";
 import { useEffect, useState } from "react";
 import { SortBy, sortByOptions } from "../common/constants";
-import { filtersColors } from "./constants";
 import { Page } from "@/utils/helpers/Page";
 import { useRouter } from "next/router";
 

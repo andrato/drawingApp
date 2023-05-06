@@ -8,7 +8,7 @@ import {
 } from '@mui/icons-material';
 import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
 import { HandleActionsCanvasType } from "../types";
-import { DrawingResponseErrorType, checkDrawing, postDrawing, publishDrawing } from "@/services/Drawings";
+import { DrawingResponseErrorType, postDrawing, publishDrawing } from "@/services/DrawingsInProgress";
 import { useRef, useState } from "react";
 import { DrawingDialog } from "@/utils/helpers/DrawingDialog";
 import { FormikHelpers, useFormik } from "formik";

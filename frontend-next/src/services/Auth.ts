@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const HOST = "http://localhost:8080/";
+const HOST = "http://localhost:8001/";
 
 type UserProfileType = {
     about: string

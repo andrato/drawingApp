@@ -16,6 +16,7 @@ const s3 = new S3Client({
 
 const storage = multerS3({
     s3: s3,
+    acl: "public-read",
     bucket: (req, file, cb) => { 
         if(file.mimetype === "image/jpeg") {
             cb(null, "images");
@@ -36,6 +37,7 @@ const storage = multerS3({
 
 export const upload = multer({storage: storage});
 
+/* not used, but it works */
 export const deleteFile = async (key: string, bucket: "videos" | "images") => {
     const params = {
         Bucket: bucket,

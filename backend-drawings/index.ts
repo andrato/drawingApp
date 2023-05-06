@@ -4,9 +4,9 @@ import express, {Express} from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { Save } from "./sources/save";
-import { Check } from "./sources/check";
-import { Publish } from "./sources/publish";
+import { GetAll } from "./sources/getAll";
+import { GetByCategory } from "./sources/getByCategory";
+import { GetDrawing } from "./sources/getDrawing";
 
 dotenv.config();
 
@@ -27,8 +27,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // define app routes
-app.use("/save", Save);
-app.use("/check", Check);
-app.use("/publish", Publish);
+app.use("/", GetAll); //basically the gallery
+app.use("/category", GetByCategory); //basically the gallery
+app.use("/drawing", GetDrawing); //basically the gallery
 
 app.listen(process.env.PORT, () => {console.log(`Listening on port ${process.env.PORT}`)});

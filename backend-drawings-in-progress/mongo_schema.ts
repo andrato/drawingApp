@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, Types } from "mongoose";
+import { Schema, model } from "mongoose";
 
 /* SCHEMAS */
 const drawingSchemaInProgress = new Schema({
@@ -29,7 +29,12 @@ const drawingSchemaInProgress = new Schema({
 
 const drawingSchema = new Schema({
     userId: String,
-    created: Number,
+    created: {
+        type: Number,
+        index: true,
+        require: true,
+        sort: -1,
+    },
     lastUpdated: Number,
     title: String,
     displayTitle: String,
@@ -39,21 +44,23 @@ const drawingSchema = new Schema({
 	topArt: {
         type: Boolean,
         default: false,
+        index: true,
+        require: true,
     }, 
 	topAmateur: {
         type: Boolean,
         default: false,
+        index: true,
+        require: true,
     }, 
 	video: {
-        destination: String,
+        location: String,
         filename: String,
-        path: String,
         size: Number,
     },
     image: {
-        destination: String,
+        location: String,
         filename: String,
-        path: String,
         size: Number,
     },
 }, { collection: 'drawings'});
