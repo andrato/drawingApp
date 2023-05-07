@@ -1,4 +1,4 @@
-import { LocalStorageKeys } from '@/utils/constants/LocalStorage';
+import { LocalStorageKeys } from '@/components/utils/constants/LocalStorage';
 
 interface CanvasRecorder {
   start: () => void;

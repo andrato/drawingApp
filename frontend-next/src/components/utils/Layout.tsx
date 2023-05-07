@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Navbar } from "../components/header/Navbar";
+import { Navbar } from "../header/Navbar";
 import { Box } from "@mui/material";
 
 export const Layout = ({children}: {children: ReactNode}) => {

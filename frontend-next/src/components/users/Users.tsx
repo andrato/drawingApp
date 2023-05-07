@@ -1,4 +1,4 @@
-import { BodyContainer } from "@/utils/helpers/BodyContainer";
+import { BodyContainer } from "@/components/utils/helpers/BodyContainer";
 
 export function Users() {
     return (<BodyContainer>

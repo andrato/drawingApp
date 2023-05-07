@@ -1,7 +1,7 @@
 "use client"
 
-import { Gallery } from "@/components/gallery/Gallery";
+import { DrawingsCategory } from "@/components/category/DrawingsCategory";
 
 export default function GalleryPage () {
-    return <Gallery />
+    return <DrawingsCategory category="Gallery" />
 }

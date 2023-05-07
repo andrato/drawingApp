@@ -7,7 +7,7 @@ import { DrawContainer } from "./DrawContainer";
 import { MenuLeft } from "./menus/MenuLeft";
 import { MenuTop } from "./menus/MenuTop";
 import { MenuRight } from "./menus/MenuRight";
-import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import { StartingDialog } from "./utils/StartingDialog";
 import { useRouter } from "next/router";
 

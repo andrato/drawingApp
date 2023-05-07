@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import { categories } from "../common/constants";
 import { HomeCategory } from "./HomeCategory";
-import { Page } from "@/utils/helpers/Page";
+import { Page } from "@/components/utils/helpers/Page";
 
 export const Home = () => {
     return (

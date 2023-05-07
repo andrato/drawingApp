@@ -1,5 +1,5 @@
-import { TopArt } from "@/components/topArt/TopArt";
+import { DrawingsCategory } from "@/components/category/DrawingsCategory";
 
 export default function TopArtPage () {
-    return <TopArt />
+    return <DrawingsCategory category="Top Art" />
 }

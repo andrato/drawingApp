@@ -2,7 +2,7 @@ import { PaletteColor, PaletteColorOptions } from "@mui/material";
 
 declare module '@mui/material/styles' {
     interface Palette {
-		backgroundCustom: PaletteColor & {hover: string, active: string};
+		backgroundCustom: PaletteColor & {hover: string, active: string, navHover: string,};
         textCustom: Partial<TypeText> & {hover: string}; 
         canvas: {
             menuBg: string,
@@ -13,7 +13,7 @@ declare module '@mui/material/styles' {
         };
     }
     interface PaletteOptions {
-		backgroundCustom?: PaletteColorOptions & {hover: string, active: string};
+		backgroundCustom?: PaletteColorOptions & {hover: string, active: string, navHover: string,};
         textCustom?: Partial<TypeText> & {hover: string};
         canvas?: {
             menuBg: string,

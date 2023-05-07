@@ -5,7 +5,7 @@ import { SigninSchema, SignInValuesType } from "./utils";
 import { SignInForm } from "./SignInForm";
 import { Typography } from "@mui/material";
 import { signIn } from "../../services/Auth";
-import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 
 export const SignIn = (props: {
     open: boolean;

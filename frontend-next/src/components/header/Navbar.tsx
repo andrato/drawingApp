@@ -15,7 +15,7 @@ import { SignUp } from "../user/SignUp";
 import { SignIn } from "../user/SignIn";
 import { Result } from "../user/Result";
 import { Step } from "../user/utils";
-import { LocalStorageKeys } from "../../utils/constants/LocalStorage";
+import { LocalStorageKeys } from "../utils/constants/LocalStorage";
 import { NavUser } from "./NavUser";
 import { NavMobile } from "./NavMobile";
 import { useRouter } from "next/router";

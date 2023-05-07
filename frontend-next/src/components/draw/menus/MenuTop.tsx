@@ -6,11 +6,11 @@ import {
     NoteAdd,
     RestartAlt,
 } from '@mui/icons-material';
-import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import { HandleActionsCanvasType } from "../types";
 import { DrawingResponseErrorType, postDrawing, publishDrawing } from "@/services/DrawingsInProgress";
 import { useRef, useState } from "react";
-import { DrawingDialog } from "@/utils/helpers/DrawingDialog";
+import { DrawingDialog } from "@/components/utils/helpers/DrawingDialog";
 import { FormikHelpers, useFormik } from "formik";
 import { SaveValuesSchema, SaveValuesType, defaultSaveValues } from "./utils";
 import { SaveValuesForm } from "./SaveValuesForm";

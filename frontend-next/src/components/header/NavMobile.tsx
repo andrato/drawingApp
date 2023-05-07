@@ -1,7 +1,7 @@
 import { Close, Menu } from "@mui/icons-material";
 import { Avatar, Box, BoxProps, Divider, Drawer, IconButton, Typography, useTheme} from "@mui/material";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { LocalStorageKeys } from "../../utils/constants/LocalStorage";
+import { LocalStorageKeys } from "../utils/constants/LocalStorage";
 import { ResultType, SignInButton, SignUpButton } from "./Navbar";
 import { SignUp } from "../user/SignUp";
 import { SignIn } from "../user/SignIn";

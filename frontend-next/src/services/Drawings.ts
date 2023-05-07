@@ -1,7 +1,7 @@
-import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import axios from "axios"
 
-const HOST = "http://localhost:8003";
+const HOST = "http://localhost:8080/drawing";
 
 export type ErrorType = {
     msg: string;

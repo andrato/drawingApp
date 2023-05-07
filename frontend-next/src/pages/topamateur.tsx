@@ -1,5 +1,5 @@
-import { TopAmateur } from "@/components/topAmateur/TopAmateur";
+import { DrawingsCategory } from "@/components/category/DrawingsCategory";
 
 export default function TopAmateurPage () {
-    return <TopAmateur />
+    return <DrawingsCategory category="Top Amateur" />
 }

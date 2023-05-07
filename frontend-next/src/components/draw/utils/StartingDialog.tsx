@@ -2,7 +2,7 @@ import { useState } from "react"
 import { DialogDrawing } from "./DialogDrawing"
 import { Button, IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { checkDrawing } from "@/services/DrawingsInProgress";
-import { LocalStorageKeys } from "@/utils/constants/LocalStorage";
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import { Info } from "@mui/icons-material";
 
 export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string | null, onFilenameChange: (name: string) => void, onClose: () => void}) => {

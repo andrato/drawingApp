@@ -1,4 +1,4 @@
-import { Layout } from '@/utils/Layout';
+import { Layout } from '@/components/utils/Layout';
 import type { AppProps } from 'next/app';
 import "./global.css";
 import {ThemeProvider, createTheme } from '@mui/material';
@@ -10,8 +10,9 @@ const drawTheme = createTheme({
             main: "#272727",
             light: "#272727",
             dark: "#1b1b1b",
-            hover: "#3a4922",
+            hover: "#16a1fb42",
             active: "#4A661D",
+            navHover: "#16a1fa75",
         },
         textCustom: {
             primary: "#d7d7d7",

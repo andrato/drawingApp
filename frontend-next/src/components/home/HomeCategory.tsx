@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DrawingTypePartial, getDrawingByCategory } from "@/services/Drawings";
 import { ReactNode } from "react";
 import { useRouter } from "next/router";
+import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 
 export const Container = ({children}: {children: ReactNode}) => {
     return (<Box sx={(theme) => ({
@@ -32,14 +33,8 @@ export const HomeCategory = ({
     });
     const router = useRouter();
 
-    if (isLoading) {
-        return <Container><CircularProgress /></Container>
-    }
-
-    if (isError) {
-        return <Container>      
-            <Alert severity="error">Error occured when loading data</Alert>
-        </Container>
+    if (isLoading || isError) {
+        return <Container><LoadingsAndErrors isLoading={isLoading} isError={isError} /></Container>
     }
 
     const drawings: DrawingTypePartial[] = data?.data.drawings;
@@ -81,7 +76,7 @@ export const HomeCategory = ({
                                     width: "auto",
                                     height: "100%",
                                     ":hover" : {
-                                        transform: "scale(1.2)",
+                                        transform: "scale(1.15)",
                                         zIndex: 1,
                                         boxShadow: 2,
                                     }

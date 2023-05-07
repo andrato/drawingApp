@@ -1,6 +1,6 @@
 import { Logout, Settings } from "@mui/icons-material";
 import { Avatar, Divider, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material"
-import { LocalStorageKeys } from "../../utils/constants/LocalStorage";
+import { LocalStorageKeys } from "../utils/constants/LocalStorage";
 
 export const NavUser = ({
     anchorEl,
