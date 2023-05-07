@@ -44,7 +44,7 @@ export const DrawingsCategory = ({category}: {category: string}) => {
         refetchOnMount: false,
     });
     const drawings: DrawingTypePartial[] = data?.data.drawings ?? []; 
-    const pages = Math.ceil(drawings.length / itemsPerPage);
+    const pages = Math.max(Math.ceil(drawings.length / itemsPerPage), 1);
 
     useEffect(() => {
         const computeItems = (pageNumber: number) => {
@@ -61,6 +61,12 @@ export const DrawingsCategory = ({category}: {category: string}) => {
             return draw;
         }
 
+        if (pageNumber > pages) {
+            router.replace({
+                query: { ...router.query, page: pages },
+            });
+        }
+
         const itemsAux = computeItems(pageNumber);
         setItemsPage(itemsAux);
     }, [itemsPerPage, pageNumber, drawings])
@@ -72,7 +78,7 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     const handlePageChange = (event: any, value: number) => {
         router.replace({
             query: { ...router.query, page: value },
-         });
+        });
     }
 
     const handleClick = (id: string) => {

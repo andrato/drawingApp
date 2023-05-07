@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import { SignIn } from "./sources/signin";
 import { SignUp } from "./sources/signup";
+import { VerifyToken } from "./sources/verify";
 
 dotenv.config();
 
@@ -26,5 +27,6 @@ app.use(cors());
 // define app routes
 app.use("/signin", SignIn);
 app.use("/signup", SignUp);
+app.use("/verify", VerifyToken);
 
 app.listen(process.env.PORT, () => {console.log(`Listening on port ${process.env.PORT}`)});

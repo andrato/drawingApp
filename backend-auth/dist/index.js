@@ -19,6 +19,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const signin_1 = require("./sources/signin");
 const signup_1 = require("./sources/signup");
+const verify_1 = require("./sources/verify");
 dotenv_1.default.config();
 /* connect to mongo */
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,5 +38,6 @@ app.use((0, cors_1.default)());
 // define app routes
 app.use("/signin", signin_1.SignIn);
 app.use("/signup", signup_1.SignUp);
+app.use("/verify", verify_1.VerifyToken);
 app.listen(process.env.PORT, () => { console.log(`Listening on port ${process.env.PORT}`); });
 //# sourceMappingURL=index.js.map
