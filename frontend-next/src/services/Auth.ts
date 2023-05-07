@@ -42,9 +42,9 @@ const config = {
 };
 
 export const signIn = (user: {email: string, password: string}) => {
-    return axios.get<SigninResponseSuccessType | ResponseErrorType>(HOST + "signin", {...config, params: user});
+    return axios.get<SigninResponseSuccessType | ResponseErrorType>(HOST + "/signin", {...config, params: user});
 }
 
 export const signUp = (user: {firstName: string, lastName: string, email: string, password: string}) => {
-    return axios.post<SignupResponseSuccessType | ResponseErrorType>(HOST + "signup", user, {...config});
+    return axios.post<SignupResponseSuccessType | ResponseErrorType>(HOST + "/signup", user, {...config});
 }

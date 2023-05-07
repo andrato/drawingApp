@@ -13,6 +13,7 @@ const drawTheme = createTheme({
             hover: "#16a1fb42",
             active: "#4A661D",
             navHover: "#16a1fa75",
+            star: "#be9b48",
         },
         textCustom: {
             primary: "#d7d7d7",

@@ -3,6 +3,10 @@ import mongoose, { Schema, model, Types } from "mongoose";
 /* SCHEMAS */
 const drawingSchema = new Schema({
     userId: String,
+    userInfo: {
+        name: String,
+        imgPath: String,
+    },
     created: {
         type: Number,
         index: true,

@@ -10,19 +10,19 @@ const router = Router();
 const checkPublishSchema = {
     drawingId: {
         isLength: {
-            errorMessage: 'drawingId is missing!',
+            errorMessage: 'Missing or incorrect drawingId!',
             options: { min: 1 },
         },
     },
     title: {
         isLength: {
-            errorMessage: 'title param missing!',
+            errorMessage: 'Missing or incorrect title!',
             options: { min: 1 },
         },
     },
     displayTitle: {
         isLength: {
-            errorMessage: 'displayTitle param missing!',
+            errorMessage: 'Missing or incorrect displayTitle!',
             options: { min: 1 },
         },
     },
@@ -32,6 +32,12 @@ const checkPublishSchema = {
             options: {
                 min: 0,
             },
+        },
+    },
+    userName: {
+        isLength: {
+            errorMessage: 'Missing or incorrect userName!',
+            options: { min: 1 },
         },
     },
 }
@@ -50,6 +56,8 @@ router.post('/',
         }
 
         const drawingId = req.body.drawingId;
+        const userName = req.body.userName;
+        const userImg = req.body.userImg;
 
         // move to drawings and erase from DrawingInProgress
         let existingDrawing: (DrawingType | null) = null;
@@ -81,8 +89,12 @@ router.post('/',
 
         // add drawing in Drawing and remove it from DrawingsInProgress
         try {
-            const newDrawing = {
+            const newDrawing: DrawingType = {
                 userId: existingDrawing.userId,
+                userInfo: {
+                    name: userName,
+                    imgPath: userImg ?? null, 
+                },
                 created: Date.now(),
                 lastUpdated: Date.now(),
                 title: existingDrawing.title,

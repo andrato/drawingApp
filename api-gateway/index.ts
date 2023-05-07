@@ -43,4 +43,11 @@ app.use('/drawing/*', proxy('http://localhost:8003', {
       }
 }));
 
+app.use('/user/*', proxy('http://localhost:8004', {
+    proxyReqPathResolver:  (req) => {
+        const urlPath = url.parse(req.originalUrl).path;
+        return urlPath?.replace("/user", "") ?? "";
+      }
+}));
+
 app.listen(process.env.PORT, () => {console.log(`Listening on port ${process.env.PORT}`)});

@@ -29,6 +29,10 @@ const drawingSchemaInProgress = new Schema({
 
 const drawingSchema = new Schema({
     userId: String,
+    userInfo: {
+        name: String,
+        imgPath: String,
+    },
     created: {
         type: Number,
         index: true,

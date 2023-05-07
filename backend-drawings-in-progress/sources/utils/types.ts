@@ -23,6 +23,11 @@ type FileType = {
 
 export type DrawingType = {
     userId: string;
+    userInfo?: {
+        name: string,
+        imgPath: string,
+    },
+    description?: string,
     created: number;
     lastUpdated: number;
     title: string;

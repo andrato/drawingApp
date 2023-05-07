@@ -47,19 +47,24 @@ export const publishDrawing = (drawing : {
     categories: string[];
 }) => {
     const drawingId = localStorage.getItem(LocalStorageKeys.DRAWING_ID) ?? undefined;
+    const user = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}');
 
-    const allData = {...drawing, drawingId};
+    const allData = {
+        ...drawing, 
+        drawingId, 
+        userName: user?.name ?? "",
+        userImg: user?.name ?? "",
+    };
 
     return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/publish", allData, {...config});
 }
 
 export const checkDrawing = (params: {name: string, checkDrawingInProgress?: boolean}) => {
-    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}')?.id;
+    const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}').id;
 
     const drawing = {
         checkDrawingInProgress: true,
-        userId, 
-        ...params,
+        userId,
     }
 
     return axios.get<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/check", {...config, params: drawing});
