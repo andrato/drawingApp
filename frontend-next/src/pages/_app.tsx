@@ -1,3 +1,5 @@
+"use client"
+
 import { Layout } from '@/components/utils/Layout';
 import type { AppProps } from 'next/app';
 import "./global.css";
@@ -8,16 +10,18 @@ const drawTheme = createTheme({
     palette: {
         backgroundCustom: {
             main: "#272727",
-            light: "#272727",
+            light: "#333333",
             dark: "#1b1b1b",
             hover: "#16a1fb42",
             active: "#4A661D",
+            contrastText: "#1b1b1b",
             navHover: "#16a1fa75",
             star: "#be9b48",
         },
         textCustom: {
             primary: "#d7d7d7",
             secondary: "#17a1fa",
+            subHeader: "#828282",
             focus: "#92c939",
         },
         primary: {

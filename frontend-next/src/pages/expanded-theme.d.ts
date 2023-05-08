@@ -8,7 +8,7 @@ declare module '@mui/material/styles' {
             navHover: string, 
             star: string
         };
-        textCustom: Partial<TypeText> & {hover: string}; 
+        textCustom: Partial<TypeText> & {hover: string, subHeader: string}; 
         canvas: {
             menuBg: string,
             menuBtnHover: string,
@@ -24,7 +24,7 @@ declare module '@mui/material/styles' {
             navHover: string, 
             star: string
         };        
-        textCustom?: Partial<TypeText> & {hover: string};
+        textCustom?: Partial<TypeText> & {hover: string, subHeader: string};
         canvas?: {
             menuBg: string,
             menuBtnHover: string,

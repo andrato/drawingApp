@@ -18,6 +18,10 @@ type FileType = {
 export type DrawingType = {
     id: string;
     userId: string;
+    userInfo: {
+        name: string,
+        imgPath: string,
+    }
     created: number;
     lastUpdated: number;
     title: string;
@@ -29,6 +33,7 @@ export type DrawingType = {
     topAmateur?: boolean;
     video: FileType;
     image: FileType;
+    description?: string;
 }
 
 export type DrawingTypePartial = {

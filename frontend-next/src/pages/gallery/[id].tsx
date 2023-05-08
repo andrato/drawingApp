@@ -10,12 +10,12 @@ import { UserBar } from '@/components/drawing/UserBar';
 const BREAKPOINT = 980;
 
 const Container = ({children}: {children: ReactNode}) => (<Box sx={(theme) => ({
-    m: 3,
+    p: 3,
     display: "flex",
     flexDirection: "row",
     alignItems: "left",
     [theme.breakpoints.down(BREAKPOINT)]: {
-        m: 2
+        p: 2
     }
 })}>
     {children}
@@ -82,8 +82,16 @@ export default function GalleryItem() {
                         {`${drawing.likes} votes`}
                     </Typography>
                 </Box>
-                <UserBar userId={drawing.userId} />
             </Box>
+            <UserBar 
+                userId={drawing.userId} 
+                userName={drawing.userInfo.name} 
+                imgPath={drawing.userInfo.imgPath} 
+                date={drawing.created} 
+                drawingVideoPath={drawing.video.location}
+                contentCateg={drawing.categories}
+                contentText={drawing.description}
+            />
         </Box>
         <Box sx={(theme) => ({
             width: "300px",

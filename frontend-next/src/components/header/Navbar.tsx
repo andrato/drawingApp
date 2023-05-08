@@ -20,6 +20,7 @@ import { NavUser } from "./NavUser";
 import { NavMobile } from "./NavMobile";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { getUserInfo } from "../common/helpers";
 
 const StyledBoxLink = ({
     children, 
@@ -77,7 +78,7 @@ const NavbarWrapper = ({children, props} : {children: React.ReactNode, props?: B
         sx={(theme) => ({
             height: theme.customSizes.navbarHeight,
             width: "100%",
-            backgroundColor: theme.palette.backgroundCustom.main,
+            backgroundColor: theme.palette.backgroundCustom.dark,
             borderBottom: isActive ? 0 : `0.5px solid ${theme.palette.textCustom.primary}`,
         })}
     >
@@ -186,9 +187,15 @@ export function Navbar() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const theme = useTheme();
 	const isMdScreenUp = useMediaQuery(theme.breakpoints.up(980));
+    const [firstName, setFirstName] = useState<string>("");
+    
 
     useEffect(() => {
         setUserToken(localStorage.getItem(LocalStorageKeys.USER_TOKEN));
+
+        const userInfo = getUserInfo();
+        const firstName = (userInfo && userInfo?.firstName) ?? "";
+        setFirstName(firstName);
     }, [])
 
     const handleSignInClose = () => {
@@ -264,7 +271,7 @@ export function Navbar() {
                             color: theme.palette.textCustom.primary, 
                             fontWeight: "bold",
                         })}>
-                            {`Welcome, Andra`}
+                            {`Welcome, ${firstName}`}
                         </Typography>
                         <Tooltip title="Account settings">
                             <IconButton
@@ -274,7 +281,14 @@ export function Navbar() {
                                 aria-haspopup="true"
                                 aria-expanded={Boolean(anchorEl)  ? 'true' : undefined}
                             >
-                                <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary, color: theme.palette.backgroundCustom.main})}>A</Avatar>
+                                <Avatar sx={(theme) => ({ 
+                                    width: 32, 
+                                    height: 32,
+                                    bgcolor: theme.palette.textCustom.secondary, 
+                                    color: theme.palette.backgroundCustom.main
+                                })}>
+                                    {firstName[0]}
+                                </Avatar>
                             </IconButton>
                         </Tooltip>
                         <NavUser

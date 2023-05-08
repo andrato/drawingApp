@@ -16,6 +16,7 @@ import { SaveValuesSchema, SaveValuesType, defaultSaveValues } from "./utils";
 import { SaveValuesForm } from "./SaveValuesForm";
 import { DialogDrawing } from "../utils/DialogDrawing";
 import { AxiosError } from "axios";
+import { upperFirst } from "lodash";
 
 const ButtonStyled = ({children, ...props} : {children: React.ReactNode} & ButtonProps) => (
     <Button
@@ -120,8 +121,9 @@ export function MenuTop ({
 
         // request doar cu values => asta o sa mute din drawingsInProgress in drawings
         let result;
+        const title = upperFirst(values.displayTitle);
         try {
-            result = await publishDrawing(values);
+            result = await publishDrawing({...values, displayTitle: title});
         } catch (err) {
             const error = err as AxiosError<DrawingResponseErrorType>;
             const displayError = error?.response?.data?.error ?? "Failed to publish! Try again later!";

@@ -43,6 +43,7 @@ export const postDrawing = (formData: FormData) => {
 
 export const publishDrawing = (drawing : {
     title: string ; 
+    displayTitle: string;
     description?: string;
     categories: string[];
 }) => {

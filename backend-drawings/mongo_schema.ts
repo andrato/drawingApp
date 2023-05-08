@@ -19,6 +19,7 @@ const drawingSchema = new Schema({
     categories: [String],
     likes: Number,
 	comments: Number,
+    description: String,
 	topArt: {
         type: Boolean,
         default: false,

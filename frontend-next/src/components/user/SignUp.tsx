@@ -5,6 +5,8 @@ import { SignUpSchema, SignUpValuesType, Step } from "./utils";
 import { SignUpForm } from "./SignUpForm";
 import { Typography } from "@mui/material";
 import { signUp } from "@/services/Auth";
+import { toUpper } from "lodash";
+import { upperFirst } from "lodash";
 
 export const SignUp = (props: {
     open: boolean;
@@ -13,10 +15,11 @@ export const SignUp = (props: {
 }) => {
     const values = useRef<SignUpValuesType>({firstName: "", lastName:"", email: "", password: ""});
     const handleSubmit = async (values: SignUpValuesType, {resetForm}: FormikHelpers<SignUpValuesType>) => {
-        // ToDo: send to backend and wait for the response
-        console.log(values);
+        const firstName = upperFirst(values.firstName);
+        const lastName = upperFirst(values.lastName);
+
         try {
-            const {data} = await signUp(values);
+            const {data} = await signUp({...values, firstName, lastName});
 
             if (data.status && data.error) {
                 console.log("error");
