@@ -64,6 +64,7 @@ export const checkDrawing = (params: {name: string, checkDrawingInProgress?: boo
     const userId = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}').id;
 
     const drawing = {
+        name: params.name,
         checkDrawingInProgress: true,
         userId,
     }
