@@ -95,6 +95,18 @@ export function Draw() {
         </DrawingContainer>
     }
 
+    const handleClearCanvas = () => {
+        handleActionsCanvas.current.handleClearCanvas();
+    }
+
+    const getDrawingVideo = () => {
+        return handleActionsCanvas.current.getDrawingVideo();
+    }
+
+    const getDrawingImage = () =>{
+        return handleActionsCanvas.current.getDrawingImage();
+    }
+
     return (
         <DrawingContainer>
             <Box sx={(theme) => ({
@@ -106,7 +118,12 @@ export function Draw() {
                 alignItems: "center",
                 flexDirection: "row",
             })}>
-                <MenuTop {...handleActionsCanvas.current} setForceNavigate={setNavigate}/>
+                <MenuTop 
+                    handleClearCanvas={handleClearCanvas} 
+                    getDrawingVideo={getDrawingVideo} 
+                    getDrawingImage={getDrawingImage}
+                    setForceNavigate={setNavigate}
+                />
             </Box>
 
             <Box sx={{

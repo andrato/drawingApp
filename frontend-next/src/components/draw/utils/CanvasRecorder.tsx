@@ -6,7 +6,7 @@ interface CanvasRecorder {
   save: (fileName: string) => void;
   pause: () => void;
   download: () => Blob;
-  createStream: <T extends HTMLCanvasElement>(canvas: T) => void;
+  createStream: <T extends HTMLVideoElement>(canvas: T) => void;
   captureMediaStream: <T extends MediaStream>(mediaStream: T) => void;
 }
 

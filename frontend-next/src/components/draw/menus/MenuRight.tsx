@@ -1,8 +1,9 @@
-import { Box, Typography, useTheme } from "@mui/material";
-import { useState, useEffect, useRef } from "react";
+import { Box, IconButton, IconButtonProps, Typography, useTheme } from "@mui/material";
+import { useState, useEffect, useRef, ReactNode } from "react";
 import { BoxProps } from "@mui/system";
 import { useButtonsRight } from "./useButtonsRight";
 import { ButtonBodySettings, ColorSettings, HistorySettings } from "./RightFirstPart";
+import { AddBoxOutlined } from "@mui/icons-material";
 
 const StyledMenuButton = ({
     children, 
@@ -53,6 +54,21 @@ const StyledMenuButton = ({
         </Typography>
     </Box>
 )}
+
+const StyledButton = ({children, ...props}:{children: ReactNode} & IconButtonProps) => (
+    <IconButton 
+        sx={(theme) => ({
+            p: 0,
+            color: theme.palette.textCustom.primary,
+            ':hover': {
+                backgroundColor: theme.palette.canvas.menuBtnHover,
+            },
+        })}
+        {...props}
+    >
+        {children}
+    </IconButton>
+)
 
 type PropsSettings = {
     setLineWidth: Function,
@@ -169,34 +185,48 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
         />
 
         <Box id="secondPart" sx={{
-            width: "calc(100% - 8px)",
+            width: "100%",
             position: "absolute",
             top: top ? `${top}px` : `50%`,
             bottom: 0,
             minHeight: "100px",
-            px: "4px",
         }}>
             <Box sx={{
                 display: "flex",
-                width: "100%"
+                width: "calc(100% - 8px)",
+                mx: "4px",
             }}>
                 <StyledMenuButton 
                     id="layers" 
                     handleClick={handleClickLayers}
-                    width="50%"
+                    width="100%"
                     isLayersButton={true}
                 >
                     Layers
                 </StyledMenuButton>
-                
-                <StyledMenuButton 
-                    id="channels" 
-                    handleClick={handleClickLayers}
-                    width="50%"
-                    isLayersButton={true}
-                >
-                    Channels
-                </StyledMenuButton>
+            </Box>
+            <Box sx={(theme) => ({
+                borderBottom: `1px solid ${theme.palette.canvas.bgColor}`,
+                height: "28px",
+            })}>
+
+            </Box>
+            <Box sx={(theme) => ({
+                height: "calc(100% - 8px - 73px)",
+            })}>
+
+            </Box>
+            <Box sx={(theme) => ({
+                borderTop: `1px solid ${theme.palette.canvas.bgColor}`,
+                height: "25px",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                px: 1,
+            })}>
+                <StyledButton>
+                    <AddBoxOutlined />
+                </StyledButton>
             </Box>
         </Box>
     </Box >)
