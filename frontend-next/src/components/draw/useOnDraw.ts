@@ -27,6 +27,7 @@ export function useOnDraw(onDraw: Function) {
     let started = false;
     const videoRef = useRef<HTMLCanvasElement | null>(null);
     const divRef = useRef<HTMLDivElement | null>(null);
+    const saveFrames = useRef<any>(null);
 
     // let recorder: RecordRTC|null = null;
 
@@ -79,11 +80,11 @@ export function useOnDraw(onDraw: Function) {
                 }
                 clearLayer(0);
                 onDraw(ctxAux, point, prevPointRef.current);
-                ctxRecording?.drawImage(refAux, 0, 0);
+                // ctxRecording?.drawImage(refAux, 0, 0);
             } else {
                 onDraw(ctx, point, prevPointRef.current);
                 prevPointRef.current = point;
-                ctxRecording?.drawImage(ref, 0, 0);
+                // ctxRecording?.drawImage(ref, 0, 0);
             }
         }
 
@@ -224,6 +225,15 @@ export function useOnDraw(onDraw: Function) {
         if(videoRef.current) {
             recorder.createStream(videoRef.current);
             recorder.start();
+
+            const context = videoRef.current.getContext('2d');
+            saveFrames.current = setInterval(() => {
+                if (divRef.current) {
+                    html2canvas(divRef.current).then((canvas) => {
+                        context?.drawImage(canvas, 0, 0);
+                    });
+                }
+            }, 10);
         } else {
             console.error("naspa")
         }
@@ -240,6 +250,7 @@ export function useOnDraw(onDraw: Function) {
 
     const pauseRecording = useCallback(() => {
         recorder.pause();
+        window && window.clearInterval(saveFrames.current);
     }, [])
 
     // const startRecording = () => {

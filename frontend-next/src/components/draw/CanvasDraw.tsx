@@ -167,15 +167,18 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             alignItems: "center",
             justifyContent: "center",
         }}>
-            <Box sx={{
-                position: "absolute", 
-                width: `${width}px`,
-                height: `${height}px`,
-                marginLeft: "auto",
-                marginRight: "auto",
-                left: 0,
-                right: 0,
-            }}>
+            <Box 
+                ref={setDivRef}
+                sx={{    
+                    position: "absolute", 
+                    width: `${width}px`,
+                    height: `${height}px`,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    left: 0,
+                    right: 0,
+                }}
+            >
                 <canvas 
                     ref={setVideoRef}
                     height={height}

@@ -3,7 +3,7 @@ import { LocalStorageKeys } from '@/components/utils/constants/LocalStorage';
 interface CanvasRecorder {
   start: () => void;
   stop: () => void;
-  save: () => File;
+  save: () => File | null;
   pause: () => void;
   download: () => Blob;
   createStream: <T extends HTMLCanvasElement>(canvas: T) => void;
