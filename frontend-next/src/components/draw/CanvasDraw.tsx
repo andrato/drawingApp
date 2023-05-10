@@ -167,53 +167,65 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             alignItems: "center",
             justifyContent: "center",
         }}>
-            <canvas 
-                ref={setVideoRef}
-                style={{
-                    display: "none",
-                    width: `${width}px`,
-                    height: `${height}px`,
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    left: 0,
-                    right: 0,
-                }}
-            />
-            <canvas 
-                ref={addLayer} 
-                height={height}
-                width={width}
-                onMouseDown={onMouseDown}
-                style={{
-                    zIndex: 2,
-                    display: "inline-block",
-                    position: "absolute", 
-                    width: `${width}px`,
-                    height: `${height}px`,
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    left: 0,
-                    right: 0,
-                }}
-            />
-            <canvas 
-                ref={addLayer} 
-                height={height}
-                width={width}
-                onMouseDown={onMouseDown}
-                style={{
-                    zIndex: 1,
-                    position: "absolute", 
-                    display: "inline-block", 
-                    backgroundColor: "white",
-                    width: `${width}px`,
-                    height: `${height}px`,
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    left: 0,
-                    right: 0,
-                }}
-            />            
+            <Box sx={{
+                position: "absolute", 
+                width: `${width}px`,
+                height: `${height}px`,
+                marginLeft: "auto",
+                marginRight: "auto",
+                left: 0,
+                right: 0,
+            }}>
+                <canvas 
+                    ref={setVideoRef}
+                    height={height}
+                    width={width}
+                    style={{
+                        display: "none",
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        left: 0,
+                        right: 0,
+                    }}
+                />
+                <canvas 
+                    ref={addLayer} 
+                    height={height}
+                    width={width}
+                    onMouseDown={onMouseDown}
+                    style={{
+                        zIndex: 2,
+                        display: "inline-block",
+                        position: "absolute", 
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        left: 0,
+                        right: 0,
+                    }}
+                />
+                <canvas 
+                    ref={addLayer} 
+                    height={height}
+                    width={width}
+                    onMouseDown={onMouseDown}
+                    style={{
+                        zIndex: 1,
+                        position: "absolute", 
+                        display: "inline-block", 
+                        backgroundColor: "white",
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        left: 0,
+                        right: 0,
+                    }}
+                />       
+            </Box>
         </Box>
     )
 })
