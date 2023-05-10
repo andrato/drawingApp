@@ -3,10 +3,10 @@ import { LocalStorageKeys } from '@/components/utils/constants/LocalStorage';
 interface CanvasRecorder {
   start: () => void;
   stop: () => void;
-  save: (fileName: string) => void;
+  save: () => File;
   pause: () => void;
   download: () => Blob;
-  createStream: <T extends HTMLVideoElement>(canvas: T) => void;
+  createStream: <T extends HTMLCanvasElement>(canvas: T) => void;
   captureMediaStream: <T extends MediaStream>(mediaStream: T) => void;
 }
 
@@ -98,7 +98,7 @@ export const CanvasRecorder = (): CanvasRecorder => {
 
     const createStream = <T extends HTMLCanvasElement>(canvas: T) => {
         if (!stream) {
-            stream = canvas.captureStream(50); //fps
+            stream = canvas.captureStream(); //fps
         }
     }
 

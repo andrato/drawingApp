@@ -1,6 +1,9 @@
 import { createRef, useCallback, useEffect, useRef } from "react";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { CanvasRecorder } from "./utils/CanvasRecorder";
+import RecordRTC from "recordrtc";
+import { clearInterval } from "timers";
+import html2canvas from "html2canvas";
 
 export type Point = {
     x: number,
@@ -22,7 +25,15 @@ export function useOnDraw(onDraw: Function) {
     const recorder = CanvasRecorder();
     const position = useRef<number>(0);
     let started = false;
-    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const videoRef = useRef<HTMLCanvasElement | null>(null);
+    const divRef = useRef<HTMLDivElement | null>(null);
+    const startRecordEvent = useRef<any>(null);
+    const stopRecordEvent = useRef<any>(null);
+    const eventRecordStarted = new Event('onRecordStarted');
+    const eventRecordEnded = new Event('onRecordStopped');
+    const saveFrames = useRef<any>(null);
+
+    // let recorder: RecordRTC|null = null;
 
     // useEffect(() => {
     //     if (canvasRef.current === null && refsArray.current.length > 1) {
@@ -88,6 +99,8 @@ export function useOnDraw(onDraw: Function) {
                 return;
             }
 
+            window && window.clearInterval(saveFrames.current);
+
             // reset values
             isDrawingRef.current = false;
             prevPointRef.current = null;
@@ -114,7 +127,40 @@ export function useOnDraw(onDraw: Function) {
         if (mouseUpListenerRef.current) {
             window.removeEventListener("mouseup", mouseUpListenerRef.current);
         }
+        // if (startRecordEvent.current){
+        //     window.removeEventListener("onRecordStarted", startRecordEvent.current);
+        // }
+        // if (stopRecordEvent.current) {
+        //     window.removeEventListener("onRecordEnded", stopRecordEvent.current);
+        // }
     }
+
+    // function initRecordEvents() {
+    //     let saveFrames: any;
+
+    //     const recordOnCanvas = () => {
+    //         // Draw the contents of the div onto the canvas every 100ms
+    //         console.log("sunt pe start");
+    //         const context = videoRef.current?.getContext('2d');
+
+    //         saveFrames = setInterval(function() {
+    //             console.log("sunt in interval");
+    //             // divRef.current && context?.drawImage(divRef.current as CanvasImageSource, 0, 0);
+    //         }, 1000);
+    //     }
+
+    //     const clearRecordInterval = () => {
+    //         console.log("sunt pe stop");
+    //         // clearInterval(saveFrames);
+    //     }
+
+    //     startRecordEvent.current = recordOnCanvas();
+    //     stopRecordEvent.current = clearRecordInterval();
+
+    //     window.addEventListener('onRecordStarted', startRecordEvent.current);
+    //     window.addEventListener('onRecordEnded', stopRecordEvent.current);
+
+    // }
 
     /* ***************************************** */
     /*            IMPORTANT FUNCTIONS            */
@@ -122,6 +168,7 @@ export function useOnDraw(onDraw: Function) {
     useEffect(() => {
         initMouseUpListener();
         initMouseMoveListener();
+        // initRecordEvents();
 
         return () => {
             // remove the listeners
@@ -156,8 +203,12 @@ export function useOnDraw(onDraw: Function) {
         }
     }
 
-    const setVideoRef = (ref: HTMLVideoElement) => {
+    const setVideoRef = (ref: HTMLCanvasElement) => {
         videoRef.current = ref;
+    }
+
+    const setDivRef = (ref: HTMLDivElement) => {
+        divRef.current = ref;
     }
 
     /* ***************************************** */
@@ -206,28 +257,40 @@ export function useOnDraw(onDraw: Function) {
     /* ***************************************** */
     /*                Recording                  */
     /* ***************************************** */
-    const startRecording = useCallback(() => {
+    const startRecording = () => {
         if(videoRef.current) {
             recorder.createStream(videoRef.current);
             recorder.start();
+            // divRef.current?.dispatchEvent(eventRecordStarted);
+            // recorder = new RecordRTC(videoRef.current, {type: "video"});
+            // recorder.startRecording();
+
+            const context = videoRef.current.getContext('2d');
+            saveFrames.current = setInterval(async () => {
+                context?.drawImage(getRef(), 0, 0);
+            }, 100);
         } else {
             console.error("naspa")
         }
-    }, [])
+    }
     
-    const stopRecording = useCallback(() => {
-        recorder.save("ceva");
+    const stopRecording = () => {
+        recorder.save();
         recorder.stop();
-    }, []);
+        // divRef.current?.dispatchEvent(eventRecordEnded);
+        // recorder?.stopRecording();
+    }
 
-    const saveRecording = useCallback(() => {
-        const ceva = recorder.save("intermediar");
-        return ceva;
-    }, [])
+    const saveRecording = () => {
+        return recorder?.save();
+        // const ceva = recorder?.getBlob();
+        // return ceva;
+    }
 
-    const pauseRecording = useCallback(() => {
+    const pauseRecording = () => {
         recorder.pause();
-    }, [])
+        // recorder?.pauseRecording();
+    }
 
     return {
         addLayer, 
@@ -237,6 +300,7 @@ export function useOnDraw(onDraw: Function) {
         stopRecording,
         saveRecording,
         saveImage,
-        setVideoRef
+        setVideoRef,
+        setDivRef,
     };
 }

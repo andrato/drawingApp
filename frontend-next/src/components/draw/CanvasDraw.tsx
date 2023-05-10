@@ -30,7 +30,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
     // const canvases = useState<CanvasElem[]>(startingLayers);
-    const {saveRecording, saveImage, onMouseDown, addLayer, setVideoRef} = useOnDraw(onDraw);
+    const {saveRecording, saveImage, onMouseDown, addLayer, setVideoRef, setDivRef} = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
@@ -167,9 +167,18 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             alignItems: "center",
             justifyContent: "center",
         }}>
-            {/* <Box>
-
-            </Box> */}
+            <canvas 
+                ref={setVideoRef}
+                style={{
+                    display: "none",
+                    width: `${width}px`,
+                    height: `${height}px`,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    left: 0,
+                    right: 0,
+                }}
+            />
             <canvas 
                 ref={addLayer} 
                 height={height}
@@ -204,7 +213,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                     left: 0,
                     right: 0,
                 }}
-            />
+            />            
         </Box>
     )
 })
