@@ -53,8 +53,8 @@ export const publishDrawing = (drawing : {
     const allData = {
         ...drawing, 
         drawingId, 
-        userName: user?.name ?? "",
-        userImg: user?.name ?? "",
+        userName: user?.firstName ?? "",
+        userImg: user?.lastName ?? "",
     };
 
     return axios.post<DrawingResponseSuccessType|DrawingResponseErrorType>(HOST + "/publish", allData, {...config});

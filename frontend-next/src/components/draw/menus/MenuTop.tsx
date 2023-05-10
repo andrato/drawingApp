@@ -69,7 +69,7 @@ export function MenuTop ({
         let drawingVideoFile, drawingImageFile;
 
         try {
-            drawingVideoFile = getDrawingVideo();
+            drawingVideoFile = await getDrawingVideo();
             drawingImageFile = await getDrawingImage();
         } catch (err) {
             console.error ("Error occured when getting data");

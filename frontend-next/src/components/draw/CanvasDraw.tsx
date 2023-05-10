@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useOnDraw, Point } from "./useOnDraw";
 import { Box } from "@mui/material";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
@@ -13,27 +13,44 @@ export type CanvasProps = {
     height: number,
 }
 
+type CanvasElem = {
+    name: string | null,
+}
+
+const startingLayers: CanvasElem[] = [{
+    name: "Default",
+}, {
+    name: null
+}]
+
 export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleActionsCanvasType>) => {
     /* ********************************************************** */
     /*                           VARIABLES                        */
     /* ********************************************************** */
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
-    const {setCanvasRef, onMouseDown, clearCanvas, saveRecording, saveImage} = useOnDraw(onDraw);
+    // const canvases = useState<CanvasElem[]>(startingLayers);
+    const {saveRecording, saveImage, onMouseDown, addLayer, setVideoRef, setDivRef} = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
+
+    // useEffect(() => {
+    //     setLayers()
+    // }, []);
 
     /* ***************************************** */
     /*                For parent                 */
     /* ***************************************** */
     useImperativeHandle(ref, () => ({
         handleClearCanvas() {
-            clearCanvas();
+            // clearCanvas();
         },
 
-        getDrawingVideo() {
-            return saveRecording();
+        getDrawingVideo () {
+            const ceva = saveRecording();
+            return ceva;
+
         },
 
         getDrawingImage() {
@@ -110,13 +127,14 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         end: Point, 
         ctx: CanvasRenderingContext2D | null | undefined,
     ) {
-        if(!ctx) return;
 
-        ctx.lineWidth = lineWidth;
-        ctx.strokeStyle = color;
-        ctx.beginPath();
-        ctx.rect(start.x, start.y, end.x-start.x, end.y-start.y);
-        ctx.stroke();
+        // if(!ctx) return;
+
+        // ctx.lineWidth = lineWidth;
+        // ctx.strokeStyle = color;
+        // ctx.beginPath();
+        // ctx.rect(start.x, start.y, end.x-start.x, end.y-start.y);
+        // ctx.stroke();
     }
 
     function handleDrawCircle (
@@ -141,7 +159,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /*                          THE RETURN                        */
     /* ********************************************************** */
     return (
-        <Box sx={{
+        <Box id="ceva" sx={{
             position: "absolute",
             width: `max(100%, ${containerWidth}px)`,
             height: `max(100%, ${containerHeight}px)`,
@@ -149,18 +167,68 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             alignItems: "center",
             justifyContent: "center",
         }}>
-            <canvas 
-                ref={setCanvasRef} 
-                height={height}
-                width={width}
-                onMouseDown={onMouseDown}
-                style={{
-                    display: "inline-block", 
-                    backgroundColor: "white",
+            <Box 
+                ref={setDivRef}
+                sx={{    
+                    position: "absolute", 
                     width: `${width}px`,
                     height: `${height}px`,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    left: 0,
+                    right: 0,
                 }}
-            />
+            >
+                <canvas 
+                    ref={setVideoRef}
+                    height={height}
+                    width={width}
+                    style={{
+                        display: "none",
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        left: 0,
+                        right: 0,
+                    }}
+                />
+                <canvas 
+                    ref={addLayer} 
+                    height={height}
+                    width={width}
+                    onMouseDown={onMouseDown}
+                    style={{
+                        zIndex: 2,
+                        display: "inline-block",
+                        position: "absolute", 
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        left: 0,
+                        right: 0,
+                    }}
+                />
+                <canvas 
+                    ref={addLayer} 
+                    height={height}
+                    width={width}
+                    onMouseDown={onMouseDown}
+                    style={{
+                        zIndex: 1,
+                        position: "absolute", 
+                        display: "inline-block", 
+                        backgroundColor: "white",
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        left: 0,
+                        right: 0,
+                    }}
+                />       
+            </Box>
         </Box>
     )
 })
