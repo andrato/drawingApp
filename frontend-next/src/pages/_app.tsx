@@ -5,6 +5,8 @@ import type { AppProps } from 'next/app';
 import "./global.css";
 import {ThemeProvider, createTheme } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { wrapper } from './store';
+// import {Provider} from 'react-redux';
 
 const drawTheme = createTheme({
     palette: {
@@ -53,11 +55,15 @@ const drawTheme = createTheme({
 
 const queryClient = new QueryClient()
 
-export default function App({ Component, pageProps }: AppProps) {    
+export default function App({ Component, pageProps }: AppProps) {  
+    const { store, props } = wrapper.useWrappedStore(pageProps);
+
     return <ThemeProvider theme={drawTheme}>
         <QueryClientProvider client={queryClient}>
             <Layout>
-                <Component {...pageProps} />
+                {/* <Provider store={store}>  */}
+                    <Component {...pageProps} />
+                {/* </Provider> */}
             </Layout>
         </QueryClientProvider>
     </ThemeProvider>
