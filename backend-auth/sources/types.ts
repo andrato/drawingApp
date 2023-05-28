@@ -1,5 +1,5 @@
 
-export const defaultUser: UserType = {
+export const defaultUser = {
     firstName: "",
 	lastName: "",
     email: "",
@@ -13,13 +13,20 @@ export const defaultUser: UserType = {
 export type ProfileType = {
     about: string;
 }
-
-export type UserType = {
+export type UserInfoType = {
     firstName: string;
 	lastName: string;
     email: string;
     password: string;
     profile: ProfileType | null;
+    created: number;
+    lastUpdated: number;
+    isAdmin: boolean;
+}
+
+export type UserAuthType = {
+    email: string;
+    password: string;
     created: number;
     lastUpdated: number;
     isAdmin: boolean;

@@ -1,8 +1,9 @@
 import { Router, Request, Response} from "express";
 import { generateHash } from "./helpers";
-import {modelUser} from "../mongo_schema";
-import { defaultUser, UserType } from "./types";
+import {modelUserAuth, modelUserInfo} from "../mongo_schema";
+import { defaultUser, UserAuthType, UserInfoType } from "./types";
 import { validationResult, checkSchema } from "express-validator";
+import { Types } from "mongoose";
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.post('/',
 
         // Check if user exists
         try {
-            const existingUser: (UserType | null) = await modelUser.findOne({email: user.email});
+            const existingUser: (UserType | null) = await modelUserAuth.findOne({email: user.email});
 
             if (existingUser) {
                 return res.status(200).json({
@@ -70,11 +71,25 @@ router.post('/',
         }
 
         // save password encrypted
-        const saveUser: UserType = {...defaultUser, ...user, password: generateHash(user.password)};
+        const saveUser: UserAuthType = {...defaultUser, ...user, password: generateHash(user.password)};
 
         // save user
+        let newUser;
         try {
-            await modelUser.create(saveUser);
+            newUser = await modelUserAuth.create(saveUser);
+        } catch (err) {
+            return res.status(500).json({
+                status: 1, 
+                step: "Save user",
+                error: err,
+            })
+        }
+
+        // save to user info
+        try {
+            const mongoId = new Types.ObjectId(newUser._id);
+            const saveUserInfo: UserInfoType = {...defaultUser, ...saveUser};
+            await modelUserInfo.create({...saveUserInfo, _id: mongoId});
         } catch (err) {
             return res.status(500).json({
                 status: 1, 

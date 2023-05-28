@@ -1,8 +1,8 @@
 import { Router, Request, Response} from "express";
 import jwt from "jsonwebtoken";
 import { comparePassword } from "./helpers";
-import {modelUser} from "../mongo_schema";
-import { UserType } from "./types";
+import {modelUserAuth, modelUserInfo} from "../mongo_schema";
+import { UserAuthType, UserInfoType } from "./types";
 import { checkSchema, validationResult } from "express-validator";
 
 const router = Router();
@@ -42,17 +42,32 @@ router.get('/',
             password: req.query.password as string,
         }
         
-        let existingUser: (UserType & {_id: string}| null);
+        let existingAuthUser: (UserAuthType & {_id: string}| null);
 
         // find user in DB
         try {
-            existingUser = await modelUser.findOne({email: user.email});
+            existingAuthUser = await modelUserAuth.findOne({email: user.email});
 
-            if (!existingUser || (!comparePassword(user.password, existingUser.password))) {
+            if (!existingAuthUser || (!comparePassword(user.password, existingAuthUser.password))) {
                 return res.status(200).json({
                     status: 1,
                     error:  "Wrong credentials! If you don't have an account you can register now!"
                 })
+            }
+        } catch (err) {
+            return res.status(500).json({
+                status: 1, 
+                error: err,
+            })
+        }
+
+
+        let existingUser: (UserInfoType & {_id: string}| null);
+        try {
+            existingUser = await modelUserInfo.findOne({email: user.email});
+
+            if (!existingUser) {
+                console.log("an error occured with the existing user info")
             }
         } catch (err) {
             return res.status(500).json({
@@ -68,13 +83,13 @@ router.get('/',
             status: 0,
             accessToken: accessToken,
             user: {
-                id: existingUser._id,
-                firstName: existingUser.firstName,
-                lastName: existingUser.lastName,
-                profile: existingUser.profile ?? null,
-                email: existingUser.email,
-                created: existingUser.created,
-                lastUpdated: existingUser.lastUpdated,
+                id: existingUser?._id,
+                firstName: existingUser?.firstName,
+                lastName: existingUser?.lastName,
+                profile: existingUser?.profile ?? null,
+                email: existingUser?.email ?? existingAuthUser.email,
+                created: existingUser?.created ?? existingAuthUser.email,
+                lastUpdated: existingUser?.lastUpdated ?? existingAuthUser.email,
             },
         });
     }

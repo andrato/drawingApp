@@ -1,8 +1,26 @@
-import { Schema, model } from "mongoose";
-import mongoose from 'mongoose';
+import { Schema, model, connection } from "mongoose";
 
 /* SCHEMAS */
-const userSchema = new Schema({
+const userAuthSchema = new Schema({
+    email: {
+        type: String,
+    },
+    password: {
+        type: String,
+    },
+    created: {
+        type: Number,
+    },
+    lastUpdated: {
+        type: Number,
+    },
+    isAdmin: {
+        type: Boolean,
+    }
+
+}, { collection: 'users'});
+
+const userInfoSchema = new Schema({
     firstName: {
         type: String,
     },
@@ -10,9 +28,6 @@ const userSchema = new Schema({
         type: String,
     },
     email: {
-        type: String,
-    },
-    password: {
         type: String,
     },
     profile: {
@@ -30,7 +45,13 @@ const userSchema = new Schema({
         type: Boolean,
     }
 
-}, { collection: 'users'});
+}, { collection: 'users_info'});
+
+
 
 /* MODEL */
-export const modelUser = model('user', userSchema);
+const auth = connection.useDb('auth');
+const info = connection.useDb('users_info');
+
+export const modelUserAuth = auth.model('user', userAuthSchema);
+export const modelUserInfo = info.model('user_info', userInfoSchema);

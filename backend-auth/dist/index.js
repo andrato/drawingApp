@@ -28,7 +28,7 @@ dotenv_1.default.config();
         console.log("Mongo successfully connected");
     }
     catch (err) {
-        console.log("Mongo error connection: " + err);
+        console.log("Mongo error connection user auth: " + err);
     }
 }))();
 /* app */

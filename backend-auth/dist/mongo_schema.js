@@ -1,9 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.modelUser = void 0;
+exports.modelUserInfo = exports.modelUserAuth = void 0;
 const mongoose_1 = require("mongoose");
 /* SCHEMAS */
-const userSchema = new mongoose_1.Schema({
+const userAuthSchema = new mongoose_1.Schema({
+    email: {
+        type: String,
+    },
+    password: {
+        type: String,
+    },
+    created: {
+        type: Number,
+    },
+    lastUpdated: {
+        type: Number,
+    },
+    isAdmin: {
+        type: Boolean,
+    }
+}, { collection: 'users' });
+const userInfoSchema = new mongoose_1.Schema({
     firstName: {
         type: String,
     },
@@ -11,9 +28,6 @@ const userSchema = new mongoose_1.Schema({
         type: String,
     },
     email: {
-        type: String,
-    },
-    password: {
         type: String,
     },
     profile: {
@@ -30,7 +44,10 @@ const userSchema = new mongoose_1.Schema({
     isAdmin: {
         type: Boolean,
     }
-}, { collection: 'users' });
+}, { collection: 'users_info' });
 /* MODEL */
-exports.modelUser = (0, mongoose_1.model)('user', userSchema);
+const auth = mongoose_1.connection.useDb('auth');
+const info = mongoose_1.connection.useDb('users_info');
+exports.modelUserAuth = auth.model('user', userAuthSchema);
+exports.modelUserInfo = info.model('user_info', userInfoSchema);
 //# sourceMappingURL=mongo_schema.js.map

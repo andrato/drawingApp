@@ -38,7 +38,7 @@ const signInSchema = {
     },
 };
 router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b, _c, _d;
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -50,15 +50,28 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
         email: req.query.email,
         password: req.query.password,
     };
-    let existingUser;
+    let existingAuthUser;
     // find user in DB
     try {
-        existingUser = yield mongo_schema_1.modelUser.findOne({ email: user.email });
-        if (!existingUser || (!(0, helpers_1.comparePassword)(user.password, existingUser.password))) {
+        existingAuthUser = yield mongo_schema_1.modelUserAuth.findOne({ email: user.email });
+        if (!existingAuthUser || (!(0, helpers_1.comparePassword)(user.password, existingAuthUser.password))) {
             return res.status(200).json({
                 status: 1,
                 error: "Wrong credentials! If you don't have an account you can register now!"
             });
+        }
+    }
+    catch (err) {
+        return res.status(500).json({
+            status: 1,
+            error: err,
+        });
+    }
+    let existingUser;
+    try {
+        existingUser = yield mongo_schema_1.modelUserInfo.findOne({ email: user.email });
+        if (!existingUser) {
+            console.log("an error occured with the existing user info");
         }
     }
     catch (err) {
@@ -73,13 +86,13 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
         status: 0,
         accessToken: accessToken,
         user: {
-            id: existingUser._id,
-            firstName: existingUser.firstName,
-            lastName: existingUser.lastName,
-            profile: (_a = existingUser.profile) !== null && _a !== void 0 ? _a : null,
-            email: existingUser.email,
-            created: existingUser.created,
-            lastUpdated: existingUser.lastUpdated,
+            id: existingUser === null || existingUser === void 0 ? void 0 : existingUser._id,
+            firstName: existingUser === null || existingUser === void 0 ? void 0 : existingUser.firstName,
+            lastName: existingUser === null || existingUser === void 0 ? void 0 : existingUser.lastName,
+            profile: (_a = existingUser === null || existingUser === void 0 ? void 0 : existingUser.profile) !== null && _a !== void 0 ? _a : null,
+            email: (_b = existingUser === null || existingUser === void 0 ? void 0 : existingUser.email) !== null && _b !== void 0 ? _b : existingAuthUser.email,
+            created: (_c = existingUser === null || existingUser === void 0 ? void 0 : existingUser.created) !== null && _c !== void 0 ? _c : existingAuthUser.email,
+            lastUpdated: (_d = existingUser === null || existingUser === void 0 ? void 0 : existingUser.lastUpdated) !== null && _d !== void 0 ? _d : existingAuthUser.email,
         },
     });
 }));

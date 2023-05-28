@@ -15,6 +15,7 @@ const helpers_1 = require("./helpers");
 const mongo_schema_1 = require("../mongo_schema");
 const types_1 = require("./types");
 const express_validator_1 = require("express-validator");
+const mongoose_1 = require("mongoose");
 const router = (0, express_1.Router)();
 exports.SignUp = router;
 const signUpSchema = {
@@ -59,7 +60,7 @@ router.post('/', (0, express_validator_1.checkSchema)(signUpSchema), (req, res) 
     const user = req.body;
     // Check if user exists
     try {
-        const existingUser = yield mongo_schema_1.modelUser.findOne({ email: user.email });
+        const existingUser = yield mongo_schema_1.modelUserAuth.findOne({ email: user.email });
         if (existingUser) {
             return res.status(200).json({
                 status: 1,
@@ -77,8 +78,22 @@ router.post('/', (0, express_validator_1.checkSchema)(signUpSchema), (req, res) 
     // save password encrypted
     const saveUser = Object.assign(Object.assign(Object.assign({}, types_1.defaultUser), user), { password: (0, helpers_1.generateHash)(user.password) });
     // save user
+    let newUser;
     try {
-        yield mongo_schema_1.modelUser.create(saveUser);
+        newUser = yield mongo_schema_1.modelUserAuth.create(saveUser);
+    }
+    catch (err) {
+        return res.status(500).json({
+            status: 1,
+            step: "Save user",
+            error: err,
+        });
+    }
+    // save to user info
+    try {
+        const mongoId = new mongoose_1.Types.ObjectId(newUser._id);
+        const saveUserInfo = Object.assign(Object.assign({}, types_1.defaultUser), saveUser);
+        yield mongo_schema_1.modelUserInfo.create(Object.assign(Object.assign({}, saveUserInfo), { _id: mongoId }));
     }
     catch (err) {
         return res.status(500).json({
