@@ -50,4 +50,11 @@ app.use('/user/*', proxy('http://localhost:8004', {
       }
 }));
 
+app.use('/comments/*', proxy('http://localhost:8005', {
+    proxyReqPathResolver:  (req) => {
+        const urlPath = url.parse(req.originalUrl).path;
+        return urlPath?.replace("/comments", "") ?? "";
+      }
+}));
+
 app.listen(process.env.PORT, () => {console.log(`Listening on port ${process.env.PORT}`)});

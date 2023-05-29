@@ -7,6 +7,7 @@ import cors from "cors";
 import { GetAll } from "./sources/getAll";
 import { GetByCategory } from "./sources/getByCategory";
 import { GetDrawing } from "./sources/getDrawing";
+import { GetByUser } from "./sources/getByUser";
 
 dotenv.config();
 
@@ -28,7 +29,9 @@ app.use(cors());
 
 // define app routes
 app.use("/", GetAll); //basically the gallery
-app.use("/category", GetByCategory); //basically the gallery
-app.use("/drawing", GetDrawing); //basically the gallery
+app.use("/category", GetByCategory);
+app.use("/drawing", GetDrawing); 
+app.use("/user", GetByUser); 
+
 
 app.listen(process.env.PORT, () => {console.log(`Listening on port ${process.env.PORT}`)});

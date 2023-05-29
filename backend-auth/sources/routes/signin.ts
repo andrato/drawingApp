@@ -1,24 +1,23 @@
 import { Router, Request, Response} from "express";
 import jwt from "jsonwebtoken";
-import { comparePassword } from "./helpers";
-import {modelUserAuth, modelUserInfo} from "../mongo_schema";
-import { UserAuthType, UserInfoType } from "./types";
+import { comparePassword } from "../helpers";
+import {modelUserAuth, modelUserInfo} from "../../mongo_schema";
+import { UserAuthType, UserInfoType } from "../types";
 import { checkSchema, validationResult } from "express-validator";
 
 const router = Router();
 
 const signInSchema = {
-    // Support bail functionality in schemas
     email: {
         isEmail: { 
+            errorMessage: 'Email is wrong or missing!',
             bail: true, 
             location: "params",
         }
     },
     password: {
         isLength: {
-            errorMessage: 'Password should be at least 1 chars long!',
-            // Multiple options would be expressed as an array
+            errorMessage: 'Password is wrong or missing!',
             options: { min: 1 },
             location: "params",
         },
@@ -61,7 +60,6 @@ router.get('/',
             })
         }
 
-
         let existingUser: (UserInfoType & {_id: string}| null);
         try {
             existingUser = await modelUserInfo.findOne({email: user.email});
@@ -69,6 +67,7 @@ router.get('/',
             if (!existingUser) {
                 console.log("an error occured with the existing user info")
             }
+            console.log("nicio eroare");
         } catch (err) {
             return res.status(500).json({
                 status: 1, 
@@ -88,8 +87,9 @@ router.get('/',
                 lastName: existingUser?.lastName,
                 profile: existingUser?.profile ?? null,
                 email: existingUser?.email ?? existingAuthUser.email,
-                created: existingUser?.created ?? existingAuthUser.email,
-                lastUpdated: existingUser?.lastUpdated ?? existingAuthUser.email,
+                created: existingUser?.created ?? existingAuthUser.created,
+                lastUpdated: existingUser?.lastUpdated ?? existingAuthUser.lastUpdated,
+                isAdmin: existingAuthUser.isAdmin,
             },
         });
     }

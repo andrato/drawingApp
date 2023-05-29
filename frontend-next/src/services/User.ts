@@ -13,11 +13,17 @@ export type UserType = {
     firstName: string;
     lastName: string;
     email: string;
+    profile: {
+        about: {
+            type: String,
+        },
+        birthdate: Number,
+    }
     imgLocation: string;
 }
 
 export type UserResponseSuccessType = {
-    status: 0;
+    status: 0 | 1;
     user: UserType;
 };
 
@@ -35,5 +41,9 @@ const config = {
 };
 
 export const getUser = (userId: string) => {
-    return axios.get<UserResponseSuccessType>(HOST + "/", {...config, params: {userId: userId}});
+    return axios.get<UserResponseSuccessType>(HOST + "/info", {...config, params: {userId: userId}});
 }
+
+// export const getProfileInfo = () => {
+
+// }

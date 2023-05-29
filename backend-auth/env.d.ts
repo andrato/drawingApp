@@ -4,5 +4,7 @@ namespace NodeJS {
         REFRESH_TOKEN_SECRET: string;
         PASSWORD_SECRET: string;
         MONGO_AUTH: string;
+        MONGO_USERS_INFO: string;
+        MONGO_URL_TEST: string;
     }
 }

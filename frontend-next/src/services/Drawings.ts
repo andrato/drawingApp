@@ -83,6 +83,10 @@ export const getDrawingByCategory = (category: string) => {
     return axios.get<DrawingsResponseSuccessType>(HOST + "/category", {...config, params: {category: computedCateg}});
 }
 
+export const getDrawingByUser = (userId: string) => {
+    return axios.get<DrawingsResponseSuccessType>(HOST + "/user", {...config, params: {userId}});
+}
+
 export const getDrawing = (id: string) => {
     return axios.get<DrawingResponseSuccessType>(HOST + "/drawing", {...config, params: {drawingId: id}});
 }

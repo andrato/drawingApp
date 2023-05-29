@@ -3,13 +3,53 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 20,
+        "lines": 60,
+        "statements": 60
+      }
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s",
+      "!main.(t|j)s",
+      "!**/*.module.(t|j)s",
+      "!**/*.input.(t|j)s",
+      "!**/*.entity.(t|j)s"
+    ],
+    "coveragePathIgnorePatterns": [
+      "node_modules",
+      "test-config",
+      "interfaces",
+      "jestGlobalMocks.ts",
+      ".module.ts",
+      "<rootDir>/src/main.ts",
+      ".mock.ts"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "sources/routes",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node"
+  },
   "scripts": {
     "build": "yarn tsc",
     "prestart": "yarn run build",
     "start": "node dist/index.js",
     "preserve": "yarn run build",
     "serve": "yarn tsc -w & nodemon dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/jest --runInBand -c ./jest.unit.js",
+    "test2": "jest --coverage --maxWorkers 2",
+    "test:coverage": "./node_modules/.bin/jest --coverage"
   },
   "author": "Andra Tomi",
   "license": "ISC",
@@ -26,11 +66,25 @@
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",
+    "mongodb-memory-server": "^8.12.2",
     "mongoose": "^7.0.3",
     "nodemon": "^2.0.22",
-    "typescript": "^5.0.2"
+    "rewire": "^6.0.0",
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
+    "@jest/globals": "^29.5.0",
+    "@shelf/jest-mongodb": "^4.1.7",
+    "@types/jest": "^29.5.1",
+    "@types/sinon": "^10.0.15",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.5.0",
+    "mockingoose": "^2.16.2",
+    "sinon": "^15.1.0",
+    "sinon-as-promised": "^4.0.3",
+    "sinon-mongoose": "^2.3.0",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1"
   }
 }

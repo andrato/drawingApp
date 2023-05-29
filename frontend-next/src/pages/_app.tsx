@@ -16,6 +16,7 @@ const drawTheme = createTheme({
             dark: "#1b1b1b",
             hover: "#16a1fb42",
             active: "#4A661D",
+            profileInfo: "#4c4c4c",
             contrastText: "#1b1b1b",
             navHover: "#16a1fa75",
             star: "#be9b48",

@@ -7,8 +7,7 @@ import { DrawingTypePartial, getDrawingByCategory } from "@/services/Drawings";
 import { SortBy, sortByOptions } from "@/components/common/constants";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 
-
-const useItemsPerPage = () => {
+export const useItemsPerPage = () => {
     const theme = useTheme();
     const isMediumScreenUp = useMediaQuery(theme.breakpoints.up('md'));
     const isSmallScreenUp = useMediaQuery(theme.breakpoints.up('sm'));
@@ -22,11 +21,12 @@ const useItemsPerPage = () => {
     return 3 * 4;
 }
 
-const Container = ({children}: {children: ReactNode}) => (
+export const Container = ({children}: {children: ReactNode}) => (
     <Page hasMarginX={true} sx={{
         display: "flex",
         flexDirection: "column", 
         justifyContent: "space-between",
+        width: "calc(100% - 240px)",
     }}>
         {children}
     </Page>

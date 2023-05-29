@@ -35,7 +35,7 @@ export const UserBar = ({
     contentText?: string,
 }) => {
     const {firstNameInitial, lastNameInitial} = getNameInitials({userName: userName});
-    const formatDate = (new Date(date)).toDateString();;
+    const formatDate = (new Date(date)).toDateString();
     const sameUser = isSameUser(userId) && isUserLoggedIn();
 
     return (

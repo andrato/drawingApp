@@ -17,14 +17,14 @@ const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
-const signin_1 = require("./sources/signin");
-const signup_1 = require("./sources/signup");
+const signin_1 = require("./sources/routes/signin");
+const signup_1 = require("./sources/routes/signup");
 const verify_1 = require("./sources/verify");
 dotenv_1.default.config();
 /* connect to mongo */
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield mongoose_1.default.connect(process.env.MONGO_AUTH);
+        yield mongoose_1.default.connect(process.env.MONGO_URL_TEST);
         console.log("Mongo successfully connected");
     }
     catch (err) {

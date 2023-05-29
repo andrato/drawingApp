@@ -1,7 +1,6 @@
 import { Router, Request, Response} from "express";
 import { DrawingType } from "./utils/types";
 import { modelDrawing } from "../mongo_schema";
-import { create } from "domain";
 
 const router = Router();
 

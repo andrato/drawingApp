@@ -47,8 +47,6 @@ const userInfoSchema = new Schema({
 
 }, { collection: 'users_info'});
 
-
-
 /* MODEL */
 const auth = connection.useDb('auth');
 const info = connection.useDb('users_info');

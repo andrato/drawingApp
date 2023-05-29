@@ -1,7 +1,7 @@
 import { Router, Request, Response} from "express";
-import { generateHash } from "./helpers";
-import {modelUserAuth, modelUserInfo} from "../mongo_schema";
-import { defaultUser, UserAuthType, UserInfoType } from "./types";
+import { generateHash } from "../helpers";
+import {modelUserAuth, modelUserInfo} from "../../mongo_schema";
+import { defaultUser, UserAuthType, UserInfoType } from "../types";
 import { validationResult, checkSchema } from "express-validator";
 import { Types } from "mongoose";
 
@@ -54,7 +54,7 @@ router.post('/',
 
         // Check if user exists
         try {
-            const existingUser: (UserType | null) = await modelUserAuth.findOne({email: user.email});
+            const existingUser: (UserAuthType | null) = await modelUserAuth.findOne({email: user.email});
 
             if (existingUser) {
                 return res.status(200).json({

@@ -17,12 +17,12 @@ export const Page = ({
         <Box 
             {...restProps}
             sx={{
-                ...(sx ? sx : {}),
                 width: hasMarginX ? "calc(100% - 32px)" : "100%",
-                height: hasMarginY ? "calc(100% - 58px - 32px)" : "100%",
+                height: hasMarginY ? "calc(100% - 58px - 32px)" : "calc(100% - 58px)",
                 overflow: "scroll",
                 ...(hasMarginY ? {py: 2} : {}),
                 ...(hasMarginX ? {px: 2} : {}),
+                ...(sx ? sx : {}),
             }}
         > 
             {children}

@@ -11,7 +11,6 @@ const drawingSchema = new Schema({
         type: Number,
         index: true,
         require: true,
-        sort: -1,
     },
     lastUpdated: Number,
     title: String,

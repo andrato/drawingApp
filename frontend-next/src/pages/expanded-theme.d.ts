@@ -6,7 +6,8 @@ declare module '@mui/material/styles' {
             hover: string, 
             active: string, 
             navHover: string, 
-            star: string
+            star: string,
+            profileInfo: string,
         };
         textCustom: Partial<TypeText> & {hover: string, subHeader: string}; 
         canvas: {
@@ -22,7 +23,8 @@ declare module '@mui/material/styles' {
             hover: string, 
             active: string, 
             navHover: string, 
-            star: string
+            star: string,
+            profileInfo: string,
         };        
         textCustom?: Partial<TypeText> & {hover: string, subHeader: string};
         canvas?: {

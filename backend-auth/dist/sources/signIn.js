@@ -21,17 +21,16 @@ const express_validator_1 = require("express-validator");
 const router = (0, express_1.Router)();
 exports.SignIn = router;
 const signInSchema = {
-    // Support bail functionality in schemas
     email: {
         isEmail: {
+            errorMessage: 'Email is wrong or missing!',
             bail: true,
             location: "params",
         }
     },
     password: {
         isLength: {
-            errorMessage: 'Password should be at least 1 chars long!',
-            // Multiple options would be expressed as an array
+            errorMessage: 'Password is wrong or missing!',
             options: { min: 1 },
             location: "params",
         },
@@ -41,6 +40,7 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
     var _a, _b, _c, _d;
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
+        console.log("eroare aici");
         return res.status(400).json({
             status: 1,
             errors: errors.array(),
@@ -73,6 +73,7 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
         if (!existingUser) {
             console.log("an error occured with the existing user info");
         }
+        console.log("nicio eroare");
     }
     catch (err) {
         return res.status(500).json({
@@ -91,8 +92,9 @@ router.get('/', (0, express_validator_1.checkSchema)(signInSchema), (req, res) =
             lastName: existingUser === null || existingUser === void 0 ? void 0 : existingUser.lastName,
             profile: (_a = existingUser === null || existingUser === void 0 ? void 0 : existingUser.profile) !== null && _a !== void 0 ? _a : null,
             email: (_b = existingUser === null || existingUser === void 0 ? void 0 : existingUser.email) !== null && _b !== void 0 ? _b : existingAuthUser.email,
-            created: (_c = existingUser === null || existingUser === void 0 ? void 0 : existingUser.created) !== null && _c !== void 0 ? _c : existingAuthUser.email,
-            lastUpdated: (_d = existingUser === null || existingUser === void 0 ? void 0 : existingUser.lastUpdated) !== null && _d !== void 0 ? _d : existingAuthUser.email,
+            created: (_c = existingUser === null || existingUser === void 0 ? void 0 : existingUser.created) !== null && _c !== void 0 ? _c : existingAuthUser.created,
+            lastUpdated: (_d = existingUser === null || existingUser === void 0 ? void 0 : existingUser.lastUpdated) !== null && _d !== void 0 ? _d : existingAuthUser.lastUpdated,
+            isAdmin: existingAuthUser.isAdmin,
         },
     });
 }));
