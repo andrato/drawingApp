@@ -17,14 +17,13 @@ const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
-const signin_1 = require("./sources/routes/signin");
-const signup_1 = require("./sources/routes/signup");
-const verify_1 = require("./sources/verify");
+const routes_1 = __importDefault(require("./src/api/routes"));
 dotenv_1.default.config();
 /* connect to mongo */
 (() => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        yield mongoose_1.default.connect(process.env.MONGO_URL_TEST);
+        yield mongoose_1.default.connect((_a = process.env.MONGO_URL_TEST) !== null && _a !== void 0 ? _a : "");
         console.log("Mongo successfully connected");
     }
     catch (err) {
@@ -36,8 +35,5 @@ const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
 // define app routes
-app.use("/signin", signin_1.SignIn);
-app.use("/signup", signup_1.SignUp);
-app.use("/verify", verify_1.VerifyToken);
+app.use(routes_1.default);
 app.listen(process.env.PORT, () => { console.log(`Listening on port ${process.env.PORT}`); });
-//# sourceMappingURL=index.js.map

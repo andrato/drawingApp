@@ -2,89 +2,43 @@
   "name": "backend-auth",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 20,
-        "lines": 60,
-        "statements": 60
-      }
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s",
-      "!main.(t|j)s",
-      "!**/*.module.(t|j)s",
-      "!**/*.input.(t|j)s",
-      "!**/*.entity.(t|j)s"
-    ],
-    "coveragePathIgnorePatterns": [
-      "node_modules",
-      "test-config",
-      "interfaces",
-      "jestGlobalMocks.ts",
-      ".module.ts",
-      "<rootDir>/src/main.ts",
-      ".mock.ts"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "sources/routes",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "coverageDirectory": "./coverage",
-    "testEnvironment": "node"
-  },
+  "main": "dist/index.js",
   "scripts": {
-    "build": "yarn tsc",
+    "build": "yarn run tsc",
     "prestart": "yarn run build",
-    "start": "node dist/index.js",
-    "preserve": "yarn run build",
-    "serve": "yarn tsc -w & nodemon dist/index.js",
-    "test": "./node_modules/.bin/jest --runInBand -c ./jest.unit.js",
-    "test2": "jest --coverage --maxWorkers 2",
-    "test:coverage": "./node_modules/.bin/jest --coverage"
+    "start": "node dist/src/index.js",
+    "test": "jest",
+    "serve": "tsc -w & nodemon ."
   },
   "author": "Andra Tomi",
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/body-parser": "^1.19.0",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
+    "@types/express-validator": "^3.0.0",
     "@types/jsonwebtoken": "^9.0.1",
-    "@types/node": "^18.15.10",
+    "@types/node": "^20.2.5",
     "bcrypt": "^5.1.0",
-    "body-parser": "^1.20.2",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "express-validator": "^6.15.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.8.0",
     "jsonwebtoken": "^9.0.0",
     "mongodb-memory-server": "^8.12.2",
     "mongoose": "^7.0.3",
     "nodemon": "^2.0.22",
-    "rewire": "^6.0.0",
     "typescript": "^5.0.4"
   },
   "devDependencies": {
-    "@jest/globals": "^29.5.0",
     "@shelf/jest-mongodb": "^4.1.7",
-    "@types/jest": "^29.5.1",
-    "@types/sinon": "^10.0.15",
-    "@types/supertest": "^2.0.12",
-    "jest": "^29.5.0",
-    "mockingoose": "^2.16.2",
-    "sinon": "^15.1.0",
-    "sinon-as-promised": "^4.0.3",
-    "sinon-mongoose": "^2.3.0",
-    "supertest": "^6.3.3",
-    "ts-jest": "^29.1.0",
+    "@types/jest": "^26.0.17",
+    "@types/supertest": "^2.0.10",
+    "jest": "^26.6.3",
+    "supertest": "^6.0.1",
+    "ts-jest": "^26.4.4",
     "ts-node": "^10.9.1"
   }
 }

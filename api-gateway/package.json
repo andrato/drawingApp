@@ -7,7 +7,7 @@
   "scripts": {
     "build": "yarn tsc",
     "prestart": "yarn run build",
-    "start": "node dist/index.js",
+    "start": "yarn dist/index.js",
     "preserve": "yarn run build",
     "serve": "yarn tsc -w & nodemon dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"

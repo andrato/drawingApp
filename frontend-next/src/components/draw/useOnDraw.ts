@@ -68,7 +68,6 @@ export function useOnDraw(onDraw: Function) {
             const point = computePointInCanvas(e.clientX, e.clientY) as Point;
             const ctx = ref?.getContext('2d');
             const ctxAux = refAux?.getContext('2d');
-            // const ctxRecording = videoRef.current?.getContext('2d');
             const buttonActive = getActiveButton();
 
             if (buttonActive === "circle" || buttonActive === "square") {
@@ -77,11 +76,9 @@ export function useOnDraw(onDraw: Function) {
                 }
                 clearLayer(0);
                 onDraw(ctxAux, point, prevPointRef.current);
-                // ctxRecording?.drawImage(refAux, 0, 0);
             } else {
                 onDraw(ctx, point, prevPointRef.current);
                 prevPointRef.current = point;
-                // ctxRecording?.drawImage(ref, 0, 0);
             }
         }
 
@@ -229,7 +226,11 @@ export function useOnDraw(onDraw: Function) {
     }
 
     const saveImage = () => {
-        const ref = refsArray.current[1];
+        if (!videoRef.current) {
+            return null;
+        }
+
+        const ref = videoRef.current;
         return new Promise(resolve => ref.toBlob(resolve, "image/jpeg"));
     };
 
@@ -249,7 +250,7 @@ export function useOnDraw(onDraw: Function) {
                 }
             }, 10);
         } else {
-            console.error("naspa")
+            console.error("Smth went wrong")
         }
       }, [])
     

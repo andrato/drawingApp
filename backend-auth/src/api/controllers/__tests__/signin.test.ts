@@ -1,7 +1,8 @@
-import {describe, expect, test} from '@jest/globals';
-import {modelUserAuth, modelUserInfo} from "../mongo_schema";
+import {describe, expect } from '@jest/globals';
+import {modelUserAuth, modelUserInfo} from "../../../mongo_schema";
 import request from 'supertest';
 import mongoose from 'mongoose';
+import app from '../../../app';
 
 const userAuth = {
     email: "email@ceva.com",
@@ -25,8 +26,6 @@ const responseSignIn = {
     email: userInfo.email,
 }
 
-const API_BASE = "http://localhost:8001";
-
 describe('Get /signin', () => {
     let mongoClient: typeof mongoose;
 
@@ -35,7 +34,7 @@ describe('Get /signin', () => {
 
         try {
             // first, add the required user to the database
-            const response = await request(API_BASE + '/signup').post('/').send({ 
+            const response = await request(app).post('/signup').send({ 
                 email: userInfo.email, 
                 password: userInfo.password, 
                 firstName: userInfo.firstName,
@@ -55,7 +54,7 @@ describe('Get /signin', () => {
 
     describe('When request is successful', () => {
         it('Should return user data', async () => {
-            const response = await request(API_BASE + '/signin').get('/').query({ email: userInfo.email, password: userInfo.password });
+            const response = await request(app).get('/signin').query({ email: userInfo.email, password: userInfo.password });
 
             expect(response.statusCode).toBe(200);
             expect(response.body.status).toBe(0);
@@ -66,7 +65,7 @@ describe('Get /signin', () => {
 
         describe('When user is not found in DB', () => {
             it('Should return a message that credentials are not valid', async () => {
-                const response = await request(API_BASE + '/signin').get('/').query({ email: "otheruser@gmail.com", password: userInfo.password });
+                const response = await request(app).get('/signin').query({ email: "otheruser@gmail.com", password: userInfo.password });
 
                 expect(response.statusCode).toBe(200);
                 expect(response.body.status).toBe(1);
@@ -77,22 +76,11 @@ describe('Get /signin', () => {
 
     describe('When request fails due to missing params', () => {
         it('Should throw a 400 http error', async () => {
-            const response = await request(API_BASE + '/signin').get('/').query({ password: userInfo.password });
+            const response = await request(app).get('/signin').query({ password: userInfo.password });
             
             expect(response.statusCode).toBe(400);
             expect(response.body.errors[0].msg).toBe('Email is wrong or missing!');
         })
     });
-
-    // describe('When request fails because of mongo', () => {
-    //     it('Should throw a 500 http error', async () => {
-    //         await mongoClient.connection.close();
-
-    //         modelUserAuth.
-
-    //         const response = await request(API_BASE + '/signin').get('/').query({ password: userInfo.password });
-    //         expect(response.statusCode).toBe(500);
-    //     })
-    // });
 });
 

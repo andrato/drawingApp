@@ -50,4 +50,3 @@ const auth = mongoose_1.connection.useDb('auth');
 const info = mongoose_1.connection.useDb('users_info');
 exports.modelUserAuth = auth.model('user', userAuthSchema);
 exports.modelUserInfo = info.model('user_info', userInfoSchema);
-//# sourceMappingURL=mongo_schema.js.map

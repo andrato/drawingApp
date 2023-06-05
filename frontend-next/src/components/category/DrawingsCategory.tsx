@@ -38,6 +38,7 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     const [itemsPage, setItemsPage] = useState<DrawingTypePartial[]>([]);
     const itemsPerPage = useItemsPerPage();
     const pageNumber = Number(router.query["page"] ?? 1);
+    // partea in care cerem datele de la backend
     const {data, isLoading, isError, error} = useQuery({
         queryKey: [category],
         queryFn: () => getDrawingByCategory(category), 
