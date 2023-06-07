@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, connection, model } from "mongoose";
 
 /* SCHEMAS */
 const drawingSchemaInProgress = new Schema({
@@ -25,7 +25,7 @@ const drawingSchemaInProgress = new Schema({
         filename: String,
         size: Number,
     },
-}, { collection: 'drawings_inprogress'});
+}, { collection: 'drawings_in_progress'});
 
 const drawingSchema = new Schema({
     userId: String,
@@ -37,7 +37,6 @@ const drawingSchema = new Schema({
         type: Number,
         index: true,
         require: true,
-        sort: -1,
     },
     lastUpdated: Number,
     title: String,
@@ -71,5 +70,8 @@ const drawingSchema = new Schema({
 }, { collection: 'drawings'});
 
 /* MODEL */
-export const modelDrawing = model('drawing', drawingSchema);
-export const modelDrawingInProgress = model('drawingInProgress', drawingSchemaInProgress);
+const drawingsDB = connection.useDb('drawings');
+const drawingsInProgressDB = connection.useDb('drawings_in_progress');
+
+export const modelDrawing = drawingsDB.model('drawing', drawingSchema);
+export const modelDrawingInProgress = drawingsInProgressDB.model('drawingInProgress', drawingSchemaInProgress);

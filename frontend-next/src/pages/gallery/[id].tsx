@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Ratings } from '@/components/drawing/Ratings';
 import { UserBar } from '@/components/drawing/UserBar';
+import { Comments } from '@/components/drawing/Comments';
 
 const BREAKPOINT = 980;
 
@@ -92,6 +93,7 @@ export default function GalleryItem() {
                 contentCateg={drawing.categories}
                 contentText={drawing.description}
             />
+            <Comments drawingId={id} />
         </Box>
         <Box sx={(theme) => ({
             width: "300px",
@@ -101,7 +103,6 @@ export default function GalleryItem() {
                 display: 'none',
             }
         })}>
-
         </Box>
         
     </Container>);

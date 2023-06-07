@@ -6,6 +6,5 @@ const router: express.Router = express.Router();
 
 router.get("/signin", checkSchema(signInSchema), signin);
 router.post("/signup", checkSchema(signUpSchema), signup);
-// router.get("/verify", getTodosByStatus);
 
 export default router;
