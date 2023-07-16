@@ -2,7 +2,7 @@ import { Box, Paper } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
-import { getUser } from "@/services/User";
+import { HOST_USER, getUser } from "@/services/User";
 
 const AVATAR_SIZE = 140;
 
@@ -18,7 +18,7 @@ const Container = ({children}: {children: ReactNode}) => (
 
 export const AllUsers = ({userId}: {userId: string}) => {
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [userId],
+        queryKey: [HOST_USER, userId],
         queryFn: () => getUser(userId), 
         refetchOnMount: false,
         enabled: Boolean(userId) && userId !== null,

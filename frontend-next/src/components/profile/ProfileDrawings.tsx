@@ -2,7 +2,7 @@ import { Box, CardMedia, Grid, Pagination, Typography, useMediaQuery, useTheme }
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { DrawingTypePartial, getDrawingByUser} from "@/services/Drawings";
+import { DrawingTypePartial, HOST_DRAWING, getDrawingByUser} from "@/services/Drawings";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { Container } from "../category/DrawingsCategory";
 
@@ -26,7 +26,7 @@ export const ProfileDrawings = ({userId}: {userId: string}) => {
     const itemsPerPage = useItemsPerPage();
     const pageNumber = Number(router.query["page"] ?? 1);
     const {data, isLoading, isError} = useQuery({
-        queryKey: [userId],
+        queryKey: [HOST_DRAWING, userId],
         queryFn: () => getDrawingByUser(userId), 
         refetchOnMount: false,
         enabled: Boolean(userId),

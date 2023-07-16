@@ -1,57 +1,47 @@
-import { Button, Paper, TextField, Typography } from "@mui/material";
-import { isUserLoggedIn } from "../common/helpers";
+
+import { CommentType, HOST_COMMENTS, getComments } from "@/services/CommentsAndRatings";
+import { Box } from "@mui/material"
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
+import { Comment } from './Comment';
+import { useEffect } from "react";
+import { AddComment } from "./AddComment";
 
 export const Comments = ({drawingId}: {drawingId: string}) => {
-    const userLogged = isUserLoggedIn(); 
+    const {data, isLoading, isError, error} = useQuery({
+        queryKey: [HOST_COMMENTS, drawingId],
+        queryFn: () => getComments(drawingId), 
+        refetchOnMount: true,
+    });
+    const comments = data?.data?.comments ?? [];
+    const queryClient = useQueryClient();
 
-    const handlePost = () => {
-        
+    const setComment = (comment: CommentType) => {
+        const aux = comments;
+        aux.push(comment);
+        queryClient.setQueryData([HOST_COMMENTS, drawingId], {
+            data: {
+                ...data?.data,
+                comments: aux
+            }
+        });
     }
 
-    return <Paper elevation={2} sx={(theme) => ({
-        mt: 1,
-        p: 2,
-        bgcolor: theme.palette.backgroundCustom.light,
-        color: theme.palette.textCustom.primary,
-    })}>
-        {userLogged ? <>
-            <TextField
-            id="outlined-multiline-flexible"
-            multiline
-            maxRows={10}
-            sx={(theme) => ({
-                width: "100%",
-                bgcolor: theme.palette.backgroundCustom.main,
-                '.MuiInputBase-input': {
-                    color: theme.palette.textCustom.primary,
-                }
-            })}
-            />
-            <Button 
-                variant="contained" 
-                size="medium" 
-                // onClick={() => setOpenSignIn()}
-                sx={(theme) => ({
-                    mt: 2,
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.backgroundCustom.main,
-                    fontWeight: "bold",
-                    // fontSize: theme.customSizes.fontSizeButtonsText,
-                    textTransform: 'none',
-                    ':hover': {
-                        backgroundColor: theme.palette.primary.light,
-                    },
-                    // p: "3px 12px",
-                    display: "block", 
-                    float: "right"
-                })}
-            >
-                Post comment
-            </Button>
-        </> : 
-            <Typography>
-                You must be logged in to post a comment!
-            </Typography>
-        }
-    </Paper>;
+    useEffect(() => {
+    }, [comments]);
+
+    if (isLoading || isError) {
+        return <Box sx={{mt: 1}}>
+            <LoadingsAndErrors isLoading={isLoading} isError={isError} />
+        </Box>
+    }
+
+    if (comments.length === 0) {
+        return null;
+    }
+
+    return <Box sx={{display: "flex", flexDirection: "column"}}>
+        <AddComment drawingId={drawingId} updateComments={setComment} />
+        {comments.map((comment) => <Comment comment={comment} /> )}
+    </Box>
 }

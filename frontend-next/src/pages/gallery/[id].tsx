@@ -1,11 +1,12 @@
 import { ReactNode } from 'react';
 import Player from '@/components/player/Player';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
-import { DrawingType, getDrawing } from '@/services/Drawings';
-import { useQuery } from '@tanstack/react-query';
+import { DrawingType, HOST_DRAWING, getDrawing } from '@/services/Drawings';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Ratings } from '@/components/drawing/Ratings';
 import { UserBar } from '@/components/drawing/UserBar';
+import { AddComment } from '@/components/drawing/AddComment';
 import { Comments } from '@/components/drawing/Comments';
 
 const BREAKPOINT = 980;
@@ -26,7 +27,7 @@ export default function GalleryItem() {
     const router = useRouter();
     const id = router.query.id as string;
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [id],
+        queryKey: [HOST_DRAWING, id],
         queryFn: () => getDrawing(id), 
         refetchOnMount: false,
     });

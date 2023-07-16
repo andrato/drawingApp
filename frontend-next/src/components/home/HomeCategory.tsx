@@ -1,7 +1,7 @@
 import { Alert, Box, CardMedia, CircularProgress, Typography } from "@mui/material";
 import { dataToTest } from "../common/testData";
 import { useQuery } from "@tanstack/react-query";
-import { DrawingTypePartial, getDrawingByCategory } from "@/services/Drawings";
+import { DrawingTypePartial, HOST_DRAWING, getDrawingByCategory } from "@/services/Drawings";
 import { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
@@ -27,7 +27,7 @@ export const HomeCategory = ({
     category: string;
 }) => {
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [category],
+        queryKey: [HOST_DRAWING, category],
         queryFn: () => getDrawingByCategory(category), 
         refetchOnMount: false,
     });

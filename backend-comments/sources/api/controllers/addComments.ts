@@ -36,16 +36,16 @@ export const addComment = async (req: Request, res: Response) => {
     const comment: CommentType = {
         drawingId: req.body.drawingId,
         userId: req.body.userId,
-        comment: req.body.comments,
+        comment: req.body.comment,
         created: Date.now(),
     }
     
     // add comment in db
     try {
-        const addedComment = await modelComment.create(comment);
+        const response = await modelComment.create(comment);
 
         return res.json({
-            comment: addedComment,
+            comment: response,
         });
     } catch (err) {
         return res.status(500).json({

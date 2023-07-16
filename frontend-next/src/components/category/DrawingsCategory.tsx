@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { Page } from "@/components/utils/helpers/Page";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { DrawingTypePartial, getDrawingByCategory } from "@/services/Drawings";
+import { DrawingTypePartial, HOST_DRAWING, getDrawingByCategory } from "@/services/Drawings";
 import { SortBy, sortByOptions } from "@/components/common/constants";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 
@@ -40,7 +40,7 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     const pageNumber = Number(router.query["page"] ?? 1);
     // partea in care cerem datele de la backend
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [category],
+        queryKey: [HOST_DRAWING, category],
         queryFn: () => getDrawingByCategory(category), 
         refetchOnMount: false,
     });

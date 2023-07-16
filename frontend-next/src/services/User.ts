@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const HOST = "http://localhost:8080/user";
+export const HOST_USER = "http://localhost:8080/user";
 
 export type ErrorType = {
     msg: string;
@@ -41,7 +41,7 @@ const config = {
 };
 
 export const getUser = (userId: string) => {
-    return axios.get<UserResponseSuccessType>(HOST + "/info", {...config, params: {userId: userId}});
+    return axios.get<UserResponseSuccessType>(HOST_USER + "/info", {...config, params: {userId: userId}});
 }
 
 // export const getProfileInfo = () => {

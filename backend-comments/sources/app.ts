@@ -10,7 +10,7 @@ dotenv.config();
 /* connect to mongo */
 (async() => {
     try {
-        await mongoose.connect(process.env.MONGO_URL_TEST ?? "");
+        await mongoose.connect(process.env.MONGO_AUTH ?? "");
         console.log("Mongo successfully connected");
     } catch (err) {
         console.log("Mongo error connection user auth: " + err);

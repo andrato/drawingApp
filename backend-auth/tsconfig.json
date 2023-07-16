@@ -114,7 +114,7 @@
     // // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     // "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "include": ["./env.d.ts", "src/app.ts"],
+  "include": ["./env.d.ts", "src/index.ts"],
   // "lib": ["ES2021"],
   "importsNotUsedAsValues": "preserve"
 }

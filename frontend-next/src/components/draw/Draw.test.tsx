@@ -1,6 +1,9 @@
 import React from 'react';
-import {render} from '@testing-library/react';
+
 import { Draw } from './Draw';
+// import { render } from '../../../tests/test-utils';
+// import { render } from '@testing-library/react';
+import { MockTheme, customRender as render } from '../../../tests/test-utils';
 
 describe("Draw Component", () => {
     describe("When user is logged in", () => {

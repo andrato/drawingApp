@@ -2,7 +2,7 @@
   "name": "backend-auth",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "yarn run tsc",
     "prestart": "yarn run build",
