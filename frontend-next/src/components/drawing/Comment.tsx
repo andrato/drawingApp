@@ -46,6 +46,9 @@ export const Comment = ({comment}: {comment: CommentType}) => {
             }
             title={isUnknown ? 'Unknown' : fullName}
             subheader={formatDate}
+            sx={{
+                pb: 0,
+            }}
         />
         <CardContent sx={{pt: 0}}>
             {paragraphs.map((text) => <p>{text}</p> )}        

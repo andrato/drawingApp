@@ -1,11 +1,11 @@
-
+import { useEffect, useState } from "react";
 import { CommentType, HOST_COMMENTS, getComments } from "@/services/CommentsAndRatings";
 import { Box } from "@mui/material"
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { Comment } from './Comment';
-import { useEffect } from "react";
 import { AddComment } from "./AddComment";
+import { debounce } from "lodash";
 
 export const Comments = ({drawingId}: {drawingId: string}) => {
     const {data, isLoading, isError, error} = useQuery({
@@ -13,22 +13,13 @@ export const Comments = ({drawingId}: {drawingId: string}) => {
         queryFn: () => getComments(drawingId), 
         refetchOnMount: true,
     });
-    const comments = data?.data?.comments ?? [];
-    const queryClient = useQueryClient();
+    const [comments, setComments] = useState<CommentType[]>(data?.data?.comments ?? []);
 
     const setComment = (comment: CommentType) => {
-        const aux = comments;
-        aux.push(comment);
-        queryClient.setQueryData([HOST_COMMENTS, drawingId], {
-            data: {
-                ...data?.data,
-                comments: aux
-            }
-        });
-    }
+        setComments([...comments, comment]);
+    };
 
-    useEffect(() => {
-    }, [comments]);
+    useEffect(debounce(() => setComments(data?.data?.comments ?? []), 100), [data?.data?.comments]);
 
     if (isLoading || isError) {
         return <Box sx={{mt: 1}}>
@@ -36,12 +27,8 @@ export const Comments = ({drawingId}: {drawingId: string}) => {
         </Box>
     }
 
-    if (comments.length === 0) {
-        return null;
-    }
-
     return <Box sx={{display: "flex", flexDirection: "column"}}>
         <AddComment drawingId={drawingId} updateComments={setComment} />
-        {comments.map((comment) => <Comment comment={comment} /> )}
+        {comments.length > 0 && comments.map((comment) => <Comment comment={comment} /> )}
     </Box>
 }
