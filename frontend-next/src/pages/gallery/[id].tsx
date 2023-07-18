@@ -2,12 +2,11 @@ import { ReactNode } from 'react';
 import Player from '@/components/player/Player';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { DrawingType, HOST_DRAWING, getDrawing } from '@/services/Drawings';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import { Ratings } from '@/components/drawing/Ratings';
+import { RatingDrawing } from '@/components/drawing/RatingDrawing';
 import { UserBar } from '@/components/drawing/UserBar';
-import { AddComment } from '@/components/drawing/AddComment';
-import { Comments } from '@/components/drawing/Comments';
+import { Reviews } from '@/components/drawing/Reviews';
 
 const BREAKPOINT = 980;
 
@@ -76,7 +75,7 @@ export default function GalleryItem() {
                     flexDirection: "column",
                     alignItems: "flex-end",
                 }}>
-                    <Ratings ratingNumber={drawing.likes} userId={drawing.userId} />
+                    <RatingDrawing ratingNumber={drawing.likes} userId={drawing.userId} />
                     <Typography variant="subtitle2" color="textCustom.primary" sx={{
                         whiteSpace: "nowrap",
                         overflow: "hidden",
@@ -94,7 +93,7 @@ export default function GalleryItem() {
                 contentCateg={drawing.categories}
                 contentText={drawing.description}
             />
-            <Comments drawingId={id} />
+            <Reviews drawingId={id} userId={drawing.userId}/>
         </Box>
         <Box sx={(theme) => ({
             width: "300px",

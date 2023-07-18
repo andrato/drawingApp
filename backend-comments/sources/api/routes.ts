@@ -1,15 +1,15 @@
 import express from "express";
 import { checkSchema } from "express-validator";
-import { getComments, allCommentsSchema } from "./controllers/getComments";
-import { addComment, commentSchema } from "./controllers/addComments";
-import { addRating, singleRatingSchema } from "./controllers/addRating";
-import { getRating, ratingSchema } from "./controllers/getRating";
+import { getReplies, allRepliesSchema } from "./controllers/getReplies";
+import { addReply, replySchema } from "./controllers/addReply";
+import { reviewSchema, addReview } from "./controllers/addReview";
+import { getReviews, reviewsSchema } from "./controllers/getReviews";
 
 const router: express.Router = express.Router();
 
-router.get("/", checkSchema(allCommentsSchema), getComments);
-router.post("/", checkSchema(commentSchema), addComment);
-router.get("/rating", checkSchema(ratingSchema), getRating);
-router.post("/rating", checkSchema(singleRatingSchema), addRating);
+router.get("/", checkSchema(reviewsSchema), getReviews);
+router.post("/", checkSchema(reviewSchema), addReview);
+router.get("/reply", checkSchema(allRepliesSchema), getReplies);
+router.post("/reply", checkSchema(replySchema), addReply);
 
 export default router;

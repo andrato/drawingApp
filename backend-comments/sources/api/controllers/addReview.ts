@@ -1,9 +1,9 @@
 import { Request, Response} from "express";
 import { modelRating} from "../../mongo_schema";
-import { RatingType } from "../utils/types";
+import { CommentRatingType } from "../utils/types";
 import { validationResult } from "express-validator";
 
-export const singleRatingSchema = {
+export const reviewSchema = {
     userId: {
         isLength: {
             errorMessage: 'userId is wrong or missing!',
@@ -24,7 +24,7 @@ export const singleRatingSchema = {
     },
 }
 
-export const addRating = async (req: Request, res: Response) => {
+export const addReview = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -33,18 +33,30 @@ export const addRating = async (req: Request, res: Response) => {
         });
     }
 
-    const rating: RatingType = {
+    const rating: CommentRatingType = {
         drawingId: req.body.drawingId,
         userId: req.body.userId,
         rating: req.body.rating,
         created: Date.now(),
+        lastUpdated: Date.now(),
     }
-    
+
+    if (req.body.comment) {
+        rating.comment = req.body.comment;
+    }
+
+    console.log("aici");
+
+    // check if model already exists
     try {
-        const addedRating = await modelRating.create(rating);
+        const addedRating = await modelRating.findOneAndUpdate({userId: req.body.userId, drawingId: req.body.drawingId}, rating, {
+            upsert: true, 
+            returnDocument: "after",
+            returnNewDocument: true,
+        });
 
         return res.json({
-            rating: addedRating,
+            review: addedRating,
         });
     } catch (err) {
         return res.status(500).json({

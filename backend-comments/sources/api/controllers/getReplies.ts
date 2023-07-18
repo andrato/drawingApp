@@ -1,10 +1,10 @@
 import { Request, Response} from "express";
-import {modelComment} from "../../mongo_schema";
-import { CommentType } from "../utils/types";
+import {modelReply} from "../../mongo_schema";
+import { ReplyType } from "../utils/types";
 import { validationResult } from "express-validator";
 
-export const allCommentsSchema = {
-    drawingId: {
+export const allRepliesSchema = {
+    commentId: {
         isLength: {
             errorMessage: 'drawingId is wrong or missing!',
             options: { min: 1 },
@@ -13,7 +13,7 @@ export const allCommentsSchema = {
     },
 }
 
-export const getComments = async (req: Request, res: Response) => {
+export const getReplies = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -22,13 +22,13 @@ export const getComments = async (req: Request, res: Response) => {
         });
     }
     
-    const drawingId = req.query.drawingId as string;
+    const commentId = req.query.drawingId as string;
     
-    let comments: CommentType[] = [];
+    let replies: ReplyType[] = [];
 
     // find all comments
     try {
-        comments = await modelComment.find({drawingId});
+        replies = await modelReply.find({commentId});
     } catch (err) {
         return res.status(500).json({
             error: err,
@@ -36,6 +36,6 @@ export const getComments = async (req: Request, res: Response) => {
     }
 
     return res.json({
-        comments: comments,
+        comments: replies,
     });
 }

@@ -1,7 +1,7 @@
 import mongoose, { Schema, model, Types, connection } from "mongoose";
 
 /* SCHEMAS */
-const commentsSchema = new Schema({
+const repliesSchema = new Schema({
     userId: {
         type: String,
         index: true, 
@@ -12,11 +12,16 @@ const commentsSchema = new Schema({
         index: true, 
         require: true,
     },
-    comment: String,
+    commentId: {
+        type: String,
+        index: true, 
+        require: true,
+    },
+    reply: String,
     created: Number
-}, { collection: 'comments'});
+}, { collection: 'replies'});
 
-const ratingsSchema = new Schema({
+const reviewsSchema = new Schema({
     userId: {
         type: String,
         index: true, 
@@ -28,11 +33,13 @@ const ratingsSchema = new Schema({
         require: true,
     },
     rating: Number,
-    created: Number
-}, { collection: 'ratings'});
+    comment: String,
+    created: Number,
+    lastUpdated: Number,
+}, { collection: 'reviews'});
 
 /* MODEL */
-const commentsDb = connection.useDb('comments');
+const commentsDb = connection.useDb('reviews');
 
-export const modelComment = commentsDb.model('comment', commentsSchema);
-export const modelRating = commentsDb.model('rating', ratingsSchema);
+export const modelReply = commentsDb.model('replies', repliesSchema);
+export const modelRating = commentsDb.model('reviews', reviewsSchema);

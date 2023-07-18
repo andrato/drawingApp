@@ -1,9 +1,9 @@
 import { Request, Response} from "express";
-import {modelComment} from "../../mongo_schema";
-import { CommentType } from "../utils/types";
+import {modelReply} from "../../mongo_schema";
+import { ReplyType } from "../utils/types";
 import { validationResult } from "express-validator";
 
-export const commentSchema = {
+export const replySchema = {
     userId: {
         isLength: {
             errorMessage: 'userId is wrong or missing!',
@@ -16,7 +16,13 @@ export const commentSchema = {
             options: { min: 1 },
         },
     },
-    comment: {
+    commentId: {
+        isLength: {
+            errorMessage: 'commentId is wrong or missing!',
+            options: { min: 1 },
+        },
+    },
+    reply: {
         isLength: {
             errorMessage: 'comment is wrong or missing!',
             options: { min: 1 },
@@ -24,7 +30,7 @@ export const commentSchema = {
     },
 }
 
-export const addComment = async (req: Request, res: Response) => {
+export const addReply = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -33,16 +39,17 @@ export const addComment = async (req: Request, res: Response) => {
         });
     }
 
-    const comment: CommentType = {
+    const comment: ReplyType = {
         drawingId: req.body.drawingId,
         userId: req.body.userId,
-        comment: req.body.comment,
+        commentId: req.body.commentId,
+        reply: req.body.reply,
         created: Date.now(),
     }
     
     // add comment in db
     try {
-        const response = await modelComment.create(comment);
+        const response = await modelReply.create(comment);
 
         return res.json({
             comment: response,

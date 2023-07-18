@@ -1,13 +1,17 @@
-export type CommentType = {
+export type ReplyType = {
     userId: string;
     drawingId: string;
-    comment: string;
+    commentId: string;
+    reply: string;
     created: number;
 }
 
-export type RatingType = {
+export type CommentRatingType = {
     userId: string;
     drawingId: string;
     rating: number;
+    comment?: string;
     created: number;
+    lastUpdated: number;
+    replies?: number;
 }

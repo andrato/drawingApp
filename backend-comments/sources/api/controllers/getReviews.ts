@@ -1,9 +1,9 @@
 import { Request, Response} from "express";
 import { modelRating} from "../../mongo_schema";
-import { RatingType } from "../utils/types";
+import { CommentRatingType } from "../utils/types";
 import { validationResult } from "express-validator";
 
-export const ratingSchema = {
+export const reviewsSchema = {
     userId: {
         isLength: {
             errorMessage: 'userId is wrong or missing!',
@@ -20,7 +20,7 @@ export const ratingSchema = {
     },
 }
 
-export const getRating = async (req: Request, res: Response) => {
+export const getReviews = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -32,10 +32,10 @@ export const getRating = async (req: Request, res: Response) => {
     const drawingId = req.query.drawingId as string;
     const userId = req.query.userId as string;
     
-    let ratings: RatingType[] = [];
+    let reviews: CommentRatingType[] = [];
 
     try {
-        ratings = await modelRating.find({drawingId});
+        reviews = await modelRating.find({drawingId});
     } catch (err) {
         return res.status(500).json({
             error: err,
@@ -43,19 +43,20 @@ export const getRating = async (req: Request, res: Response) => {
     }
 
     let computedRatings = 0;
-    if (!ratings.length) {
-        const sumRatings = ratings.reduce(
+    if (!reviews.length) {
+        const sumRatings = reviews.reduce(
             (accumulator, currentValue) => accumulator + currentValue.rating,
             0
         );
 
-        computedRatings = sumRatings / ratings.length;
+        computedRatings = sumRatings / reviews.length;
     }
 
-    let userVote = ratings.find((rating) => rating.userId === userId);
+    let userVote = reviews.find((review) => review.userId === userId);
 
     return res.json({
         rating: computedRatings,
         userVote: userVote,
+        reviews,
     });
 }

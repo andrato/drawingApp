@@ -50,10 +50,10 @@ app.use('/user/*', proxy('http://localhost:8004', {
       }
 }));
 
-app.use('/comments/*', proxy('http://localhost:8005', {
+app.use('/review/*', proxy('http://localhost:8005', {
     proxyReqPathResolver:  (req) => {
         const urlPath = url.parse(req.originalUrl).path;
-        return urlPath?.replace("/comments", "") ?? "";
+        return urlPath?.replace("/review", "") ?? "";
       }
 }));
 
