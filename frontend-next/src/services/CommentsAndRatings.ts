@@ -13,6 +13,8 @@ export type ReplyType = {
 
 type Reviews = {
     rating: number;
+    numberOfRatings: number;
+    ratingSum: number;
     userRating: number;
     reviews: ReviewType[];
 }

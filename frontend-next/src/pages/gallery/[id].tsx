@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import Player from '@/components/player/Player';
-import { Alert, Box, CircularProgress, Typography } from '@mui/material';
+import { Alert, Box, CircularProgress, Rating, Typography } from '@mui/material';
 import { DrawingType, HOST_DRAWING, getDrawing } from '@/services/Drawings';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -25,6 +25,10 @@ const Container = ({children}: {children: ReactNode}) => (<Box sx={(theme) => ({
 export default function GalleryItem() {
     const router = useRouter();
     const id = router.query.id as string;
+    const [reviewInfo, setReviewInfo] = useState<{rating: number, numberOfRatings: number}>({
+        rating: 0,
+        numberOfRatings: 0,
+    });
     const {data, isLoading, isError, error} = useQuery({
         queryKey: [HOST_DRAWING, id],
         queryFn: () => getDrawing(id), 
@@ -75,12 +79,24 @@ export default function GalleryItem() {
                     flexDirection: "column",
                     alignItems: "flex-end",
                 }}>
-                    <RatingDrawing ratingNumber={drawing.likes} userId={drawing.userId} />
+                    <Rating
+                        value={reviewInfo.rating}
+                        precision={0.5}
+                        sx={(theme) => ({
+                            'svg': {
+                                color: theme.palette.backgroundCustom.star,
+                            },
+                            'label': {
+                                fontSize: "27px",
+                            }
+                        })}
+                        readOnly
+                    />
                     <Typography variant="subtitle2" color="textCustom.primary" sx={{
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                     }}>
-                        {`${drawing.likes} votes`}
+                        <><b>{reviewInfo.rating}</b> {`of ${reviewInfo.numberOfRatings} reviews`}</>
                     </Typography>
                 </Box>
             </Box>
@@ -93,7 +109,7 @@ export default function GalleryItem() {
                 contentCateg={drawing.categories}
                 contentText={drawing.description}
             />
-            <Reviews drawingId={id} userId={drawing.userId}/>
+            <Reviews drawingId={id} userId={drawing.userId} setReviewInfo={setReviewInfo}/>
         </Box>
         <Box sx={(theme) => ({
             width: "300px",

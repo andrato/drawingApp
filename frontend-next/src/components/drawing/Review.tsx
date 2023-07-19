@@ -10,9 +10,11 @@ import { useState } from "react";
 export const Review = ({
     review,
     userId,
+    updateReviews,
 }: {
     review: ReviewType;
     userId: string;
+    updateReviews: (review: ReviewType) => void; 
 }) => {
     const [reviewAux, setReviewAux] = useState<ReviewType>(review);
     const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -80,12 +82,14 @@ export const Review = ({
                 })}
                 readOnly
             />
-            {paragraphs.map((text) => <Typography component="div" variant="subtitle1" sx={{mt: 1, mb: 2}}> {text}</Typography> )}
+            {paragraphs.length && <Box sx={{mt: 1, mb: 2}}> 
+                {paragraphs.map((text) => <Typography  variant="body1"> {text}</Typography>)}
+            </Box>}
             <ActionBar userId={reviewAux.userId} onClickEdit={() => 
                 setIsEditing(true)}/>
             {isEditing && <AddReview 
                 drawingId={reviewAux.drawingId}
-                updateReviews={(review: ReviewType) => setReviewAux(review)} 
+                updateReviews={(review: ReviewType) => {updateReviews(review); setReviewAux(review)}} 
                 userId={userId}
                 existingRating={reviewAux.rating}
                 existingComment={reviewAux.comment}

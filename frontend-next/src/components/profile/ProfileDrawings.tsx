@@ -60,7 +60,7 @@ export const ProfileDrawings = ({userId}: {userId: string}) => {
     }, [itemsPerPage, pageNumber, drawings.length])
 
     if (isLoading || isError || !userId) {
-        return <Container><LoadingsAndErrors isLoading={isLoading} isError={isError} /></Container>
+        return <Container width="calc(100% - 240px)"><LoadingsAndErrors isLoading={isLoading} isError={isError} /></Container>
     }
 
     const handlePageChange = (event: any, value: number) => {
@@ -74,7 +74,7 @@ export const ProfileDrawings = ({userId}: {userId: string}) => {
     }
 
     return (
-        <Container>
+        <Container width="calc(100% - 240px)">
             <div>
                 {drawings.length ? (<Grid container spacing={1} sx={{
                     mb: 2,

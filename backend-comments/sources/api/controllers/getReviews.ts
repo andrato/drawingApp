@@ -43,8 +43,9 @@ export const getReviews = async (req: Request, res: Response) => {
     }
 
     let computedRatings = 0;
-    if (!reviews.length) {
-        const sumRatings = reviews.reduce(
+    let sumRatings = 0;
+    if (reviews.length) {
+        sumRatings = reviews.reduce(
             (accumulator, currentValue) => accumulator + currentValue.rating,
             0
         );
@@ -56,6 +57,8 @@ export const getReviews = async (req: Request, res: Response) => {
 
     return res.json({
         rating: computedRatings,
+        ratingSum: sumRatings,
+        numberOfRatings: reviews.length,
         userVote: userVote,
         reviews,
     });

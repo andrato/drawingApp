@@ -21,12 +21,12 @@ export const useItemsPerPage = () => {
     return 3 * 4;
 }
 
-export const Container = ({children}: {children: ReactNode}) => (
+export const Container = ({children, width}: {children: ReactNode, width?: string}) => (
     <Page hasMarginX={true} sx={{
         display: "flex",
         flexDirection: "column", 
         justifyContent: "space-between",
-        width: "calc(100% - 240px)",
+        ...(width ? {width: "calc(100% - 240px)"} : {}),
     }}>
         {children}
     </Page>
