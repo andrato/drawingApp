@@ -14,7 +14,7 @@ export const Review = ({
 }: {
     review: ReviewType;
     userId: string;
-    updateReviews: (review: ReviewType) => void; 
+    updateReviews?: (review: ReviewType) => void; 
 }) => {
     const [reviewAux, setReviewAux] = useState<ReviewType>(review);
     const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -89,7 +89,7 @@ export const Review = ({
                 setIsEditing(true)}/>
             {isEditing && <AddReview 
                 drawingId={reviewAux.drawingId}
-                updateReviews={(review: ReviewType) => {updateReviews(review); setReviewAux(review)}} 
+                updateReviews={(review: ReviewType) => {updateReviews && updateReviews(review); setReviewAux(review)}} 
                 userId={userId}
                 existingRating={reviewAux.rating}
                 existingComment={reviewAux.comment}

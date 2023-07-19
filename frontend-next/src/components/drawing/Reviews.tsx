@@ -34,7 +34,7 @@ export const Reviews = ({
             const ratingMean = (data.data.ratingSum - myReview.rating + review.rating) / data.data.numberOfRatings;
             reviewInfo.rating = ratingMean;
             reviewInfo.numberOfRatings = data.data.numberOfRatings;
-        } else if (!myReview && data?.data?.ratingSum) {
+        } else if (!myReview && data?.data) {
             const ratingMean = (data.data.ratingSum + review.rating) / (data.data.numberOfRatings + 1);
             reviewInfo.rating = ratingMean;
             reviewInfo.numberOfRatings = data.data.numberOfRatings + 1;
