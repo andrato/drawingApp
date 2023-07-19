@@ -59,8 +59,9 @@ export const Suggestions = ({height}: {height: number | null}) => {
         <Box sx={(theme) => ({
             overflow: "auto",
             p: 3,
+            pt: 2,
         })}>
-            <Typography variant="subtitle2" sx={({palette}) => ({color: palette.textCustom.primary, mb: 2, textAlign: "center"})}>Drawings you might like</Typography>
+            <Typography variant="subtitle2" sx={({palette}) => ({color: palette.textCustom.subHeader, mb: 2})}>Drawings you might also like</Typography>
             {drawings.map((item) => <Box sx={{position: "relative", mb: 2}}>
                 <CardMedia
                     component="img"
