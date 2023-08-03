@@ -1,7 +1,7 @@
 import { Request} from "express";
 import multer from "multer";
 import multerS3 from 'multer-s3';
-import { IMAGE_EXT, VIDEO_EXT, generateFilename } from "../utils/helpers";
+import { IMAGE_EXT, VIDEO_EXT, generateFilename } from "./helpers";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({

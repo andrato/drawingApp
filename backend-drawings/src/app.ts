@@ -1,13 +1,9 @@
 import dotenv from "dotenv";
 import express, {Express} from "express";
-// import upload from 'express-fileupload';
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { GetAll } from "./sources/getAll";
-import { GetByCategory } from "./sources/getByCategory";
-import { GetDrawing } from "./sources/getDrawing";
-import { GetByUser } from "./sources/getByUser";
+import router from "./api/routes";
 
 dotenv.config();
 
@@ -23,15 +19,10 @@ dotenv.config();
 
 /* app */
 const app:Express = express();
-// app.use(upload());
 app.use(bodyParser.json());
 app.use(cors());
 
 // define app routes
-app.use("/", GetAll); //basically the gallery
-app.use("/category", GetByCategory);
-app.use("/drawing", GetDrawing); 
-app.use("/user", GetByUser); 
+app.use(router);
 
-
-app.listen(process.env.PORT, () => {console.log(`Listening on port ${process.env.PORT}`)});
+export default app;

@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+      target: base
+    volumes:
+      - ./api-gateway/src:/app/src
+    container_name: api-gateway
+    # expose:
+    #   - "8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - mynet
+  backend-auth:
+    build:
+      context: ./backend-auth
+      dockerfile: Dockerfile
+      target: base
+    container_name: backend-auth
+    volumes:
+      - ./backend-auth/src:/app/src
+    # ports:
+    #   - "8001:8001"
+    networks:
+      - mynet
+  backend-drawings-in-progress:
+    build:
+      context: ./backend-drawings-in-progress
+      dockerfile: Dockerfile
+      target: base
+    container_name: backend-drawings-in-progress
+    volumes:
+      - ./backend-drawings-in-progress/src:/app/src
+    # ports:
+    #   - "8002:8002"
+    networks:
+      - mynet
+  backend-drawings:
+    build:
+      context: ./backend-drawings
+      dockerfile: Dockerfile
+      target: base
+    container_name: backend-drawings
+    volumes:
+      - ./backend-drawings/src:/app/src
+    # ports:
+    #   - "8003:8003"
+    networks:
+      - mynet
+  backend-comments:
+    build:
+      context: ./backend-comments
+      dockerfile: Dockerfile
+      target: base
+    container_name: backend-comments
+    volumes:
+      - ./backend-comments/src:/app/src
+    # ports:
+    #   - "8005:8005"
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    driver: bridge
+    ipam:
+      driver: default

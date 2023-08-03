@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ReactNode, useEffect, useState } from "react";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { getUserInfo } from "../common/helpers";
-import { HOST_USER, UserResponseSuccessType, getUser } from "@/services/User";
+import { USER_INFO_API, getUser } from "@/services/User";
 
 const AVATAR_SIZE = 140;
 
@@ -21,7 +21,7 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
     const [initials, setInitials] = useState<string>("");
 
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [HOST_USER, userId],
+        queryKey: [USER_INFO_API, userId],
         queryFn: () => getUser(userId), 
         refetchOnMount: false,
         enabled: Boolean(userId) && userId !== null,

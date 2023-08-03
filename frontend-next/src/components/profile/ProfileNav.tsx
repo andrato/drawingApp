@@ -50,8 +50,8 @@ export const ProfileNav = () => {
 
     useEffect(() => {
         const userInfo = getUserInfo();
-        const isAdmin = Boolean(userInfo && userInfo?.isAdmin);
-        setIsAdmin(isAdmin);
+        const isAdminAux = Boolean(userInfo && userInfo?.isAdmin);
+        setIsAdmin(isAdminAux);
     }, []);
 
     return <Box sx={(theme) => ({

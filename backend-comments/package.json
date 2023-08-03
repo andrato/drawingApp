@@ -1,15 +1,15 @@
 {
   "name": "backend-drawings",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "author": "Andra Tomi",
   "license": "MIT",
   "scripts": {
     "build": "yarn tsc",
     "prestart": "yarn run build",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "preserve": "yarn run build",
-    "serve": "yarn tsc -w & nodemon dist/index.js",
+    "serve": "yarn tsc -w & nodemon dist/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

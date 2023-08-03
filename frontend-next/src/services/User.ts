@@ -1,6 +1,8 @@
 import axios from "axios"
 
 export const HOST_USER = "http://localhost:8080/user";
+export const USER_INFO_API = HOST_USER + "/info";
+export const ADMIN_USERS_API = HOST_USER + "/admin/users";
 
 export type ErrorType = {
     msg: string;
@@ -9,17 +11,20 @@ export type ErrorType = {
 }
 
 export type UserType = {
-    id: string;
+    _id: string;
     firstName: string;
     lastName: string;
     email: string;
+    created: number,
+    lastUpdated: number,
+    imgLocation: string;
+    isAdmin: boolean;
     profile: {
         about: {
             type: String,
         },
         birthdate: Number,
     }
-    imgLocation: string;
 }
 
 export type UserResponseSuccessType = {
@@ -41,9 +46,9 @@ const config = {
 };
 
 export const getUser = (userId: string) => {
-    return axios.get<UserResponseSuccessType>(HOST_USER + "/info", {...config, params: {userId: userId}});
+    return axios.get<UserResponseSuccessType>(USER_INFO_API, {...config, params: {userId: userId}});
 }
 
-// export const getProfileInfo = () => {
-
-// }
+export const getUsers = () => {
+    return axios.get<{users: UserType[]}>(ADMIN_USERS_API, {...config});
+}

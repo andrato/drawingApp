@@ -21,14 +21,18 @@ const app:Express = express();
 // app.use(upload());
 app.use(cors());
 
-app.use('/auth', proxy('http://localhost:8001', {
+console.log("aici");
+
+app.use('/', proxy('http://backend-auth:8001', {
     proxyReqPathResolver:  (req) => {
+        console.log("ahaaam s");
         const urlPath = url.parse(req.originalUrl).path;
+        console.log("urlPath" + urlPath);
         return urlPath?.replace("/auth", "") ?? "";
       }
 }));
 
-app.use('/progress', proxy('http://localhost:8002', {
+app.use('/progress', proxy('http://backend-drawings-in-progress:8002', {
     proxyReqPathResolver:  (req) => {
         const urlPath = url.parse(req.originalUrl).path;
         return urlPath?.replace("/progress", "") ?? "";
@@ -36,7 +40,7 @@ app.use('/progress', proxy('http://localhost:8002', {
 
 }));
 
-app.use('/drawing/*', proxy('http://localhost:8003', {
+app.use('/drawing/*', proxy('http://backend-drawings:8003', {
     proxyReqPathResolver:  (req) => {
         const urlPath = url.parse(req.originalUrl).path;
         return urlPath?.replace("/drawing", "") ?? "";
@@ -50,7 +54,7 @@ app.use('/user/*', proxy('http://localhost:8004', {
       }
 }));
 
-app.use('/review/*', proxy('http://localhost:8005', {
+app.use('/review/*', proxy('http://backend-comments:8005', {
     proxyReqPathResolver:  (req) => {
         const urlPath = url.parse(req.originalUrl).path;
         return urlPath?.replace("/review", "") ?? "";

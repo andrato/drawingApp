@@ -1,5 +1,5 @@
 import { ReviewType } from "@/services/CommentsAndRatings";
-import { HOST_USER, getUser } from "@/services/User";
+import { USER_INFO_API, getUser } from "@/services/User";
 import { Avatar, Box, Card, CardContent, CardHeader, Paper, Rating, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
@@ -21,7 +21,7 @@ export const Review = ({
     const paragraphs = reviewAux.comment ? reviewAux.comment.split('<br>') : [];
     const formatDate = (new Date(reviewAux.created)).toDateString();
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [HOST_USER, reviewAux.userId],
+        queryKey: [USER_INFO_API, reviewAux.userId],
         queryFn: () => getUser(reviewAux.userId), 
         refetchOnMount: false,
         enabled: Boolean(reviewAux.userId),

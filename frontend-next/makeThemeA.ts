@@ -30,6 +30,18 @@ export const makeThemeA = () => {
                 menuBtnActive: "#2d2d2d",
                 bgColor: "#2d2d2d",
                 slider: "#cdcdcd",
+            },
+            error: {
+                light: "#d65454",
+                main: "#d65454",
+                dark: "#b45050",
+                contrastText: "#d7d7d7",
+            },
+            success: {
+                light: "#9b62be",
+                main: "#9b62be",
+                dark: "#744890",
+                contrastText: "#d7d7d7",
             }
         },
         customSizes: {
