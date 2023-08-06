@@ -2,65 +2,68 @@ version: "3.8"
 
 services:
   api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
-      target: base
+    # build:
+    #   context: ./api-gateway
+    #   dockerfile: Dockerfile
+    #   target: base
+    # container_name: api-gateway
+    image: andratommmm/api-gateway:base.1.0
     volumes:
       - ./api-gateway/src:/app/src
-    container_name: api-gateway
-    # expose:
-    #   - "8080"
+    expose:
+      - "8080"
     ports:
       - "8080:8080"
     networks:
       - mynet
   backend-auth:
-    build:
-      context: ./backend-auth
-      dockerfile: Dockerfile
-      target: base
-    container_name: backend-auth
+    image: andratommmm/backend-auth:base.1.0
     volumes:
       - ./backend-auth/src:/app/src
-    # ports:
-    #   - "8001:8001"
+    expose:
+      - "8001"
+    ports:
+      - "8001:8001"
     networks:
       - mynet
   backend-drawings-in-progress:
-    build:
-      context: ./backend-drawings-in-progress
-      dockerfile: Dockerfile
-      target: base
-    container_name: backend-drawings-in-progress
+    image: andratommmm/backend-drawings-in-progress:base.1.0
     volumes:
       - ./backend-drawings-in-progress/src:/app/src
-    # ports:
-    #   - "8002:8002"
+    expose:
+      - "8002"
+    ports:
+      - "8002:8002"
     networks:
       - mynet
   backend-drawings:
-    build:
-      context: ./backend-drawings
-      dockerfile: Dockerfile
-      target: base
-    container_name: backend-drawings
+    image: andratommmm/backend-drawings:base.1.0
     volumes:
       - ./backend-drawings/src:/app/src
-    # ports:
-    #   - "8003:8003"
+    expose:
+      - "8003"
+    ports:
+      - "8003:8003"
+    networks:
+      - mynet
+  backend-users:
+    image: andratommmm/backend-users:base.1.0
+    volumes:
+      - ./backend-users/src:/app/src
+    expose:
+      - "8004"
+    ports:
+      - "8004:8004"
     networks:
       - mynet
   backend-comments:
-    build:
-      context: ./backend-comments
-      dockerfile: Dockerfile
-      target: base
-    container_name: backend-comments
+    image: andratommmm/backend-comments:base.1.0
     volumes:
       - ./backend-comments/src:/app/src
-    # ports:
-    #   - "8005:8005"
+    expose:
+      - "8005"
+    ports:
+      - "8005:8005"
     networks:
       - mynet
 

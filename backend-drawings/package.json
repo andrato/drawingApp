@@ -9,8 +9,7 @@
     "prestart": "yarn run build",
     "start": "node dist/src/index.js",
     "test": "jest",
-    "preserve": "yarn run build",
-    "serve": "yarn tsc -w & nodemon dist/src/index.js"
+    "serve": "tsc -w & nodemon ."
   },
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.0.0",

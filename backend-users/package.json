@@ -7,9 +7,8 @@
     "build": "yarn run tsc",
     "prestart": "yarn run build",
     "start": "node dist/src/index.js",
-    "preserve": "yarn run build",
-    "serve": "tsc -w & nodemon .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "serve": "tsc -w & nodemon ."
   },
   "author": "Andra Tomi",
   "license": "ISC",

@@ -18,6 +18,8 @@ RUN yarn build
 ENV MONGO_AUTH=mongodb+srv://general:S5GANK3iobHnzvF8@drawing.wvoxhls.mongodb.net/drawings?retryWrites=true&w=majority
 ENV PORT=8003
 
+EXPOSE 8003
+
 CMD [ "yarn", "serve" ]
 
 ### FOR PROD

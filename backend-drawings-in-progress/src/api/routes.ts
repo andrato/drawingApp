@@ -5,8 +5,8 @@ import { upload } from "./utils/upload";
 
 const router: express.Router = express.Router();
 
-router.get("/save", checkSchema(saveSchema), upload.array('files'), save);
+router.post("/save", checkSchema(saveSchema), upload.array('files'), save);
 router.get("/check", checkSchema(checkDrawingSchema), check);
-router.get("/publish", checkSchema(publishSchema), upload.array('files'), publish);
+router.post("/publish", checkSchema(publishSchema), upload.array('files'), publish);
 
 export default router;

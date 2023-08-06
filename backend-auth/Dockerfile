@@ -22,6 +22,9 @@ ENV MONGO_AUTH=mongodb+srv://general:S5GANK3iobHnzvF8@drawing.wvoxhls.mongodb.ne
 ENV MONGO_USERS_INFO=mongodb+srv://general:S5GANK3iobHnzvF8@drawing.wvoxhls.mongodb.net/users_info?retryWrites=true&w=majority
 ENV PORT=8001
 
+# expose API PORT
+EXPOSE 8001
+
 CMD [ "yarn", "serve" ]
 
 ### FOR PROD

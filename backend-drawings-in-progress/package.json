@@ -1,7 +1,7 @@
 {
   "name": "backend-drawings",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "author": "Andra Tomi",
   "license": "MIT",
   "scripts": {
@@ -9,8 +9,7 @@
     "prestart": "yarn run build",
     "start": "node dist/src/index.js",
     "test": "jest",
-    "preserve": "yarn run build",
-    "serve": "yarn tsc -w & nodemon dist/src/index.js"
+    "serve": "tsc -w & nodemon ."
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.327.0",
