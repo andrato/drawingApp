@@ -51,6 +51,14 @@ app.use('/review/*', proxy('http://backend-comments:8005', {
       }
 }));
 
+
+app.use('/admin/*', proxy('http://backend-auth:8001', {
+    proxyReqPathResolver:  (req) => {
+        const urlPath = url.parse(req.originalUrl).path;
+        return urlPath?.replace("/admin", "") ?? "";
+      }
+}));
+
 app.use('/', proxy('http://backend-auth:8001', {
     proxyReqPathResolver:  (req) => {
         const urlPath = url.parse(req.originalUrl).path;

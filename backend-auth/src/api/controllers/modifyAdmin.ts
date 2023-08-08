@@ -8,6 +8,7 @@ export const modifyAdminSchema = {
         isLength: {
             errorMessage: 'userId is wrong or missing!',
             options: { min: 1 },
+            location: "params",
         },
     },
 }
@@ -22,13 +23,17 @@ export const modifyAdmin = async (req: Request, res: Response) => {
         });
     }
     
-    const userId = req.body.userId;
+    const userId = req.query.userId;
+
+    console.log("ajung aici");
 
     let existingAuthUser: (UserAuthType & {_id: string}| null);
 
     // find user in DB
     try {
         existingAuthUser = await modelUserAuth.findByIdAndUpdate(userId, [{ $set: { isAdmin: { $not: "$isAdmin" }}}]);
+
+        console.log("ajung aici");
 
         if (!existingAuthUser) {
             return res.status(500).json({
@@ -43,14 +48,14 @@ export const modifyAdmin = async (req: Request, res: Response) => {
 
     let existingUser: (UserInfoType & {_id: string}| null);
     try {
-        existingUser = await modelUserAuth.findByIdAndUpdate(userId, [{$set: { isAdmin: { $not: "$isAdmin" }}}]);
+        existingUser = await modelUserInfo.findByIdAndUpdate(userId, [{$set: { isAdmin: { $not: "$isAdmin" }}}]);
 
         if (!existingUser) {
             console.log("an error occured while trying to update the existing user info")
         }
     } catch (err) {
         return res.status(500).json({
-            error: err,
+            error: "error occured when trying to update users",
         })
     }
     
