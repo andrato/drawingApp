@@ -18,6 +18,13 @@ const Container = ({children}: {children: ReactNode}) => (<Box sx={(theme) => ({
     alignItems: "left",
     [theme.breakpoints.down(BREAKPOINT)]: {
         p: 2
+    },
+    overflowX: "hidden",
+    // WebkitOverflowScrolling: {
+    //     display: "block"
+    // }
+    "::-webkit-scrollbar": {
+        display: "block",
     }
 })}>
     {children}
