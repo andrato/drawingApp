@@ -1,9 +1,8 @@
+
 import { createRef, useCallback, useEffect, useRef } from "react";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { CanvasRecorder } from "./utils/CanvasRecorder";
-import RecordRTC from "recordrtc";
-import { clearInterval } from "timers";
-import html2canvas from "html2canvas";
+import domtoimage from 'dom-to-image-more';
 
 export type Point = {
     x: number,
@@ -29,8 +28,6 @@ export function useOnDraw(onDraw: Function) {
     const divRef = useRef<HTMLDivElement | null>(null);
     const saveFrames = useRef<any>(null);
 
-    // let recorder: RecordRTC|null = null;
-
     // useEffect(() => {
     //     if (canvasRef.current === null && refsArray.current.length > 1) {
     //         canvasRef.current = refsArray.current[1];
@@ -47,7 +44,8 @@ export function useOnDraw(onDraw: Function) {
         if (pos !== undefined && pos <= refsArray.current.length) {
             return refsArray.current[pos];
         }
-        return refsArray.current[position.current];
+        
+        return canvasRef.current;
     }
 
     /* ***************************************** */
@@ -71,7 +69,6 @@ export function useOnDraw(onDraw: Function) {
             const point = computePointInCanvas(e.clientX, e.clientY) as Point;
             const ctx = ref?.getContext('2d');
             const ctxAux = refAux?.getContext('2d');
-            const ctxRecording = videoRef.current?.getContext('2d');
             const buttonActive = getActiveButton();
 
             if (buttonActive === "circle" || buttonActive === "square") {
@@ -80,11 +77,9 @@ export function useOnDraw(onDraw: Function) {
                 }
                 clearLayer(0);
                 onDraw(ctxAux, point, prevPointRef.current);
-                // ctxRecording?.drawImage(refAux, 0, 0);
             } else {
                 onDraw(ctx, point, prevPointRef.current);
                 prevPointRef.current = point;
-                // ctxRecording?.drawImage(ref, 0, 0);
             }
         }
 
@@ -106,9 +101,10 @@ export function useOnDraw(onDraw: Function) {
             // copy from layer aux to current layer
             const buttonActive = getActiveButton();
 
-            if (buttonActive === "circle" || buttonActive === "square") {
+            const auxCanvas = getRef(0);
+            if (auxCanvas !== null && (buttonActive === "circle" || buttonActive === "square")) {
                 const ctx = getRef()?.getContext('2d');
-                ctx?.drawImage(getRef(0), 0, 0);
+                ctx?.drawImage(auxCanvas, 0, 0);
                 clearLayer(0);
             }
         }
@@ -140,7 +136,7 @@ export function useOnDraw(onDraw: Function) {
         }
     }, [onDraw])
 
-    function addLayer(ref: HTMLCanvasElement) {
+    function addInitialLayer(ref: HTMLCanvasElement) {
         if (!ref) {
             return;
         }
@@ -153,7 +149,8 @@ export function useOnDraw(onDraw: Function) {
 
         let length = refsArray.current.length + 1;
         refsArray.current = Array(length).fill(null).map((_, i) => refsArray.current[i] || ref);
-        position.current = length-1;
+        canvasRef.current = refsArray.current[refsArray.current.length - 1];
+        // position.current = length-1;
 
         if (!started && length > 1) {
             const ctx = getRef(1)?.getContext('2d');
@@ -165,6 +162,22 @@ export function useOnDraw(onDraw: Function) {
 
             started = true;
         }
+    }
+
+    function addLayer (name: string) {
+        let length = refsArray.current.length + 1;
+
+        const newLayer = document.createElement("canvas");
+        newLayer.id = name;
+        newLayer.width=500;
+        newLayer.height=500;
+        newLayer.onmousedown=onMouseDown;
+        newLayer.style.cssText = `z-index: ${length}; position: absolute; display: inline-block; width: 500px; height: 500px; margin-left: auto; margin-right: auto; left: 0px; right: 0px;`;
+        document.getElementById("layersContainers")?.appendChild(newLayer);
+        
+        refsArray.current = Array(length).fill(null).map((_, i) => refsArray.current[i] || newLayer);
+        canvasRef.current = refsArray.current[refsArray.current.length - 1];
+        // position.current = length-1;
     }
 
     const setVideoRef = (ref: HTMLCanvasElement) => {
@@ -199,7 +212,7 @@ export function useOnDraw(onDraw: Function) {
 
     function clearLayer(pos?: number) {
         const ref = getRef(pos);
-        const ctx = ref.getContext('2d');
+        const ctx = ref?.getContext('2d');
 
         if (!ctx) return;
 
@@ -214,7 +227,11 @@ export function useOnDraw(onDraw: Function) {
     }
 
     const saveImage = () => {
-        const ref = refsArray.current[1];
+        if (!videoRef.current) {
+            return null;
+        }
+
+        const ref = videoRef.current;
         return new Promise(resolve => ref.toBlob(resolve, "image/jpeg"));
     };
 
@@ -227,17 +244,16 @@ export function useOnDraw(onDraw: Function) {
             recorder.start();
 
             const context = videoRef.current.getContext('2d');
-            saveFrames.current = setInterval(() => {
+            saveFrames.current = setInterval(async () => {
                 if (divRef.current) {
-                    html2canvas(divRef.current).then((canvas) => {
-                        context?.drawImage(canvas, 0, 0);
-                    });
+                    const canvas = await domtoimage.toCanvas(divRef.current) as HTMLCanvasElement;
+                    context?.drawImage(canvas, 0, 0);
                 }
             }, 10);
         } else {
-            console.error("naspa")
+            console.error("Smth went wrong")
         }
-      }, [videoRef])
+      }, [])
     
     const stopRecording = useCallback(() => {
         recorder.save();
@@ -253,48 +269,9 @@ export function useOnDraw(onDraw: Function) {
         window && window.clearInterval(saveFrames.current);
     }, [])
 
-    // const startRecording = () => {
-    //     if(videoRef.current) {
-    //         recorder.createStream(videoRef.current);
-    //         recorder.start();
-    //         // divRef.current?.dispatchEvent(eventRecordStarted);
-    //         // recorder = new RecordRTC(videoRef.current, {type: "video"});
-    //         // recorder.startRecording();
-    //         // const currCanvas = getRef()?.getContext('2d');
-    //         // const context = videoRef.current?.getContext('2d');
-    //         // console.log("width:" + context?.canvas.width);
-    //         // console.log("height:" + context?.canvas.height);
-    //         // console.log("width - current canvas:" + currCanvas?.canvas.width);
-    //         // console.log("height - current canvas:" + currCanvas?.canvas.height);
-    //         // saveFrames.current = setInterval(() => {
-    //         //     context?.drawImage(getRef(), 0, 0);
-    //         // }, 100);
-    //     } else {
-    //         console.error("naspa")
-    //     }
-    // }
-    
-    // const stopRecording = () => {
-    //     recorder.save();
-    //     recorder.stop();
-    //     // divRef.current?.dispatchEvent(eventRecordEnded);
-    //     // recorder?.stopRecording();
-    // }
-
-    // const saveRecording = () => {
-    //     return recorder?.save();
-    //     // const ceva = recorder?.getBlob();
-    //     // return ceva;
-    // }
-
-    // const pauseRecording = () => {
-    //     // window && window.clearInterval(saveFrames.current);
-    //     recorder.pause();
-    //     // recorder?.pauseRecording();
-    // }
-
     return {
         addLayer, 
+        addInitialLayer,
         onMouseDown,
         clearLayer,
         startRecording,

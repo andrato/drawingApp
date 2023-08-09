@@ -1,10 +1,12 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useOnDraw, Point } from "./useOnDraw";
 import { Box } from "@mui/material";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { 
+    CanvasElem,
     HandleActionsCanvasType,
 } from "./types";
+import { subscribe, unsubscribe } from "./events";
 
 export type CanvasProps = {
     color: string, 
@@ -13,15 +15,9 @@ export type CanvasProps = {
     height: number,
 }
 
-type CanvasElem = {
-    name: string | null,
-}
+const defaulName = "Default";
 
-const startingLayers: CanvasElem[] = [{
-    name: "Default",
-}, {
-    name: null
-}]
+const startingLayers: CanvasElem[] = []
 
 export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleActionsCanvasType>) => {
     /* ********************************************************** */
@@ -29,15 +25,12 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /* ********************************************************** */
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
-    // const canvases = useState<CanvasElem[]>(startingLayers);
-    const {saveRecording, saveImage, onMouseDown, addLayer, setVideoRef, setDivRef} = useOnDraw(onDraw);
+    const {saveRecording, saveImage, onMouseDown, addLayer, addInitialLayer, setVideoRef, setDivRef} = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
-
-    // useEffect(() => {
-    //     setLayers()
-    // }, []);
+    // for layers
+    const newLayers = useRef<CanvasElem[]>([]);
 
     /* ***************************************** */
     /*                For parent                 */
@@ -57,6 +50,33 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             return saveImage();
         },
     }));
+
+    useEffect(() => {
+        subscribe("setLayers", (event: CustomEvent<CanvasElem[]>) => {
+            console.log("in event");
+            // setLayers(event.detail);
+            newLayers.current = event.detail;
+        });
+        subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
+            console.log("in event");
+            const elem = newLayers.current.find((elem) => elem.name === event.detail[0].name);
+
+            if(elem) {
+                return;
+            }
+
+            // const newLayers = layers;
+            // layers.push(event.detail[0]);
+            // setLayers(newLayers);
+            newLayers.current.push(event.detail[0]);
+            addLayer(event.detail[0].name);
+        });
+    
+        return () => {
+          unsubscribe("setLayers", () => {});
+          unsubscribe("addLayer", () => {});
+        }
+      }, []);
 
     /* ******************************s**************************** */
     /*                          DRAW STUFF                        */
@@ -127,14 +147,13 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         end: Point, 
         ctx: CanvasRenderingContext2D | null | undefined,
     ) {
+        if(!ctx) return;
 
-        // if(!ctx) return;
-
-        // ctx.lineWidth = lineWidth;
-        // ctx.strokeStyle = color;
-        // ctx.beginPath();
-        // ctx.rect(start.x, start.y, end.x-start.x, end.y-start.y);
-        // ctx.stroke();
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.rect(start.x, start.y, end.x-start.x, end.y-start.y);
+        ctx.stroke();
     }
 
     function handleDrawCircle (
@@ -154,7 +173,6 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         ctx.stroke();
     }
 
-
     /* ********************************************************** */
     /*                          THE RETURN                        */
     /* ********************************************************** */
@@ -168,11 +186,14 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             justifyContent: "center",
         }}>
             <Box 
+                id="layersContainers"
+                height={height}
+                width={width}
                 ref={setDivRef}
                 sx={{    
                     position: "absolute", 
-                    width: `${width}px`,
-                    height: `${height}px`,
+                    // width: `${width}px`,
+                    // height: `${height}px`,
                     marginLeft: "auto",
                     marginRight: "auto",
                     left: 0,
@@ -194,7 +215,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                     }}
                 />
                 <canvas 
-                    ref={addLayer} 
+                    ref={addInitialLayer} 
                     height={height}
                     width={width}
                     onMouseDown={onMouseDown}
@@ -211,7 +232,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                     }}
                 />
                 <canvas 
-                    ref={addLayer} 
+                    ref={addInitialLayer} 
                     height={height}
                     width={width}
                     onMouseDown={onMouseDown}
@@ -227,7 +248,28 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                         left: 0,
                         right: 0,
                     }}
-                />       
+                />
+                {/* {newLayers.current.map((layer) => {
+                    return (<canvas 
+                        key={layer.name}
+                        ref={addLayer} 
+                        height={height}
+                        width={width}
+                        onMouseDown={onMouseDown}
+                        style={{
+                            zIndex: 1,
+                            position: "absolute", 
+                            display: "inline-block", 
+                            backgroundColor: "white",
+                            width: `${width}px`,
+                            height: `${height}px`,
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            left: 0,
+                            right: 0,
+                        }}
+                    />)
+                })}        */}
             </Box>
         </Box>
     )

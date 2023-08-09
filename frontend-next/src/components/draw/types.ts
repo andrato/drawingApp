@@ -3,3 +3,10 @@ export type HandleActionsCanvasType = {
     getDrawingVideo: Function,
     getDrawingImage: Function,
 }
+
+export type CanvasElem = {
+    position: number;
+    name: string;
+    selected: boolean;
+}
+

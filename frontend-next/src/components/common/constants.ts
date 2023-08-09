@@ -12,3 +12,5 @@ export const sortByOptions = [
     SortBy.OLDEST, 
     SortBy.POPULAR
 ]
+
+export const HOST = "http://localhost:8080";

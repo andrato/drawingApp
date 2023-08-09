@@ -22,6 +22,7 @@ type SigninResponseSuccessType = {
         profile?: UserProfileType | null,
         email: string,
         created: string,
+        isAdmin: boolean,
         lastUpdated: string,
     },
 };

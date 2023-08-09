@@ -1,7 +1,7 @@
 import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import axios from "axios"
 
-const HOST = "http://localhost:8080/drawing";
+export const HOST_DRAWING = "http://localhost:8080/drawing";
 
 export type ErrorType = {
     msg: string;
@@ -67,7 +67,7 @@ const config = {
 };
 
 export const getDrawings = () => {
-    return axios.get<DrawingsResponseSuccessType>(HOST + "/", {...config});
+    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/", {...config});
 }
 
 export const getDrawingByCategory = (category: string) => {
@@ -80,9 +80,13 @@ export const getDrawingByCategory = (category: string) => {
         computedCateg = "topAmateur";
     }
 
-    return axios.get<DrawingsResponseSuccessType>(HOST + "/category", {...config, params: {category: computedCateg}});
+    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/category", {...config, params: {category: computedCateg}});
+}
+
+export const getDrawingByUser = (userId: string) => {
+    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/user", {...config, params: {userId}});
 }
 
 export const getDrawing = (id: string) => {
-    return axios.get<DrawingResponseSuccessType>(HOST + "/drawing", {...config, params: {drawingId: id}});
+    return axios.get<DrawingResponseSuccessType>(HOST_DRAWING + "/drawing", {...config, params: {drawingId: id}});
 }

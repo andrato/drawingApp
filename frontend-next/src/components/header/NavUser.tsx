@@ -1,6 +1,7 @@
 import { Logout, Settings } from "@mui/icons-material";
 import { Avatar, Divider, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material"
 import { LocalStorageKeys } from "../utils/constants/LocalStorage";
+import { useRouter } from "next/router";
 
 export const NavUser = ({
     anchorEl,
@@ -9,6 +10,8 @@ export const NavUser = ({
     anchorEl: HTMLElement | null;
     onClose: () => void;
 }) => {
+    const router = useRouter();
+
     return <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -44,21 +47,17 @@ export const NavUser = ({
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-        <MenuItem onClick={onClose}>
+        <MenuItem onClick={() => router.push('/profile')}>
             <Avatar /> 
             <Typography component="span" variant="body2"> Profile </Typography>
         </MenuItem>
-        <MenuItem onClick={onClose}>
-            <Avatar /> 
-            <Typography component="span" variant="body2"> My account </Typography>
-        </MenuItem>
         <Divider />
-        <MenuItem onClick={onClose}>
+        {/* <MenuItem onClick={onClose}>
             <ListItemIcon>
                 <Settings fontSize="small" />
             </ListItemIcon>
             <Typography component="span" variant="body2"> Settings </Typography>
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={() => {
             localStorage.removeItem(LocalStorageKeys.USER_TOKEN);
             localStorage.removeItem(LocalStorageKeys.USER_INFO); 

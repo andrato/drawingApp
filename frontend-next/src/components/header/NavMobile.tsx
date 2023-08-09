@@ -201,9 +201,6 @@ export const NavMobile = ({
                             <StyledLink to="/profile">
                                 Profile
                             </StyledLink>
-                            <StyledLink to="/settings">
-                                Settings
-                            </StyledLink>
                             <Box 
                                 onClick={() => {
                                     localStorage.removeItem(LocalStorageKeys.USER_TOKEN);

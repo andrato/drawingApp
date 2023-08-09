@@ -3,12 +3,11 @@ import { ReactNode, useEffect, useState } from "react";
 import { Page } from "@/components/utils/helpers/Page";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { DrawingTypePartial, getDrawingByCategory } from "@/services/Drawings";
+import { DrawingTypePartial, HOST_DRAWING, getDrawingByCategory } from "@/services/Drawings";
 import { SortBy, sortByOptions } from "@/components/common/constants";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 
-
-const useItemsPerPage = () => {
+export const useItemsPerPage = () => {
     const theme = useTheme();
     const isMediumScreenUp = useMediaQuery(theme.breakpoints.up('md'));
     const isSmallScreenUp = useMediaQuery(theme.breakpoints.up('sm'));
@@ -22,11 +21,12 @@ const useItemsPerPage = () => {
     return 3 * 4;
 }
 
-const Container = ({children}: {children: ReactNode}) => (
+export const Container = ({children, width}: {children: ReactNode, width?: string}) => (
     <Page hasMarginX={true} sx={{
         display: "flex",
         flexDirection: "column", 
         justifyContent: "space-between",
+        ...(width ? {width: "calc(100% - 240px)"} : {}),
     }}>
         {children}
     </Page>
@@ -38,8 +38,9 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     const [itemsPage, setItemsPage] = useState<DrawingTypePartial[]>([]);
     const itemsPerPage = useItemsPerPage();
     const pageNumber = Number(router.query["page"] ?? 1);
+    // partea in care cerem datele de la backend
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [category],
+        queryKey: [HOST_DRAWING, category],
         queryFn: () => getDrawingByCategory(category), 
         refetchOnMount: false,
     });
