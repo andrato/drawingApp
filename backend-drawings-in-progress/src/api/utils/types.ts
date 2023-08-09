@@ -33,8 +33,8 @@ export type DrawingType = {
     title: string;
     displayTitle?: string;
     categories?: string[];
-    likes?: number;
-    comments?: number;
+    rating?: number;
+    reviews?: number;
     topArt?: boolean;
     topAmateur?: boolean;
     video: FileType;

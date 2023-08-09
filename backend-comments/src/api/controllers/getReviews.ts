@@ -1,6 +1,7 @@
 import { Request, Response} from "express";
 import { modelRating} from "../../mongo_schema";
 import { CommentRatingType } from "../utils/types";
+import { getReviewsAndRating } from "../utils/helpers";
 import { validationResult } from "express-validator";
 
 export const reviewsSchema = {
@@ -42,21 +43,12 @@ export const getReviews = async (req: Request, res: Response) => {
         })
     }
 
-    let computedRatings = 0;
-    let sumRatings = 0;
-    if (reviews.length) {
-        sumRatings = reviews.reduce(
-            (accumulator, currentValue) => accumulator + currentValue.rating,
-            0
-        );
-
-        computedRatings = sumRatings / reviews.length;
-    }
+    const {rating, sumRatings} = getReviewsAndRating(reviews);
 
     let userVote = reviews.find((review) => review.userId === userId);
 
     return res.json({
-        rating: computedRatings,
+        rating,
         ratingSum: sumRatings,
         numberOfRatings: reviews.length,
         userVote: userVote,

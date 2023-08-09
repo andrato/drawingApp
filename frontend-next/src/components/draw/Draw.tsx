@@ -146,7 +146,7 @@ export function Draw() {
                     width: `calc(100% - ${theme.customSizes.drawLeftMenuWidth} - ${theme.customSizes.drawRightMenuWidth})`, 
                     height: "100%",
                     position: "relative",
-                    overflow: "scroll",
+                    overflow: "visible",
                 })}>
                     <DrawContainer 
                         width={500} 

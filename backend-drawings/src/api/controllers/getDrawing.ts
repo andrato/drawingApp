@@ -2,6 +2,7 @@ import { Request, Response} from "express";
 import { Types } from "mongoose";
 import { DrawingType } from "../utils/types";
 import { modelDrawing } from "../../mongo_schema";
+import { validationResult } from "express-validator";
 
 export const getDrawingSchema = {
     drawingId: {
@@ -14,6 +15,14 @@ export const getDrawingSchema = {
 }
 
 export const getDrawing = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+            errors: errors.array(),
+        });
+    }
+
     const drawingId = req.query.drawingId as string;
 
     let drawing: DrawingType | null = null;

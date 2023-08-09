@@ -65,7 +65,7 @@ const Container = ({children}: {children: ReactNode}) => (
         position: "relative",
         width: "calc(100% - 240px)",
         m: 2,
-        overflow: "scroll",
+        // overflow: "hidden",
     }}>
         {children}
     </Box>

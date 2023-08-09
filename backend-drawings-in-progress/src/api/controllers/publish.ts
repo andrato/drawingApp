@@ -96,8 +96,8 @@ export const publish = async (req: Request, res: Response) => {
             displayTitle: req.body.displayTitle,
             categories: req.body.categories ?? [],
             description: req.body.description ?? '',
-            likes: 0, 
-            comments: 0,
+            rating: 0, 
+            reviews: 0,
             topArt: false,
             topAmateur: false,
             video: {

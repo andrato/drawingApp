@@ -1,6 +1,7 @@
 import { Request, Response} from "express";
 import { DrawingType } from "../utils/types";
 import { modelDrawing } from "../../mongo_schema";
+import { validationResult } from "express-validator";
 
 export const getByUserSchema = {
     userId: {
@@ -13,6 +14,14 @@ export const getByUserSchema = {
 }
 
 export const getByUser = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+            errors: errors.array(),
+        });
+    }
+
     const userId = req.query.userId;
 
     let drawings: DrawingType[] = [];

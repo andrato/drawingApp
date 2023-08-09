@@ -1,6 +1,7 @@
 import { Request, Response} from "express";
 import { modelDrawing } from "../../mongo_schema";
 import { DrawingType } from "../utils/types";
+import { validationResult } from "express-validator";
 
 export const getByCategorySchema = {
     category: {
@@ -13,6 +14,14 @@ export const getByCategorySchema = {
 }
 
 export const getByCategory = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+            errors: errors.array(),
+        });
+    }
+
     const category = req.query.category;
 
     let drawings: DrawingType[] = [];

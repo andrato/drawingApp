@@ -1,7 +1,11 @@
-import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import axios from "axios"
 
-export const HOST_DRAWING = "http://localhost:8080/drawing";
+export const HOST = "http://localhost:8080/drawing";
+export const HOST_DRAWINGS = HOST + "/";
+export const HOST_DRAWINGS_ADMIN = HOST + "/getAdmin";
+export const HOST_DRAWING = HOST + "/drawing";
+export const HOST_USER_DRAWINGS = HOST + "/user";
+export const HOST_CATEGORY_DRAWINGS = HOST + "/category";
 
 export type ErrorType = {
     msg: string;
@@ -36,6 +40,20 @@ export type DrawingType = {
     description?: string;
 }
 
+export type DrawingAdminType = {
+    id: string;
+    userId: string;
+    created: number;
+    lastUpdated: number;
+    title: string;
+    displayTitle: string;
+    categories?: string[];
+    rating: number;
+    review: number;
+    topArt?: boolean;
+    topAmateur?: boolean;
+}
+
 export type DrawingTypePartial = {
     id: string,
     created: string,
@@ -45,12 +63,10 @@ export type DrawingTypePartial = {
 
 
 export type DrawingsResponseSuccessType = {
-    status: 0;
     drawings: DrawingTypePartial[];
 };
 
 export type DrawingResponseSuccessType = {
-    status: 0;
     drawing: DrawingType;
 };
 
@@ -67,7 +83,7 @@ const config = {
 };
 
 export const getDrawings = () => {
-    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/", {...config});
+    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWINGS, {...config});
 }
 
 export const getDrawingByCategory = (category: string) => {
@@ -80,13 +96,17 @@ export const getDrawingByCategory = (category: string) => {
         computedCateg = "topAmateur";
     }
 
-    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/category", {...config, params: {category: computedCateg}});
+    return axios.get<DrawingsResponseSuccessType>(HOST_CATEGORY_DRAWINGS, {...config, params: {category: computedCateg}});
 }
 
 export const getDrawingByUser = (userId: string) => {
-    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/user", {...config, params: {userId}});
+    return axios.get<DrawingsResponseSuccessType>(HOST_USER_DRAWINGS, {...config, params: {userId}});
 }
 
 export const getDrawing = (id: string) => {
-    return axios.get<DrawingResponseSuccessType>(HOST_DRAWING + "/drawing", {...config, params: {drawingId: id}});
+    return axios.get<DrawingResponseSuccessType>(HOST_DRAWING, {...config, params: {drawingId: id}});
+}
+
+export const getDrawingsAdmin = () => {
+    return axios.get<{drawings: DrawingAdminType}>(HOST_DRAWINGS_ADMIN, {...config});
 }
