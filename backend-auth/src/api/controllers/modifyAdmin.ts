@@ -25,15 +25,11 @@ export const modifyAdmin = async (req: Request, res: Response) => {
     
     const userId = req.query.userId;
 
-    console.log("ajung aici");
-
     let existingAuthUser: (UserAuthType & {_id: string}| null);
 
     // find user in DB
     try {
         existingAuthUser = await modelUserAuth.findByIdAndUpdate(userId, [{ $set: { isAdmin: { $not: "$isAdmin" }}}]);
-
-        console.log("ajung aici");
 
         if (!existingAuthUser) {
             return res.status(500).json({

@@ -22,6 +22,7 @@ export type UserInfoType = {
     created: number;
     lastUpdated: number;
     isAdmin: boolean;
+    drawings: number;
 }
 
 export type UserAuthType = {

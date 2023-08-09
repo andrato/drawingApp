@@ -1,4 +1,5 @@
-import { getUserInfo } from "@/components/common/helpers";
+import { getUserInfo, isUserLoggedIn } from "@/components/common/helpers";
+import { AllDrawings } from "@/components/profile/AllDrawings";
 import { AllUsers } from "@/components/profile/AllUsers";
 import { Profile } from "@/components/profile/Profile";
 import { ProfileDrawings } from "@/components/profile/ProfileDrawings";
@@ -16,6 +17,10 @@ export default function ProfileCategory() {
         const userInfo = getUserInfo();
         const userId = (userInfo && userInfo?.id) ?? "";
         setUserId(userId);
+
+        if (userId == '') {
+            router.push('/');
+        }
     }, []);
 
     switch(slug) {
@@ -31,10 +36,10 @@ export default function ProfileCategory() {
             component = <AllUsers userId={userId}/>;
             break;
         }
-        // case 'allDrawings': {
-        //     component = <ProfileAllDrawings userId={userId}/>;
-        //     break;
-        // }
+        case 'allDrawings': {
+            component = <AllDrawings userId={userId}/>;
+            break;
+        }
     }
 
     return <Profile>

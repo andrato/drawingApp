@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import mongoose from "mongoose";
 import { DrawingType } from "../utils/types";
 import { modelDrawing, modelDrawingInProgress } from "../../mongo_schema";
+import axios from "axios";
 
 export const publishSchema = {
     drawingId: {
@@ -125,6 +126,16 @@ export const publish = async (req: Request, res: Response) => {
         return res.status(200).json({
             status: 0, 
             error: "Error while deleting from modelDrawingInProgress",
+        })
+    }
+
+    // add drawing to user
+    try {
+        await axios.post("http://backend-users:8004/addDrawing", {}, { params: {userId: existingDrawing.userId}});
+    } catch (err) {
+        return res.status(200).json({
+            status: 0, 
+            error: "Error saving for users",
         })
     }
 

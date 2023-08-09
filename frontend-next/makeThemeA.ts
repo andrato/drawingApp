@@ -19,6 +19,7 @@ export const makeThemeA = () => {
                 secondary: "#17a1fa",
                 subHeader: "#828282",
                 focus: "#92c939",
+                disabled: "#919191",
             },
             primary: {
                 main: "#3fa0e0",

@@ -1,6 +1,6 @@
 import { Request, Response} from "express";
-import {modelUserAuth, modelUserInfo} from "../../mongo_schema";
-import { UserAuthType, UserInfoType } from "../helpers/types";
+import {modelUserInfo} from "../../mongo_schema";
+import { UserAuthType } from "../helpers/types";
 import { validationResult } from "express-validator";
 
 export const getUsers = async (req: Request, res: Response) => {

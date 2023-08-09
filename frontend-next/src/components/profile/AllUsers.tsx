@@ -1,37 +1,15 @@
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
+import { Box, Button, FormControlLabel, FormGroup, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ReactNode, useMemo, useState } from "react";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
-import { ADMIN_USERS_API, UserType, deleteUser, getUser, getUsers, modifyUser } from "@/services/User";
+import { ADMIN_USERS_API, deleteUser, getUsers, modifyUser } from "@/services/User";
 import { DrawingDialog } from "../utils/helpers/DrawingDialog";
-import { Order, getComparator, stableSort } from "./helpers";
-import { visuallyHidden } from "@mui/utils";
+import { HeadCell, Order, SortData, getComparator, mapUsersToTableData, stableSort } from "./helpers";
 
 const DEFAULT_VALUES_DIALOG = {
     isOpen: false,
     handler: () => {},
     bodyText: '',
-}
-interface Data {
-    _id: string;
-    name: string;
-    created: number;
-    updated: number;
-    admin: boolean;
-    actions: ReactNode;
-}
-
-interface SortData {
-    _id: string;
-    name: string;
-    created: number;
-    updated: number;
-}
-
-interface HeadCell {
-    id: keyof Data;
-    label: string;
-    numeric: boolean;
 }
 
 const headCellsSort: readonly HeadCell[] = [
@@ -51,9 +29,14 @@ const headCellsSort: readonly HeadCell[] = [
       label: 'Created',
     },
     {
-      id: 'updated',
+      id: 'lastUpdated',
       numeric: true,
       label: 'Last updated',
+    },
+    {
+        id: 'drawings',
+        numeric: true,
+        label: 'Drawings',
     },
 ];
 
@@ -63,11 +46,6 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         label: 'Admin',
     },
-    {
-        id: 'actions',
-        numeric: false,
-        label: 'Actions',
-    },
 ]
 
 const Container = ({children}: {children: ReactNode}) => (
@@ -75,6 +53,7 @@ const Container = ({children}: {children: ReactNode}) => (
         position: "relative",
         width: "calc(100% - 240px)",
         m: 2,
+        overflow: "scroll",
     }}>
         {children}
     </Box>
@@ -107,13 +86,32 @@ const EnhancedTableHead = (props: {
                 active={orderBy === headCell.id}
                 direction={orderBy === headCell.id ? order : 'asc'}
                 onClick={createSortHandler(headCell.id as keyof SortData)}
+                color="success"
+                sx={(theme) => ({
+                    color: `${theme.palette.textCustom.primary} !important`,
+                    "svg:active, :hover, svg:hover": {
+                        color: theme.palette.textCustom.primary,
+                    },
+                    ".MuiSvgIcon-root": {
+                        color: theme.palette.textCustom.primary,
+                    },
+                    "> span > svg": {
+                        color: theme.palette.textCustom.primary,
+                        display: "block",
+                    },
+                    '.MuiTableSortLabel-root.MuiTableSortLabel-active, \
+                    .MuiTableSortLabel-root:active, \
+                    .MuiTableSortLabel-root:hover, \
+                    .MuiTableSortLabel-icon': {
+                        color: `${theme.palette.textCustom.primary} !important`,
+                    }
+                })}
               >
                 {headCell.label}
-                {orderBy === headCell.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </Box>
-                ) : null}
+                {/* {orderBy === headCell.id 
+                    ? (<> {order === 'desc' ? <KeyboardArrowUp/> : <KeyboardArrowDown />} </>) 
+                    : null
+                } */}
               </TableSortLabel>
             </TableCell>
           ))}
@@ -124,6 +122,11 @@ const EnhancedTableHead = (props: {
                 {headCell.label}
             </TableCell>
           ))}
+          <TableCell
+              align='center'
+            >
+                Actions
+            </TableCell>
         </TableRow>
     </TableHead>);
 }  
@@ -138,6 +141,7 @@ export const AllUsers = ({userId}: {userId: string}) => {
     });
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof SortData>('created');
+    const [showUserType, setShowUserType] = useState<{onlyAdmins: boolean; onlyNormal: boolean}>({onlyAdmins: false, onlyNormal: false});
 
     const users = data?.data?.users ?? [];
 
@@ -150,9 +154,22 @@ export const AllUsers = ({userId}: {userId: string}) => {
         setOrderBy(property);
     };
 
-    const usersSort = useMemo(
-        () => stableSort(data?.data?.users ?? [], getComparator(order, orderBy))
-        , [order, orderBy]
+    const usersSortTable = useMemo(
+        () => stableSort(mapUsersToTableData(data?.data?.users ?? []), getComparator(order, orderBy))
+        , [order, orderBy, data]
+    );
+
+    const usersSort= useMemo(
+        () => {
+            if (showUserType.onlyAdmins) {
+                return usersSortTable.filter((user) => user.admin)
+            } else if (showUserType.onlyNormal) {
+                return usersSortTable.filter((user) => !user.admin)
+            } else {
+                return usersSortTable;
+            }
+        }
+        , [usersSortTable, showUserType]
     );
 
     const queryClient = useQueryClient();
@@ -165,17 +182,18 @@ export const AllUsers = ({userId}: {userId: string}) => {
         return <Container><LoadingsAndErrors isLoading={false} isError={true} /></Container>
     }
 
-    const handleEdit = async (userId: string) => {
+    const handleEdit = async (userIdChanges: string) => {
         // send data to backend
         try {
-            await modifyUser(userId);
+            await modifyUser(userIdChanges);
 
             const index = users.findIndex(obj => {
-                return obj._id === userId;
+                return obj._id === userIdChanges;
             });
+
             users[index].isAdmin = !users[index].isAdmin;
 
-            queryClient.setQueryData([ADMIN_USERS_API], users);
+            queryClient.setQueryData([ADMIN_USERS_API, userId], {data: {users: users}});
         } catch (err) {
             alert("An error occured!");
         }
@@ -184,20 +202,20 @@ export const AllUsers = ({userId}: {userId: string}) => {
         setDialog(DEFAULT_VALUES_DIALOG);
     }
 
-    const handleDelete = async (userId: string) => {
+    const handleDelete = async (userIdChanges: string) => {
         // send data to backend
         try {
-            await deleteUser(userId);
+            await deleteUser(userIdChanges);
 
             const usersUpdated = users.filter((obj) => {
-                if (obj._id !== userId) {
+                if (obj._id !== userIdChanges) {
                     return true;
                 }
 
                 return false;
             }); 
 
-            queryClient.setQueryData([ADMIN_USERS_API], usersUpdated);
+            queryClient.setQueryData([ADMIN_USERS_API, userId], {data: {users: usersUpdated}});
         } catch (err) {
             alert("An error occured!");
         }
@@ -206,8 +224,31 @@ export const AllUsers = ({userId}: {userId: string}) => {
         setDialog(DEFAULT_VALUES_DIALOG);
     }
 
-
     return <Container>
+        <FormGroup aria-label="position" row sx={(theme) => ({
+            color: theme.palette.textCustom.primary, 
+            'span': {
+                color: theme.palette.textCustom.primary, 
+                fontSize: theme.typography.body2,
+            },
+            '.MuiFormControlLabel-label.Mui-disabled': {
+                color: `${theme.palette.textCustom.disabled} !important`,
+            },
+            mb: 1,
+        })}>
+            <FormControlLabel
+                value="admin"
+                control={<Switch color="primary" disabled={showUserType.onlyNormal} onChange={() => setShowUserType({...showUserType, onlyAdmins: !showUserType.onlyAdmins})}/>}
+                label="Only admin"
+                labelPlacement="start"
+            />
+            <FormControlLabel
+                value="normal"
+                control={<Switch color="primary" disabled={showUserType.onlyAdmins} onChange={() => setShowUserType({...showUserType, onlyNormal: !showUserType.onlyNormal})}/>}
+                label="Only normal"
+                labelPlacement="start"
+            />
+        </FormGroup>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <EnhancedTableHead
@@ -216,11 +257,11 @@ export const AllUsers = ({userId}: {userId: string}) => {
                     onRequestSort={handleRequestSort}
                 />
                 <TableBody>
-                {users.map((user, index) => {
+                {usersSort.map((user, index) => {
                     const dateCreated = new Date(user.created).toLocaleDateString();
-                    const dateUpdated = new Date(user.created).toLocaleDateString();
+                    const dateUpdated = new Date(user.lastUpdated).toLocaleDateString();
 
-                    return <TableRow key={user.email} sx={(theme) => ({
+                    return <TableRow key={user._id} sx={(theme) => ({
                         bgcolor: (index % 2 === 1) ? '#bababa' : '#e0dfdf',
                         ...((user._id === userId) 
                             ? {
@@ -234,10 +275,11 @@ export const AllUsers = ({userId}: {userId: string}) => {
                         <TableCell align="center" component="th" scope="row">
                             {user._id}
                         </TableCell>
-                        <TableCell align="center">{user.lastName + ", " + user.firstName}</TableCell>
+                        <TableCell align="center">{user.name}</TableCell>
                         <TableCell align="center">{dateCreated}</TableCell>
                         <TableCell align="center">{dateUpdated}</TableCell>
-                        <TableCell align="center">{JSON.stringify(user.isAdmin)}</TableCell>
+                        <TableCell align="center">{user.drawings}</TableCell>
+                        <TableCell align="center">{JSON.stringify(user.admin)}</TableCell>
                         <TableCell align="center">
                             <Button size="small" color="success" variant="contained" sx={(theme) => ({
                                 fontWeight: "bold",
@@ -246,7 +288,7 @@ export const AllUsers = ({userId}: {userId: string}) => {
                                 textTransform: 'none',
                                 p: "3px 12px",
                                 mr: 1,
-                                [theme.breakpoints.down(1160)]: {
+                                [theme.breakpoints.down(1263)]: {
                                     mt: 0, mb: 1,
                                 }
                             })}
@@ -267,8 +309,8 @@ export const AllUsers = ({userId}: {userId: string}) => {
                             })}
                             onClick={() => setDialog({
                                 isOpen: true,
-                                handler: handleDelete,
-                                bodyText: `Are you sure do you want to delete the user ${user.lastName + " " + user.firstName}?`,
+                                handler: () => {handleDelete(user._id)},
+                                bodyText: `Are you sure do you want to delete the user ${user.name}?`,
                             })}
                             >
                                 Delete

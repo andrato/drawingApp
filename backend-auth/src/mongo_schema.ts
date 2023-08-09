@@ -43,8 +43,8 @@ const userInfoSchema = new Schema({
     },
     isAdmin: {
         type: Boolean,
-    }
-
+    },
+    drawings: Number,
 }, { collection: 'users_info'});
 
 /* MODEL */

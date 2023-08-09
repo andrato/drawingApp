@@ -29,6 +29,7 @@ export const SignIn = (props: {
                     email: data.user.email,
                     firstName: data.user.firstName,
                     lastName: data.user.lastName,
+                    isAdmin: data.user.isAdmin ?? undefined,
                 };
 
                 localStorage.setItem(LocalStorageKeys.USER_TOKEN, data.accessToken);

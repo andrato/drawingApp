@@ -54,6 +54,7 @@ export const userInfo = async (req: Request, res: Response) => {
             email: existingUser.email,
             created: existingUser.created,
             lastUpdated: existingUser.lastUpdated,
+            drawings: existingUser.drawings,
         },
     });
 };

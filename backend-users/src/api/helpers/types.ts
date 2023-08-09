@@ -6,6 +6,7 @@ export const defaultUser: UserType = {
     profile: null,
     created: Math.floor(Date.now()),
     lastUpdated: Math.floor(Date.now()),
+    drawings: 0,
 }
 
 export type ProfileType = {
@@ -21,6 +22,7 @@ export type UserType = {
     created: number;
     lastUpdated: number;
     imgLocation?: string;
+    drawings?: number;
 }
 
 export type RequestUserInfoType = {

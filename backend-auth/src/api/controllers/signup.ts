@@ -84,7 +84,7 @@ export const signup = async (req: Request, res: Response) => {
     // save to user info
     try {
         const mongoId = new Types.ObjectId(newUser._id);
-        const saveUserInfo: UserInfoType = {...defaultUser, ...saveUser};
+        const saveUserInfo: UserInfoType = {...defaultUser, ...saveUser, drawings: 0};
         await modelUserInfo.create({...saveUserInfo, _id: mongoId});
     } catch (err) {
         return res.status(500).json({

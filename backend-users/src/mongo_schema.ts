@@ -24,7 +24,7 @@ const userInfoSchema = new Schema({
         type: Number,
     },
     imgLocation: String,
-
+    drawings: Number,
 }, { collection: 'users_info'});
 
 /* MODEL */
