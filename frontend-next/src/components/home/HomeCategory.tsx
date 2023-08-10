@@ -84,7 +84,7 @@ export const HomeCategory = ({
                             />
                         </Box>
                     )
-                })};
+                })}
             </Box>
         </Container>
     );

@@ -89,17 +89,21 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     return (
         <Container>
             <div>
-                <Box>
+                <Box sx={(theme) => ({
+                    '&.MuiPopover-paper': {
+                        bgcolor: `${theme.palette.backgroundCustom.dark} !important`,
+                    }
+                })}>
                     <FormControl>
                     <InputLabel 
                         id="demo-simple-select-standard-label"
                         size="small"
                         sx={(theme) => ({
                             fontSize: "0.9rem",
-                            color: theme.palette.textCustom.primary,
+                            color: `${theme.palette.textCustom.primary} !important`,
                             '&.Mui-focused': {
-                                color: theme.palette.textCustom.focus,
-                                borderColor: theme.palette.textCustom.focus,
+                                color: `${theme.palette.info.main} !important`,
+                                borderColor: `${theme.palette.info.main} !important`,
                             },
                         })}
                     >Sort By
@@ -111,7 +115,7 @@ export const DrawingsCategory = ({category}: {category: string}) => {
                         // value={sortBy}
                         onChange={(event) => setSortBy(event.target.value as SortBy)}
                         label="Sort by"
-                        color="success"
+                        color="info"
                         // inputProps={{
                         //     color: "red",
                         //     sx: {
@@ -119,18 +123,28 @@ export const DrawingsCategory = ({category}: {category: string}) => {
                         //     }
                         // }}
                         sx={(theme) => ({
-                            backgroundColor: theme.palette.backgroundCustom.dark,
+                            bgColor: theme.palette.backgroundCustom.dark,
                             mb: 3,
                             width: "180px",
                             fontSize: "0.9rem",
-                            color: theme.palette.textCustom.primary,
+                            color: `${theme.palette.textCustom.primary} !important`,
                             'svg': {
                                 color: theme.palette.primary.main,
                             },
                         })}
                     >
                         {sortByOptions.map((option) => {
-                            return <MenuItem value={option} sx={{fontSize: "0.9rem"}}>{option}</MenuItem>
+                            return <MenuItem value={option} sx={(theme) => ({
+                                bgcolor: theme.palette.backgroundCustom.dark,
+                                fontSize: "0.9rem",
+                                color: `${theme.palette.textCustom.primary} !important`,
+                                ':hover': {
+                                    bgcolor: theme.palette.backgroundCustom.light,
+                                },
+                                '&.Mui-selected': {
+                                    bgcolor: theme.palette.backgroundCustom.light,
+                                },
+                            })}>{option}</MenuItem>
                         })}
                     </Select>
                     </FormControl>

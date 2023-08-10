@@ -1,44 +1,7 @@
+import { DrawingAdminType } from "@/services/Drawings";
 import { UserType } from "@/services/User";
-import { ReactNode } from "react";
 
 export type Order = 'asc' | 'desc';
-export interface Data {
-    _id: string;
-    user_id: string,
-    name: string;
-    created: number;
-    lastUpdated: number;
-    admin: boolean;
-    drawings: number;
-    reviews: number;
-    rating: number;
-}
-
-export interface SortData {
-    _id: string;
-    name: string;
-    created: number;
-    lastUpdated: number;
-    drawings: number;
-}
-
-export interface HeadCell {
-    id: keyof Data;
-    label: string;
-    numeric: boolean;
-    displayed?: boolean;
-}
-
-export const mapUsersToTableData = (users: UserType[]): Data[] => {
-    return users.map((user) => ({
-        _id: user._id,
-        name: `${user.lastName}, ${user.firstName}`,
-        created: user.created,
-        lastUpdated: user.lastUpdated,
-        admin: user.isAdmin,
-        drawings: user.drawings ?? 0,
-    }))
-};
 
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -73,3 +36,85 @@ export function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => n
     });
     return stabilizedThis.map((el) => el[0]);
 }
+
+/* for Users */
+export interface Data {
+    _id: string;
+    name: string;
+    created: number;
+    lastUpdated: number;
+    admin: boolean;
+    drawings: number;
+}
+
+export interface SortData {
+    _id: string;
+    name: string;
+    created: number;
+    lastUpdated: number;
+    drawings: number;
+}
+
+export interface HeadCell {
+    id: keyof Data;
+    label: string;
+    numeric: boolean;
+}
+
+export const mapUsersToTableData = (users: UserType[]): Data[] => {
+    return users.map((user) => ({
+        _id: user._id,
+        name: `${user.lastName}, ${user.firstName}`,
+        created: user.created,
+        lastUpdated: user.lastUpdated,
+        admin: user.isAdmin,
+        drawings: user.drawings ?? 0,
+    }))
+};
+
+/* for Drawings */
+export enum Category {
+    TOP_ART = "Top Art",
+    TOP_AMATEUR = "Top Amateur",
+    GALLERY = "Gallery",
+}
+export interface DataDrawings {
+    _id: string;
+    userId: string,
+    name: string;
+    created: number;
+    lastUpdated: number;
+    reviews: number;
+    rating: number;
+    labels: string;
+    category: Category;
+}
+
+export interface SortDataDrawings {
+    _id: string;
+    name: string;
+    created: number;
+    lastUpdated: number;
+    reviews: number;
+    rating: number;
+}
+export interface HeadCellDrawing {
+    id: keyof DataDrawings;
+    label: string;
+    numeric: boolean;
+    displayed?: boolean;
+}
+
+export const mapDrawingsToTableData = (drawings: DrawingAdminType[]): DataDrawings[] => {
+    return drawings.map((drawing) => ({
+        _id: drawing.id,
+        userId: drawing.userId,
+        name: drawing.displayTitle,
+        created: drawing.created,
+        lastUpdated: drawing.lastUpdated,
+        reviews: drawing.reviews ?? 0,
+        rating: Number(drawing.rating ?? 0),
+        labels: drawing.categories?.join() ?? '',
+        category: drawing.topArt ? Category.TOP_ART : drawing.topAmateur ? Category.TOP_AMATEUR : Category.GALLERY,
+    }))
+};

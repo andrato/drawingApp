@@ -31,8 +31,8 @@ export type DrawingType = {
     title: string;
     displayTitle: string;
     categories?: string[];
-    likes?: number;
-    comments?: number;
+    reviews?: number;
+    rating?: number;
     topArt?: boolean;
     topAmateur?: boolean;
     video: FileType;
@@ -49,7 +49,7 @@ export type DrawingAdminType = {
     displayTitle: string;
     categories?: string[];
     rating: number;
-    review: number;
+    reviews: number;
     topArt?: boolean;
     topAmateur?: boolean;
 }

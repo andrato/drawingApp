@@ -108,10 +108,6 @@ const EnhancedTableHead = (props: {
                 })}
               >
                 {headCell.label}
-                {/* {orderBy === headCell.id 
-                    ? (<> {order === 'desc' ? <KeyboardArrowUp/> : <KeyboardArrowDown />} </>) 
-                    : null
-                } */}
               </TableSortLabel>
             </TableCell>
           ))}
