@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { wrapper } from './store';
 import { makeThemeA } from '../../makeThemeA';
 // import {Provider} from 'react-redux';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 export const drawTheme = makeThemeA();
 
@@ -20,7 +22,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <QueryClientProvider client={queryClient}>
             <Layout>
                 {/* <Provider store={store}>  */}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <Component {...pageProps} />
+                </LocalizationProvider>
                 {/* </Provider> */}
             </Layout>
         </QueryClientProvider>

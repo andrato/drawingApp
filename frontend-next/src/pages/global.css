@@ -40,20 +40,11 @@ body::-webkit-scrollbar {
   background: #555; 
 }
 
-.MuiPopover-paper {
-  background-color: #1b1b1b !important;
-  color: #d7d7d7 !important;
+.MuiInputBase-sizeSmall, .MuiInputLabel-sizeSmall {
+  font-size: 13px;
 }
-
-.MuiSelect-iconOutlined {
-  color: #d7d7d7 !important;
-}
-.MuiSelect-iconOpen  {
-  color: #3fa0e0 !important;
-}
-
-.MuiOutlinedInput-notchedOutline {
-  border-color: #d7d7d7;
+.MuiPopover-paper .MuiMenuItem-root{
+  font-size: 13px;
 }
 
 body svg{
@@ -61,5 +52,5 @@ body svg{
 }
 
 hr {
-  border-color: rgb(215 215 215 / 47%) !important;
+  border-color: rgb(215 215 215 / 47%);
 }

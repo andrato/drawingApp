@@ -1,11 +1,12 @@
-import { Box, CardMedia, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, CardMedia, Grid, Pagination, SelectChangeEvent, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { Page } from "@/components/utils/helpers/Page";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { DrawingTypePartial, HOST_CATEGORY_DRAWINGS, getDrawingByCategory } from "@/services/Drawings";
-import { SortBy, sortByOptions } from "@/components/common/constants";
+import { SortBy} from "@/components/common/constants";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
+import { QueryFields } from "./QueryFields";
 
 export const useItemsPerPage = () => {
     const theme = useTheme();
@@ -34,7 +35,6 @@ export const Container = ({children, width}: {children: ReactNode, width?: strin
 
 export const DrawingsCategory = ({category}: {category: string}) => {
     const router = useRouter();
-    const [sortBy, setSortBy] = useState<SortBy>(SortBy.RECENT);
     const [itemsPage, setItemsPage] = useState<DrawingTypePartial[]>([]);
     const itemsPerPage = useItemsPerPage();
     const pageNumber = Number(router.query["page"] ?? 1);
@@ -89,67 +89,7 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     return (
         <Container>
             <div>
-                <Box sx={(theme) => ({
-                    '&.MuiPopover-paper': {
-                        bgcolor: `${theme.palette.backgroundCustom.dark} !important`,
-                    }
-                })}>
-                    <FormControl>
-                    <InputLabel 
-                        id="demo-simple-select-standard-label"
-                        size="small"
-                        sx={(theme) => ({
-                            fontSize: "0.9rem",
-                            color: `${theme.palette.textCustom.primary} !important`,
-                            '&.Mui-focused': {
-                                color: `${theme.palette.info.main} !important`,
-                                borderColor: `${theme.palette.info.main} !important`,
-                            },
-                        })}
-                    >Sort By
-                    </InputLabel>
-                    <Select
-                        labelId="demo-simple-select-standard-label"
-                        size="small"
-                        variant="outlined"
-                        // value={sortBy}
-                        onChange={(event) => setSortBy(event.target.value as SortBy)}
-                        label="Sort by"
-                        color="info"
-                        // inputProps={{
-                        //     color: "red",
-                        //     sx: {
-                        //         bgcolor: filtersColors.backgoundInput,
-                        //     }
-                        // }}
-                        sx={(theme) => ({
-                            bgColor: theme.palette.backgroundCustom.dark,
-                            mb: 3,
-                            width: "180px",
-                            fontSize: "0.9rem",
-                            color: `${theme.palette.textCustom.primary} !important`,
-                            'svg': {
-                                color: theme.palette.primary.main,
-                            },
-                        })}
-                    >
-                        {sortByOptions.map((option) => {
-                            return <MenuItem value={option} sx={(theme) => ({
-                                bgcolor: theme.palette.backgroundCustom.dark,
-                                fontSize: "0.9rem",
-                                color: `${theme.palette.textCustom.primary} !important`,
-                                ':hover': {
-                                    bgcolor: theme.palette.backgroundCustom.light,
-                                },
-                                '&.Mui-selected': {
-                                    bgcolor: theme.palette.backgroundCustom.light,
-                                },
-                            })}>{option}</MenuItem>
-                        })}
-                    </Select>
-                    </FormControl>
-                </Box>
-                
+                <QueryFields />
                 {drawings.length ? (<Grid container spacing={1} sx={{
                     mb: 2,
                 }}>
