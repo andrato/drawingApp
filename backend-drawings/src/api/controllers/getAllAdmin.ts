@@ -22,7 +22,7 @@ export const getAllAdmin = async (req: Request, res: Response) => {
         lastUpdated: drawing.lastUpdated,
         rating: drawing.rating,
         reviews: drawing.reviews,
-        categories: drawing.categories,
+        labels: drawing.labels,
     }));
 
     return res.status(200).json({

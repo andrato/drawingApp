@@ -109,13 +109,13 @@ export const SaveValuesForm = ({
                 labelId="demo-multiple-chip-label"
                 id="demo-multiple-chip"
                 multiple
-                value={values["categories"]}
+                value={values["labels"]}
                 onChange={(event) => {
                     const {
                         target: { value },
                     } = event;
               
-                    setFieldValue("categories", value);
+                    setFieldValue("labels", value);
                 }}
                 input={<OutlinedInput id="select-multiple-chip" label="Select category" />}
                 renderValue={(selected) => (
@@ -131,7 +131,7 @@ export const SaveValuesForm = ({
                     <MenuItem
                     key={name}
                     value={name}
-                    style={getStyles(name, values.categories, theme)}
+                    style={getStyles(name, values.labels, theme)}
                     >
                         {name}
                     </MenuItem>

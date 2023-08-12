@@ -6,6 +6,7 @@ import {
     getAll, 
     getAllAdmin, 
     getByCategory, 
+    getByCategoryChainValidation, 
     getByCategorySchema, 
     getByUser, 
     getByUserSchema, 
@@ -17,8 +18,8 @@ import {
 
 const router: express.Router = express.Router();
 
-router.get("/", getAll);
-router.get("/category", checkSchema(getByCategorySchema), getByCategory);
+// router.get("/", getAll);
+router.get("/", getByCategoryChainValidation, getByCategory);
 router.get("/drawing", checkSchema(getDrawingSchema), getDrawing);
 router.get("/user", checkSchema(getByUserSchema), getByUser);
 router.get("/getAdmin", getAllAdmin);

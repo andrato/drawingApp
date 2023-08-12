@@ -24,7 +24,7 @@ export const publishSchema = {
             options: { min: 1 },
         },
     },
-    categories: {
+    labels: {
         isArray: {
             bail:true,
             options: {
@@ -94,12 +94,11 @@ export const publish = async (req: Request, res: Response) => {
             lastUpdated: Date.now(),
             title: existingDrawing.title,
             displayTitle: req.body.displayTitle,
-            categories: req.body.categories ?? [],
+            labels: req.body.labels ?? [],
             description: req.body.description ?? '',
             rating: 0, 
             reviews: 0,
-            topArt: false,
-            topAmateur: false,
+            category: "Gallery",
             video: {
                 filename: existingDrawing.video.filename,
                 location: existingDrawing.video.location,

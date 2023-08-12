@@ -125,7 +125,7 @@ export default function GalleryItem() {
                     imgPath={drawing.userInfo.imgPath} 
                     date={drawing.created} 
                     drawingVideoPath={drawing.video.location}
-                    contentCateg={drawing.categories}
+                    contentCateg={drawing.labels}
                     contentText={drawing.description}
                 />
                 <Reviews drawingId={id} userId={drawing.userId} setReviewInfo={setReviewInfo}/>

@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 const BREAKPOINT = 980;
 
 const getDrawing = async () => {
-    const response = await getDrawingByCategory("Gallery");
+    const response = await getDrawingByCategory({category: "Gallery"});
 
     const dataSorted = {
         data: {

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, SxProps, TextField, Theme } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, SxProps, TextField, Theme } from "@mui/material";
 import { useRouter } from "next/router";
 import { QueryParams, SortBy, QuerySortToApiSort, labelsDrawing, sortByOptions, ApiSortToQuerySort } from "@/components/common/constants";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { useQueryParams } from "./useQueryParams";
+import { RestartAlt } from "@mui/icons-material";
 
 const SearchBarSx: SxProps<Theme> = (theme) => ({
     display: "flex",
@@ -55,7 +56,7 @@ export const QueryFields = () => {
 
     useEffect(() => {
 
-    }, [sortBy])
+    }, [sortBy, endDate, startDate]);
 
     return <Box sx={SearchBarSx}>
         <FormControl sx={{ width: 150 }}>
@@ -72,7 +73,7 @@ export const QueryFields = () => {
                 labelId="demo-simple-select-standard-label"
                 size="small"
                 variant="outlined"
-                value={ApiSortToQuerySort[sortBy]}
+                defaultValue={ApiSortToQuerySort[sortBy]}
                 onChange={(event) => {
                     const value = event.target.value as SortBy;
                     
@@ -105,21 +106,20 @@ export const QueryFields = () => {
         <DatePicker
             label="Start Date"
             slotProps={{ textField: { size: 'small'} }}
-            value={dayjs(startDate)}
+            value={startDate ? dayjs(startDate)  : null}
             onChange={(newDate) => {   
-                router.replace({
-                    query: { ...router.query, [QueryParams.START_DATE]: newDate?.millisecond()},
+                newDate && router.replace({
+                    query: { ...router.query, [QueryParams.START_DATE]: newDate.toString()},
                 });
             }}
         />
         <DatePicker
             label="End Date"
             slotProps={{ textField: { size: 'small'} }}
+            value={endDate ? dayjs(endDate) : null}
             onChange={(newDate) => {   
-                const newDateString = (newDate as number).toString();
-
-                router.replace({
-                    query: { ...router.query, [QueryParams.END_DATE]: newDateString},
+                newDate && router.replace({
+                    query: { ...router.query, [QueryParams.END_DATE]: newDate.toString()},
                 });
             }}
         />
@@ -129,7 +129,7 @@ export const QueryFields = () => {
             variant="outlined" 
             size="small"
             color="info"
-            value={search}
+            defaultValue={search}
             onChange={debouncedOnChange}
         />
         <FormControl sx={{ width: 150 }}>
@@ -164,5 +164,28 @@ export const QueryFields = () => {
                 ))}
             </Select>
         </FormControl>
+        <Button 
+                variant="contained" 
+                size="small" 
+                startIcon={<RestartAlt />}
+                onClick={() => {
+                    router.replace({
+                        query: {},
+                    });
+                }}
+                sx={(theme) => ({
+                    m: 0,
+                    height: "37px",
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.backgroundCustom.main,
+                    fontWeight: "bold",
+                    textTransform: 'none',
+                    ':hover': {
+                        backgroundColor: theme.palette.primary.light,
+                    },
+                })}
+            >
+                Reset
+            </Button>
     </Box>
 }

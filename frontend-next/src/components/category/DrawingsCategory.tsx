@@ -7,6 +7,7 @@ import { DrawingTypePartial, HOST_CATEGORY_DRAWINGS, getDrawingByCategory } from
 import { SortBy} from "@/components/common/constants";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { QueryFields } from "./QueryFields";
+import { useDrawingsQuery } from "./useDrawingsQuery";
 
 export const useItemsPerPage = () => {
     const theme = useTheme();
@@ -39,13 +40,10 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     const itemsPerPage = useItemsPerPage();
     const pageNumber = Number(router.query["page"] ?? 1);
     // partea in care cerem datele de la backend
-    const {data, isLoading, isError, error} = useQuery({
-        queryKey: [HOST_CATEGORY_DRAWINGS, category],
-        queryFn: () => getDrawingByCategory(category), 
-        refetchOnMount: false,
-    });
+    const {data, isLoading, isError, error} = useDrawingsQuery({category})
     const drawings: DrawingTypePartial[] = data?.data.drawings ?? []; 
     const pages = Math.max(Math.ceil(drawings.length / itemsPerPage), 1);
+    const loadingOrError = isLoading || isError;
 
     useEffect(() => {
         const computeItems = (pageNumber: number) => {
@@ -72,10 +70,6 @@ export const DrawingsCategory = ({category}: {category: string}) => {
         setItemsPage(itemsAux);
     }, [itemsPerPage, pageNumber, drawings])
 
-    if (isLoading || isError) {
-        return <Container><LoadingsAndErrors isLoading={isLoading} isError={isError} /></Container>
-    }
-
     const handlePageChange = (event: any, value: number) => {
         router.replace({
             query: { ...router.query, page: value },
@@ -90,55 +84,58 @@ export const DrawingsCategory = ({category}: {category: string}) => {
         <Container>
             <div>
                 <QueryFields />
-                {drawings.length ? (<Grid container spacing={1} sx={{
-                    mb: 2,
-                }}>
-                    {itemsPage?.length && itemsPage.map((item) => {
-                        return (
-                            <Grid item md={2} sm={3} xs={4} key={item.id}>
-                                <Box sx={{position: "relative"}}>
-                                    <CardMedia
-                                        component="img"
-                                        image={item.image.location}
-                                        alt={item.displayTitle}
-                                        sx={{
-                                            mr: 1,
-                                            position: "relative",
-                                        }}
-                                    />
-                                    <Box 
-                                        onClick={() => {
-                                            handleClick(item.id);
-                                        }}
-                                        sx={{
-                                            position: "absolute",
-                                            top: 0,
-                                            left: 0,
-                                            width: "100%",
-                                            height: "100%",
-                                            background: "rgba(0, 0, 0, 0.7)",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            opacity: 0,
+                {loadingOrError && <LoadingsAndErrors isLoading={isLoading} isError={isError} /> }
+                {!loadingOrError && (drawings.length 
+                    ? (<Grid container spacing={1} sx={{
+                        mb: 2,
+                      }}>
+                        {itemsPage?.length && itemsPage.map((item) => {
+                            return (
+                                <Grid item md={2} sm={3} xs={4} key={item.id}>
+                                    <Box sx={{position: "relative"}}>
+                                        <CardMedia
+                                            component="img"
+                                            image={item.image.location}
+                                            alt={item.displayTitle}
+                                            sx={{
+                                                mr: 1,
+                                                position: "relative",
+                                            }}
+                                        />
+                                        <Box 
+                                            onClick={() => {
+                                                handleClick(item.id);
+                                            }}
+                                            sx={{
+                                                position: "absolute",
+                                                top: 0,
+                                                left: 0,
+                                                width: "100%",
+                                                height: "100%",
+                                                background: "rgba(0, 0, 0, 0.7)",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                opacity: 0,
 
-                                            ':hover': {
-                                                opacity: 1,
-                                            },
-                                        }}
-                                    >
-                                        <Typography variant="body1" color="textCustom.primary">
-                                            {item.displayTitle}
-                                        </Typography>
+                                                ':hover': {
+                                                    opacity: 1,
+                                                },
+                                            }}
+                                        >
+                                            <Typography variant="body1" color="textCustom.primary">
+                                                {item.displayTitle}
+                                            </Typography>
+                                        </Box>
                                     </Box>
-                                </Box>
-                            </Grid>
-                        )
-                    })}
-                </Grid>) : (<Typography variant="body1" color="textCustom.primary">
-                    {"There are no drawings at this moment in this category"}
-                </Typography>)}
+                                </Grid>
+                            )
+                          })}
+                       </Grid>) 
+                    : (<Typography variant="body1" color="textCustom.primary">
+                        {"There are no drawings at this moment in this category"}
+                      </Typography>))}
             </div>
             <Pagination count={pages} 
                 showFirstButton 

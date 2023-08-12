@@ -114,7 +114,7 @@ export const mapDrawingsToTableData = (drawings: DrawingAdminType[]): DataDrawin
         lastUpdated: drawing.lastUpdated,
         reviews: drawing.reviews ?? 0,
         rating: Number(drawing.rating ?? 0),
-        labels: drawing.categories?.join() ?? '',
+        labels: drawing.labels?.join() ?? '',
         category: drawing.topArt ? Category.TOP_ART : drawing.topAmateur ? Category.TOP_AMATEUR : Category.GALLERY,
     }))
 };

@@ -8,7 +8,7 @@ export const useQueryParams = () => {
     const search = searchParams.get(QueryParams.SEARCH);
     const labels = searchParams.get(QueryParams.LABELS) ?? [];
     const startDate = searchParams.get(QueryParams.START_DATE);
-    const endDate = searchParams.get(QueryParams.START_DATE);
+    const endDate = searchParams.get(QueryParams.END_DATE);
 
     return {
         cursor,
@@ -17,7 +17,5 @@ export const useQueryParams = () => {
         labels: typeof labels === 'string' ? labels.split(',') : labels,
         startDate,
         endDate,
-        // startDate: startDate ? (new Date(startDate)).getMilliseconds() : startDate,
-        // endDate: endDate ? (new Date(endDate)).getMilliseconds() : endDate, 
     }
 }

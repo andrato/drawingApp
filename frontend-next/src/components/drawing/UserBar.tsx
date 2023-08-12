@@ -70,10 +70,10 @@ export const UserBar = ({
             <CardContent>
                 <Box>
                     <Typography variant="subtitle2" color={"textCustom.primary"}>
-                        Categories
+                        Labels
                     </Typography>
-                    {contentCateg?.map((category, index) => {
-                        return <Chip key={category} variant="outlined" label={category} 
+                    {contentCateg?.map((label, index) => {
+                        return <Chip key={label} variant="outlined" label={label} 
                             color="primary"
                             sx={(theme) => ({
                                 // color: theme.palette.textCustom.secondary,

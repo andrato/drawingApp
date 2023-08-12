@@ -1,3 +1,4 @@
+import { Category } from "@/components/profile/helpers";
 import axios from "axios"
 
 export const HOST = "http://localhost:8080/drawing";
@@ -5,7 +6,7 @@ export const HOST_DRAWINGS = HOST + "/";
 export const HOST_DRAWINGS_ADMIN = HOST + "/getAdmin";
 export const HOST_DRAWING = HOST + "/drawing";
 export const HOST_USER_DRAWINGS = HOST + "/user";
-export const HOST_CATEGORY_DRAWINGS = HOST + "/category";
+export const HOST_CATEGORY_DRAWINGS = HOST + "/";
 
 export type ErrorType = {
     msg: string;
@@ -30,7 +31,7 @@ export type DrawingType = {
     lastUpdated: number;
     title: string;
     displayTitle: string;
-    categories?: string[];
+    labels?: string[];
     reviews?: number;
     rating?: number;
     topArt?: boolean;
@@ -47,7 +48,7 @@ export type DrawingAdminType = {
     lastUpdated: number;
     title: string;
     displayTitle: string;
-    categories?: string[];
+    labels?: string[];
     rating: number;
     reviews: number;
     topArt?: boolean;
@@ -86,17 +87,36 @@ export const getDrawings = () => {
     return axios.get<DrawingsResponseSuccessType>(HOST_DRAWINGS, {...config});
 }
 
-export const getDrawingByCategory = (category: string) => {
-    if (category === "Gallery") {
-        return getDrawings();
-    }
-
-    let computedCateg = "topArt";
-    if (category === "Top Amateur") {
+export const getDrawingByCategory = ({
+    category,
+    sortBy,
+    search,
+    startDate,
+    endDate,
+    labels,
+}: {   
+    category?: string | null;
+    sortBy?: string | null;
+    search?: string | null ;
+    startDate?: number | null; 
+    endDate?: number | null;
+    labels?: string[] | null;
+}) => {
+    let computedCateg: string | undefined;
+    if (category === Category.TOP_AMATEUR) {
         computedCateg = "topAmateur";
+    } else if (category === Category.TOP_ART) {
+        computedCateg = "topArt";
     }
 
-    return axios.get<DrawingsResponseSuccessType>(HOST_CATEGORY_DRAWINGS, {...config, params: {category: computedCateg}});
+    return axios.get<DrawingsResponseSuccessType>(HOST_CATEGORY_DRAWINGS, {...config, params: {
+        category: computedCateg ?? undefined,
+        sortBy: sortBy ?? undefined,
+        search: search ?? undefined,
+        startDate: startDate ?? undefined,
+        endDate: endDate ?? undefined,
+        labels: labels?.join() ?? undefined,
+    }});
 }
 
 export const getDrawingByUser = (userId: string) => {
