@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, SxProps, TextField, Theme } from "@mui/material";
 import { useRouter } from "next/router";
-import { QueryParams, SortBy, QuerySortToApiSort, labelsDrawing, sortByOptions, ApiSortToQuerySort } from "@/components/common/constants";
+import { QueryParams, SortBy, QuerySortToApiSort, labelsDrawing, sortByOptions, ApiSortToQuerySort, categories } from "@/components/common/constants";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
@@ -25,10 +25,20 @@ const SearchBarSx: SxProps<Theme> = (theme) => ({
     },
 })
 
-export const QueryFields = () => {
+export const QueryFields = ({
+    showSortBy = true,
+    showCategory=false,
+    children,
+    onResetFilters,
+}: {
+    showSortBy?: boolean,
+    showCategory?: boolean,
+    children?: ReactNode,
+    onResetFilters?: () => void,
+}) => {
     const router = useRouter();
-    const [labels, setLabelsQuery] = useState<string[]>([]);
-    const {sortBy, search, startDate, endDate} = useQueryParams();
+    // const [labels, setLabelsQuery] = useState<string[]>([]);
+    const {sortBy, search, startDate, endDate, labels} = useQueryParams();
 
     const onChangeSearch = (e: any) => {
         const value = e.target.value;
@@ -37,6 +47,14 @@ export const QueryFields = () => {
             query: { ...router.query, [QueryParams.SEARCH]: value},
         });
     };
+
+    const handleReset = () => {
+        () => {
+            router.replace({
+                query: {},
+            });
+        }
+    }
 
     const debouncedOnChange = debounce(onChangeSearch, 500);
 
@@ -47,7 +65,7 @@ export const QueryFields = () => {
 
         const newLabels = typeof value === 'string' ? value.split(',') : value;
 
-        setLabelsQuery(newLabels);
+        // setLabelsQuery(newLabels);
 
         router.replace({
             query: { ...router.query, [QueryParams.LABELS]: newLabels},
@@ -56,10 +74,11 @@ export const QueryFields = () => {
 
     useEffect(() => {
 
-    }, [sortBy, endDate, startDate]);
+    }, [sortBy, endDate, startDate, labels]);
 
     return <Box sx={SearchBarSx}>
-        <FormControl sx={{ width: 150 }}>
+        {children}
+        {showSortBy && <FormControl sx={{ width: 150 }}>
             <InputLabel 
                 id="demo-simple-select-standard-label"
                 size="small"
@@ -102,7 +121,51 @@ export const QueryFields = () => {
                     >{option}</MenuItem>
                 })}
             </Select>
-        </FormControl>
+        </FormControl>}
+        {showCategory && <FormControl sx={{ width: 150 }}>
+            <InputLabel 
+                id="demo-simple-select-standard-label"
+                size="small"
+                sx={(theme) => ({
+                    color: `${theme.palette.textCustom.primary} !important`,
+                })}
+            >
+                Sort By
+            </InputLabel>
+            <Select
+                labelId="demo-simple-select-standard-label"
+                size="small"
+                variant="outlined"
+                defaultValue={ApiSortToQuerySort[sortBy]}
+                onChange={(event) => {
+                    const value = event.target.value as SortBy;
+                    
+                    router.replace({
+                        query: { ...router.query, [QueryParams.CATEGORY]: value},
+                    });
+                }}
+                label="Sort by"
+                sx={(theme) => ({
+                    bgColor: theme.palette.backgroundCustom.dark,
+                    mb: 3,
+                    color: `${theme.palette.textCustom.primary} !important`,
+                })}
+            >
+                {categories.map((option) => {
+                    return <MenuItem 
+                        value={option} 
+                        sx={(theme) => ({
+                            ':hover': {
+                                bgcolor: "#bcbcbc",
+                            },
+                            '&.Mui-selected, &.Mui-selected:hover': {
+                                bgcolor: theme.palette.textCustom.disabled,
+                            }
+                        })}
+                    >{option}</MenuItem>
+                })}
+            </Select>
+        </FormControl>}
         <DatePicker
             label="Start Date"
             slotProps={{ textField: { size: 'small'} }}
@@ -165,27 +228,23 @@ export const QueryFields = () => {
             </Select>
         </FormControl>
         <Button 
-                variant="contained" 
-                size="small" 
-                startIcon={<RestartAlt />}
-                onClick={() => {
-                    router.replace({
-                        query: {},
-                    });
-                }}
-                sx={(theme) => ({
-                    m: 0,
-                    height: "37px",
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.backgroundCustom.main,
-                    fontWeight: "bold",
-                    textTransform: 'none',
-                    ':hover': {
-                        backgroundColor: theme.palette.primary.light,
-                    },
-                })}
-            >
+            variant="contained" 
+            size="small" 
+            startIcon={<RestartAlt />}
+            onClick={() => {onResetFilters ? onResetFilters() : handleReset()}}
+            sx={(theme) => ({
+                m: 0,
+                height: "37px",
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.backgroundCustom.main,
+                fontWeight: "bold",
+                textTransform: 'none',
+                ':hover': {
+                    backgroundColor: theme.palette.primary.light,
+                },
+            })}
+        >
                 Reset
-            </Button>
+        </Button>
     </Box>
 }

@@ -6,16 +6,18 @@ export const useQueryParams = () => {
     const cursor = searchParams.get(QueryParams.CURSOR);
     const sortBy = searchParams.get(QueryParams.SORT_BY) ?? SortBy.NEWEST;
     const search = searchParams.get(QueryParams.SEARCH);
-    const labels = searchParams.get(QueryParams.LABELS) ?? [];
+    const labels = searchParams.getAll(QueryParams.LABELS) ?? [];
     const startDate = searchParams.get(QueryParams.START_DATE);
     const endDate = searchParams.get(QueryParams.END_DATE);
+    const category = searchParams.get(QueryParams.CATEGORY);
 
     return {
         cursor,
         sortBy,
         search,
-        labels: typeof labels === 'string' ? labels.split(',') : labels,
+        labels,
         startDate,
         endDate,
+        category,
     }
 }

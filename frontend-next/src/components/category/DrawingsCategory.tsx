@@ -2,9 +2,7 @@ import { Box, CardMedia, Grid, Pagination, SelectChangeEvent, Typography, useMed
 import { ReactNode, useEffect, useState } from "react";
 import { Page } from "@/components/utils/helpers/Page";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
 import { DrawingTypePartial, HOST_CATEGORY_DRAWINGS, getDrawingByCategory } from "@/services/Drawings";
-import { SortBy} from "@/components/common/constants";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { QueryFields } from "./QueryFields";
 import { useDrawingsQuery } from "./useDrawingsQuery";

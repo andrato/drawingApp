@@ -87,6 +87,20 @@ export const getDrawings = () => {
     return axios.get<DrawingsResponseSuccessType>(HOST_DRAWINGS, {...config});
 }
 
+const computeCategory = (category?: string | null) => {
+    if (!category) {
+        return undefined;
+    }
+
+    if (category === Category.TOP_AMATEUR) {
+        return "topAmateur";
+    } else if (category === Category.TOP_ART) {
+        return "topArt";
+    }
+
+    return undefined;
+}
+
 export const getDrawingByCategory = ({
     category,
     sortBy,
@@ -102,12 +116,7 @@ export const getDrawingByCategory = ({
     endDate?: number | null;
     labels?: string[] | null;
 }) => {
-    let computedCateg: string | undefined;
-    if (category === Category.TOP_AMATEUR) {
-        computedCateg = "topAmateur";
-    } else if (category === Category.TOP_ART) {
-        computedCateg = "topArt";
-    }
+    const computedCateg = computeCategory(category);
 
     return axios.get<DrawingsResponseSuccessType>(HOST_CATEGORY_DRAWINGS, {...config, params: {
         category: computedCateg ?? undefined,
@@ -127,6 +136,26 @@ export const getDrawing = (id: string) => {
     return axios.get<DrawingResponseSuccessType>(HOST_DRAWING, {...config, params: {drawingId: id}});
 }
 
-export const getDrawingsAdmin = () => {
-    return axios.get<{drawings: DrawingAdminType}>(HOST_DRAWINGS_ADMIN, {...config});
+export const getDrawingsAdmin = ({
+    category,
+    search,
+    startDate,
+    endDate,
+    labels,
+}: {   
+    category?: string | null;
+    search?: string | null ;
+    startDate?: number | null; 
+    endDate?: number | null;
+    labels?: string[] | null;
+}) => {
+    const computedCateg = computeCategory(category);
+
+    return axios.get<{drawings: DrawingAdminType}>(HOST_DRAWINGS_ADMIN, {...config, params: {
+        category: computedCateg ?? undefined,
+        search: search ?? undefined,
+        startDate: startDate ?? undefined,
+        endDate: endDate ?? undefined,
+        labels: labels?.join() ?? undefined,
+    }});
 }

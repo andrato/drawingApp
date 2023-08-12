@@ -1,8 +1,10 @@
-import { Box, Checkbox, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
-import { ChangeEvent, ReactNode, useMemo, useReducer, useState } from "react";
+import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Theme, Typography } from "@mui/material";
+import { ReactNode, useMemo, useState } from "react";
 import { DataDrawings, HeadCellDrawing, Order, SortDataDrawings, getComparator, mapDrawingsToTableData, stableSort } from "./helpers";
-import { useQuery } from "@tanstack/react-query";
-import { HOST_DRAWINGS_ADMIN, getDrawingsAdmin } from "@/services/Drawings";
+import { QueryFields } from "../category/QueryFields";
+import { useAdminDrawingsQuery } from "./useAdminDrawingsQuery";
+import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
+import { useRouter } from "next/router";
 
 const headCellsSort: HeadCellDrawing[] = [
     {
@@ -61,11 +63,10 @@ const Container = ({children}: {children: ReactNode}) => (
         position: "relative",
         width: "calc(100% - 240px)",
         m: 2,
-        // overflow: "hidden",
     }}>
         {children}
     </Box>
-) 
+) ;
 
 const EnhancedTableHead = (props: {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof SortDataDrawings) => void;
@@ -164,15 +165,11 @@ const HeadCells: {id: keyof DataDrawings, label: string}[] = [
 ];
 
 export const AllDrawings = ({userId}: {userId: string}) => {
-    // const [dialog, setDialog] = useState<{isOpen: boolean, handler: Function, bodyText: string}>(DEFAULT_VALUES_DIALOG);
-    const {data, isLoading, isError, error} = useQuery({
-        queryKey: [HOST_DRAWINGS_ADMIN],
-        queryFn: () => getDrawingsAdmin(), 
-        refetchOnMount: false,
-        enabled: Boolean(userId) && userId !== null,
-    });
+    const {data, isLoading, isError, error} = useAdminDrawingsQuery({userId})
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof SortDataDrawings>('created');
+    const loadingOrError = isLoading || isError;
+    const router = useRouter();
     const [columns, setColumns] = useState<string[]>([
         "Id",
         "Name",
@@ -218,71 +215,102 @@ export const AllDrawings = ({userId}: {userId: string}) => {
         setColumns(columnsVisible);
     } 
 
-    const handleChangeColumns = (checked: boolean, columnId: string) => {
-        setColumnsDisplay({...columnsDisplay, [columnId]: checked});
+    const handleChangeColumns = (columnId: string) => {
+        const checkState = columnsDisplay[columnId as keyof DataDrawings];
+        setColumnsDisplay({...columnsDisplay, [columnId]: !checkState});
     }
 
     return  <Container>
-        <FormControl sx={{ m: 1, width: 300 }}>
-            <InputLabel id="demo-multiple-checkbox-label">Select columns</InputLabel>
-            <Select
-                labelId="demo-multiple-checkbox-label"
-                id="demo-multiple-checkbox"
-                multiple
-                value={columns}
-                onChange={handleDisplayColumns}
-                input={<OutlinedInput label="Tag" />}
-                renderValue={(selected) => selected.join(', ')}
-                MenuProps={MenuProps}
+        <QueryFields 
+            showSortBy={false} 
+            showCategory={true}
+            onResetFilters={() => {
+                router.replace({
+                    query: {category: router.query.category},
+                });
+            }}
+        >
+            <FormControl sx={{ width: 150 }}>
+                <InputLabel 
+                    size="small"
+                    id="demo-multiple-name-label"
+                >Display columns</InputLabel>
+                <Select
+                    size="small"
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    multiple
+                    value={columns}
+                    onChange={handleDisplayColumns}
+                    input={<OutlinedInput label="Display columns" />}
                 >
-                {HeadCells.map((column) => (
-                    <MenuItem key={column.id} value={column.label}>
-                        <Checkbox checked={columns.indexOf(column.label) > -1} onChange={(event, checked) => handleChangeColumns(checked, column.id)}/>
-                        <ListItemText primary={column.label} />
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+                    {HeadCells.map((column) => (
+                        <MenuItem
+                            key={column.label}
+                            value={column.label}
+                            sx={(theme) => ({
+                                ':hover': {
+                                    bgcolor: "#bcbcbc",
+                                },
+                                '&.Mui-selected, &.Mui-selected:hover': {
+                                    bgcolor: theme.palette.textCustom.disabled,
+                                }
+                            })}
+                            onClick={() => handleChangeColumns(column.id)}
+                        >
+                            {column.label}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </QueryFields>
+        {loadingOrError && <LoadingsAndErrors isLoading={isLoading} isError={isError} /> }
 
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                <EnhancedTableHead
-                    order={order}
-                    orderBy={orderBy}
-                    onRequestSort={handleRequestSort}
-                    columnsDisplay={columnsDisplay}
-                />
-                <TableBody>
-                    {drawingSortTable.map((drawing, index) => {
-                        const dateCreated = new Date(drawing.created).toLocaleDateString();
-                        const dateUpdated = new Date(drawing.lastUpdated).toLocaleDateString();
+        {!loadingOrError && (drawingSortTable.length 
+            ? <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                    <EnhancedTableHead
+                        order={order}
+                        orderBy={orderBy}
+                        onRequestSort={handleRequestSort}
+                        columnsDisplay={columnsDisplay}
+                    />
+                    <TableBody>
+                        {drawingSortTable.map((drawing, index) => {
+                            const dateCreated = new Date(drawing.created).toLocaleDateString();
+                            const dateUpdated = new Date(drawing.lastUpdated).toLocaleDateString();
 
-                        return <TableRow key={drawing._id} sx={(theme) => ({
-                            bgcolor: (index % 2 === 1) ? '#bababa' : '#e0dfdf',
-                            ...((drawing._id === userId) 
-                                ? {
-                                    boxShadow: `inset 0px 0px 0px 4px ${theme.palette.error.main}`
-                                } 
-                                : {}),
-                            ':hover': {
-                                bgcolor: '#939393',
-                            }
-                        })}>
-                            {columnsDisplay._id && <TableCell align="center" component="th" scope="row">
-                                {drawing._id}
-                            </TableCell>}
-                            {columnsDisplay.name && <TableCell align="center">{drawing.name}</TableCell>}
-                            {columnsDisplay.userId && <TableCell align="center">{drawing.userId}</TableCell>}
-                            {columnsDisplay.reviews && <TableCell align="center">{drawing.reviews}</TableCell>}
-                            {columnsDisplay.rating && <TableCell align="center">{drawing.rating}</TableCell>}
-                            {columnsDisplay.created &&<TableCell align="center">{dateCreated}</TableCell>}
-                            {columnsDisplay.lastUpdated && <TableCell align="center">{dateUpdated}</TableCell>}
-                            {columnsDisplay.labels &&<TableCell align="center">{drawing.labels}</TableCell>}
-                            {columnsDisplay.category && <TableCell align="center">{drawing.category}</TableCell>}
-                        </TableRow>
-                    })}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                            return <TableRow key={drawing._id} sx={(theme) => ({
+                                bgcolor: (index % 2 === 1) ? '#bababa' : '#e0dfdf',
+                                ...((drawing._id === userId) 
+                                    ? {
+                                        boxShadow: `inset 0px 0px 0px 4px ${theme.palette.error.main}`
+                                    } 
+                                    : {}),
+                                ':hover': {
+                                    bgcolor: '#939393',
+                                }
+                            })}>
+                                {columnsDisplay._id && <TableCell align="center" component="th" scope="row">
+                                    {drawing._id}
+                                </TableCell>}
+                                {columnsDisplay.name && <TableCell align="center">{drawing.name}</TableCell>}
+                                {columnsDisplay.userId && <TableCell align="center">{drawing.userId}</TableCell>}
+                                {columnsDisplay.reviews && <TableCell align="center">{drawing.reviews}</TableCell>}
+                                {columnsDisplay.rating && <TableCell align="center">{drawing.rating}</TableCell>}
+                                {columnsDisplay.created &&<TableCell align="center">{dateCreated}</TableCell>}
+                                {columnsDisplay.lastUpdated && <TableCell align="center">{dateUpdated}</TableCell>}
+                                {columnsDisplay.labels &&<TableCell align="center">{drawing.labels}</TableCell>}
+                                {columnsDisplay.category && <TableCell align="center">{drawing.category}</TableCell>}
+                            </TableRow>
+                        })}
+                    </TableBody>
+                </Table>
+              </TableContainer> 
+            : <Typography variant="body1" color="textCustom.primary">
+                {"No drawings found for the current filters"}
+              </Typography>
+            )
+        }
     </Container>;
 }

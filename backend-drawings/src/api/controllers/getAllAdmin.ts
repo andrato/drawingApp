@@ -1,12 +1,60 @@
 import { Request, Response} from "express";
 import { DrawingType } from "../utils/types";
 import { modelDrawing } from "../../mongo_schema";
+import { param, validationResult } from "express-validator";
+
+export const getAllAdminChainValidation = [
+    param("category")
+      .optional()
+      .isString()
+      .withMessage("Incorrect category!")
+      .isIn(["topArt", "topAmateur"])
+      .withMessage("category value is invalid!"),
+    param("search")
+      .optional()
+      .isString()
+      .withMessage("Incorrect search!"),
+    param("startDate")
+      .optional()
+      .isDecimal()
+      .withMessage("Incorrect startDate!"),
+    param("endDate")
+      .optional()
+      .isDecimal()
+      .withMessage("Incorrect endDate!"),
+    param("labels")
+      .optional()
+      .isString()
+      .withMessage("Incorrect labels!"),
+];
 
 export const getAllAdmin = async (req: Request, res: Response) => {
-    let allDrawings: (DrawingType & {rating: number; reviews: number;})[] = [];
+    const errors = validationResult(req);
 
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+            errors: errors.array(),
+        });
+    }
+
+    const {category, search, startDate, endDate, labels} = req.query;
+
+    const created = {
+        ...(startDate ? {$gte: startDate} : {}), 
+        ...(endDate ? {$lte: endDate} : {}),
+    }
+    const labelsArray = labels ? (labels as string).split(",") : [];
+
+    const searchDrawings = {
+        ...(category ? {category: category} : {}),
+        ...(startDate || endDate ? {created: created} : {}),
+        ...(search ? {displayTitle: { $regex: search, $options: 'i' }} : {}),
+        ...(labels ? {labels: { $all: labelsArray}} : {}),
+    }
+
+    let drawings: DrawingType[] = [];
     try {
-        allDrawings = await modelDrawing.find();
+        drawings = await modelDrawing.find(searchDrawings);        
     } catch (err) {
         return res.status(500).json({
             status: 1, 
@@ -14,7 +62,7 @@ export const getAllAdmin = async (req: Request, res: Response) => {
         })
     }
 
-    const filteredDrawings = allDrawings.map((drawing) => ({
+    const filteredDrawings = drawings.map((drawing) => ({
         id: drawing._id,
         displayTitle: drawing.displayTitle,
         userId: drawing.userId,
