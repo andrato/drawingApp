@@ -8,7 +8,7 @@ export const defaultDrawingInProgress: DrawingType = {
         filename: "",
         size: 0,
     },
-    category: "Gallery",
+    category: "gallery",
     image: {
         location: "",
         filename: "",

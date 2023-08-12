@@ -21,9 +21,9 @@ const drawingSchema = new Schema({
     description: String,
 	category: {
         type: String,
-        default: "Gallery",
+        default: "gallery",
         index: true,
-        require: true,
+        require: false,
     }, 
 	video: {
         location: String,

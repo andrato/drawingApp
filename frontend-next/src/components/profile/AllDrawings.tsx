@@ -1,10 +1,12 @@
-import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Theme, Typography } from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
 import { ReactNode, useMemo, useState } from "react";
-import { DataDrawings, HeadCellDrawing, Order, SortDataDrawings, getComparator, mapDrawingsToTableData, stableSort } from "./helpers";
+import { DataDrawings, HeadCellDrawing, Order, SortDataDrawings, getComparator, mapApiToCategory, mapDrawingsToTableData, stableSort } from "./helpers";
 import { QueryFields } from "../category/QueryFields";
 import { useAdminDrawingsQuery } from "./useAdminDrawingsQuery";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { useRouter } from "next/router";
+import { categories } from "../common/constants";
+import { modifyDrawingAdmin } from "@/services/Drawings";
 
 const headCellsSort: HeadCellDrawing[] = [
     {
@@ -165,9 +167,10 @@ const HeadCells: {id: keyof DataDrawings, label: string}[] = [
 ];
 
 export const AllDrawings = ({userId}: {userId: string}) => {
-    const {data, isLoading, isError, error} = useAdminDrawingsQuery({userId})
+    const {data, isLoading, isError, refetch} = useAdminDrawingsQuery({userId})
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof SortDataDrawings>('created');
+    const [loading, setLoading] = useState<boolean>(false);
     const loadingOrError = isLoading || isError;
     const router = useRouter();
     const [columns, setColumns] = useState<string[]>([
@@ -267,7 +270,17 @@ export const AllDrawings = ({userId}: {userId: string}) => {
         {loadingOrError && <LoadingsAndErrors isLoading={isLoading} isError={isError} /> }
 
         {!loadingOrError && (drawingSortTable.length 
-            ? <TableContainer component={Paper}>
+            ? <TableContainer component={Paper} sx={(theme) => ({
+                '.MuiSelect-iconOutlined, .MuiFormLabel-root, .MuiOutlinedInput-input': {
+                    color: `${theme.palette.backgroundCustom.dark} !important`,
+                },
+                '.MuiSelect-iconOpen': {
+                    color: `${theme.palette.backgroundCustom.dark} !important`,
+                },
+                '.MuiOutlinedInput-notchedOutline': {
+                    borderColor: theme.palette.backgroundCustom.dark,
+                },
+            })}>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                     <EnhancedTableHead
                         order={order}
@@ -301,7 +314,54 @@ export const AllDrawings = ({userId}: {userId: string}) => {
                                 {columnsDisplay.created &&<TableCell align="center">{dateCreated}</TableCell>}
                                 {columnsDisplay.lastUpdated && <TableCell align="center">{dateUpdated}</TableCell>}
                                 {columnsDisplay.labels &&<TableCell align="center">{drawing.labels}</TableCell>}
-                                {columnsDisplay.category && <TableCell align="center">{drawing.category}</TableCell>}
+                                {columnsDisplay.category && <TableCell align="center">
+                                    <FormControl sx={{ width: 150 }}>
+                                        <Select
+                                            labelId="demo-simple-select-standard-label"
+                                            size="small"
+                                            variant="outlined"
+                                            value={drawing.category}
+                                            onChange={async (event) => {
+                                                const value = event.target.value;
+
+                                                setLoading(true);
+                                                try {
+                                                    await modifyDrawingAdmin({
+                                                        id: drawing._id,
+                                                        category: value,
+                                                    })
+                                                } catch (err) {
+                                                    alert("An error occured!");
+                                                    refetch();
+                                                    setLoading(false);
+                                                }
+
+                                                refetch();
+                                                setLoading(false);                                                
+                                            }}
+                                            inputProps={{ 'aria-label': 'Without label' }}
+                                            disabled={loading}
+                                            sx={(theme) => ({
+                                                bgColor: theme.palette.backgroundCustom.dark,
+                                                color: `${theme.palette.textCustom.primary} !important`,
+                                            })}
+                                        >
+                                            {categories.map((option) => {
+                                                return <MenuItem 
+                                                    value={option} 
+                                                    sx={(theme) => ({
+                                                        ':hover': {
+                                                            bgcolor: "#bcbcbc",
+                                                        },
+                                                        '&.Mui-selected, &.Mui-selected:hover': {
+                                                            bgcolor: theme.palette.textCustom.disabled,
+                                                        }
+                                                    })}
+                                                >{option}</MenuItem>
+                                            })}
+                                        </Select>
+                                    </FormControl>
+                                </TableCell>}
                             </TableRow>
                         })}
                     </TableBody>

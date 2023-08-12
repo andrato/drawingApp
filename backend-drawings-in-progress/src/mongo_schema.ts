@@ -47,7 +47,7 @@ const drawingSchema = new Schema({
     description: String,
 	category: {
         type: String,
-        default: "Gallery",
+        default: "gallery",
         index: true,
         require: false,
     }, 

@@ -38,7 +38,7 @@ export const QueryFields = ({
 }) => {
     const router = useRouter();
     // const [labels, setLabelsQuery] = useState<string[]>([]);
-    const {sortBy, search, startDate, endDate, labels} = useQueryParams();
+    const {sortBy, search, startDate, endDate, labels, category} = useQueryParams();
 
     const onChangeSearch = (e: any) => {
         const value = e.target.value;
@@ -130,13 +130,13 @@ export const QueryFields = ({
                     color: `${theme.palette.textCustom.primary} !important`,
                 })}
             >
-                Sort By
+                Category
             </InputLabel>
             <Select
                 labelId="demo-simple-select-standard-label"
                 size="small"
                 variant="outlined"
-                defaultValue={ApiSortToQuerySort[sortBy]}
+                defaultValue={category}
                 onChange={(event) => {
                     const value = event.target.value as SortBy;
                     

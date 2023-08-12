@@ -78,6 +78,27 @@ export enum Category {
     TOP_AMATEUR = "Top Amateur",
     GALLERY = "Gallery",
 }
+
+export const mapApiToCategory = (category: string): Category => {
+    let res: Category = Category.GALLERY;
+
+    switch(category) {
+        case 'gallery': {
+            res = Category.GALLERY;
+            break;
+        };
+        case 'topAmateur': {
+            res = Category.TOP_AMATEUR;
+            break;
+        };
+        case 'topArt': {
+            res = Category.TOP_ART;
+            break;
+        }
+    }
+
+    return res;
+} 
 export interface DataDrawings {
     _id: string;
     userId: string,
@@ -115,6 +136,6 @@ export const mapDrawingsToTableData = (drawings: DrawingAdminType[]): DataDrawin
         reviews: drawing.reviews ?? 0,
         rating: Number(drawing.rating ?? 0),
         labels: drawing.labels?.join() ?? '',
-        category: drawing.topArt ? Category.TOP_ART : drawing.topAmateur ? Category.TOP_AMATEUR : Category.GALLERY,
+        category: mapApiToCategory(drawing.category),
     }))
 };

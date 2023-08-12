@@ -7,6 +7,7 @@ export const HOST_DRAWINGS_ADMIN = HOST + "/getAdmin";
 export const HOST_DRAWING = HOST + "/drawing";
 export const HOST_USER_DRAWINGS = HOST + "/user";
 export const HOST_CATEGORY_DRAWINGS = HOST + "/";
+export const HOST_MODIFY_ADMIN = HOST + "/drawingAdmin";
 
 export type ErrorType = {
     msg: string;
@@ -34,11 +35,10 @@ export type DrawingType = {
     labels?: string[];
     reviews?: number;
     rating?: number;
-    topArt?: boolean;
-    topAmateur?: boolean;
     video: FileType;
     image: FileType;
     description?: string;
+    category: string;
 }
 
 export type DrawingAdminType = {
@@ -51,8 +51,7 @@ export type DrawingAdminType = {
     labels?: string[];
     rating: number;
     reviews: number;
-    topArt?: boolean;
-    topAmateur?: boolean;
+    category: string;
 }
 
 export type DrawingTypePartial = {
@@ -101,6 +100,20 @@ const computeCategory = (category?: string | null) => {
     return undefined;
 }
 
+const computeCategoryForModify = (category?: string | null) => {
+    if (!category) {
+        return undefined;
+    }
+
+    if (category === Category.TOP_AMATEUR) {
+        return "topAmateur";
+    } else if (category === Category.TOP_ART) {
+        return "topArt";
+    }
+
+    return "gallery";
+}
+
 export const getDrawingByCategory = ({
     category,
     sortBy,
@@ -134,6 +147,38 @@ export const getDrawingByUser = (userId: string) => {
 
 export const getDrawing = (id: string) => {
     return axios.get<DrawingResponseSuccessType>(HOST_DRAWING, {...config, params: {drawingId: id}});
+}
+
+export const modifyDrawingAdmin = ({
+    id,
+    category,
+}: {
+    id: string, 
+    category?: string,
+}) => {
+    const computedCateg = computeCategoryForModify(category);
+
+    return axios.post<DrawingResponseSuccessType>(
+        HOST_MODIFY_ADMIN, 
+        {category: computedCateg, drawingId: id},
+        {...config}
+    );
+}
+
+export const modifyDrawing = ({
+    id,
+    ...props
+}: {
+    id: string, 
+    description?: string,
+    displayTitle?: string,
+    labels?: string[],
+}) => {
+    return axios.post<DrawingResponseSuccessType>(
+        HOST_DRAWING, 
+        {...props}, 
+        {...config, params: {drawingId: id}}
+    );
 }
 
 export const getDrawingsAdmin = ({

@@ -26,7 +26,7 @@ export const HomeCategory = ({
     category: string;
 }) => {
     
-    const {data, isLoading, isError, error} = useDrawingsQuery({category});
+    const {data, isLoading, isError, error} = useDrawingsQuery({category, refetchOnMount: true});
     const router = useRouter();
 
     if (isLoading || isError) {

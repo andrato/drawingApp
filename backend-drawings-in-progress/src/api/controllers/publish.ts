@@ -98,7 +98,7 @@ export const publish = async (req: Request, res: Response) => {
             description: req.body.description ?? '',
             rating: 0, 
             reviews: 0,
-            category: "Gallery",
+            category: "gallery",
             video: {
                 filename: existingDrawing.video.filename,
                 location: existingDrawing.video.location,

@@ -71,6 +71,7 @@ export const getAllAdmin = async (req: Request, res: Response) => {
         rating: drawing.rating,
         reviews: drawing.reviews,
         labels: drawing.labels,
+        category: drawing.category,
     }));
 
     return res.status(200).json({

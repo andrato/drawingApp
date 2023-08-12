@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryParams } from "./useQueryParams";
 import { HOST_CATEGORY_DRAWINGS, getDrawingByCategory } from "@/services/Drawings";
 
-export const useDrawingsQuery = ({category}: {category: string}) => {
+export const useDrawingsQuery = ({category, refetchOnMount=false}: {category: string, refetchOnMount?: boolean}) => {
     const {sortBy, search, startDate, endDate, labels} = useQueryParams();
 
     return useQuery({
@@ -15,6 +15,6 @@ export const useDrawingsQuery = ({category}: {category: string}) => {
             labels,
             category,
         }), 
-        refetchOnMount: false,
+        refetchOnMount,
     });
 }
