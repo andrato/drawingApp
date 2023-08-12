@@ -15,21 +15,15 @@ const drawingSchema = new Schema({
     lastUpdated: Number,
     title: String,
     displayTitle: String,
-    categories: [String],
-    likes: Number,
-	comments: Number,
+    labels: [String],
+    rating: Number,
+    reviews: Number,
     description: String,
-	topArt: {
-        type: Boolean,
-        default: false,
+	category: {
+        type: String,
+        default: "gallery",
         index: true,
-        require: true,
-    }, 
-	topAmateur: {
-        type: Boolean,
-        default: false,
-        index: true,
-        require: true,
+        require: false,
     }, 
 	video: {
         location: String,

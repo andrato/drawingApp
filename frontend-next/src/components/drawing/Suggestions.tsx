@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { DrawingTypePartial, HOST_DRAWING, getDrawingByCategory } from '@/services/Drawings';
+import React from 'react';
+import { DrawingTypePartial, HOST_CATEGORY_DRAWINGS, getDrawingByCategory } from '@/services/Drawings';
 import { useQuery } from '@tanstack/react-query';
 import { LoadingsAndErrors } from '../utils/helpers/LoadingsAndErrors';
 import { Box, CardMedia, Typography } from '@mui/material';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 const BREAKPOINT = 980;
 
 const getDrawing = async () => {
-    const response = await getDrawingByCategory("Gallery");
+    const response = await getDrawingByCategory({category: "Gallery"});
 
     const dataSorted = {
         data: {
@@ -29,7 +29,7 @@ export const Suggestions = ({height}: {height: number | null}) => {
     // for now, we'll just randomly display drawings
     const router = useRouter();
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [HOST_DRAWING, "Gallery"],
+        queryKey: [HOST_CATEGORY_DRAWINGS, "Gallery"],
         queryFn: getDrawing,
         refetchOnMount: false,
     });

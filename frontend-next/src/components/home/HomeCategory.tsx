@@ -1,10 +1,9 @@
-import { Alert, Box, CardMedia, CircularProgress, Typography } from "@mui/material";
-import { dataToTest } from "../common/testData";
-import { useQuery } from "@tanstack/react-query";
-import { DrawingTypePartial, HOST_DRAWING, getDrawingByCategory } from "@/services/Drawings";
+import { Box, CardMedia, Typography } from "@mui/material";
+import { DrawingTypePartial } from "@/services/Drawings";
 import { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
+import { useDrawingsQuery } from "../category/useDrawingsQuery";
 
 export const Container = ({children}: {children: ReactNode}) => {
     return (<Box sx={(theme) => ({
@@ -26,11 +25,8 @@ export const HomeCategory = ({
 }: {
     category: string;
 }) => {
-    const {data, isLoading, isError, error} = useQuery({
-        queryKey: [HOST_DRAWING, category],
-        queryFn: () => getDrawingByCategory(category), 
-        refetchOnMount: false,
-    });
+    
+    const {data, isLoading, isError, error} = useDrawingsQuery({category, refetchOnMount: true});
     const router = useRouter();
 
     if (isLoading || isError) {
@@ -52,7 +48,7 @@ export const HomeCategory = ({
                 height: "calc(100% - 24px)",
                 width: "100%",
                 display: "flex", 
-                overflow: "scroll",
+                overflowX: "hidden",
                 "::-webkit-scrollbar": {
                     display: "none",
                 },
@@ -84,7 +80,7 @@ export const HomeCategory = ({
                             />
                         </Box>
                     )
-                })};
+                })}
             </Box>
         </Container>
     );

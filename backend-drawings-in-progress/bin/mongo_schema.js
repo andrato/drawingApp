@@ -10,20 +10,15 @@ const drawingSchema = new mongoose_1.Schema({
     created: {
         type: Number,
     },
-    categories: [String],
+    labels: [String],
     likes: {
         type: Number,
     },
     comments: {
         type: Number,
     },
-    topArt: {
-        type: Boolean,
-        default: false,
-    },
-    topAmateur: {
-        type: Boolean,
-        default: false,
+    category: {
+        type: String,
     },
     videoPath: {
         type: String,

@@ -1,8 +1,14 @@
-import { Box } from "@mui/material";
-import { ReactNode } from "react";
-import { HeadCell } from "./helpers";
+import { Box, FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
+import { ReactNode, useMemo, useState } from "react";
+import { DataDrawings, HeadCellDrawing, Order, SortDataDrawings, getComparator, mapApiToCategory, mapDrawingsToTableData, stableSort } from "./helpers";
+import { QueryFields } from "../category/QueryFields";
+import { useAdminDrawingsQuery } from "./useAdminDrawingsQuery";
+import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
+import { useRouter } from "next/router";
+import { categories } from "../common/constants";
+import { modifyDrawingAdmin } from "@/services/Drawings";
 
-const headCellsSort: readonly HeadCell[] = [
+const headCellsSort: HeadCellDrawing[] = [
     {
         id: '_id',
         numeric: false,
@@ -16,7 +22,7 @@ const headCellsSort: readonly HeadCell[] = [
         displayed: true,
     },
     {
-        id: 'user_id',
+        id: 'userId',
         numeric: false,
         label: 'User Id',
         displayed: true,
@@ -45,19 +51,13 @@ const headCellsSort: readonly HeadCell[] = [
         label: 'Last updated',
         displayed: false,
     },
-    {
-        id: 'drawings',
-        numeric: true,
-        label: 'Drawings',
-        displayed: true,
-    },
 ];
 
-const headCells: readonly HeadCell[] = [
+const headCells: readonly HeadCellDrawing[] = [
     {
-        id: 'admin',
+        id: 'labels',
         numeric: false,
-        label: 'Admin',
+        label: 'Labels',
     },
 ]
 const Container = ({children}: {children: ReactNode}) => (
@@ -65,15 +65,312 @@ const Container = ({children}: {children: ReactNode}) => (
         position: "relative",
         width: "calc(100% - 240px)",
         m: 2,
-        overflow: "scroll",
     }}>
         {children}
     </Box>
-) 
+) ;
+
+const EnhancedTableHead = (props: {
+    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof SortDataDrawings) => void;
+    order: Order;
+    orderBy: string;
+    columnsDisplay: {[key in keyof DataDrawings]: boolean}
+}) => {
+    const { order, orderBy, onRequestSort, columnsDisplay} = props;
+
+    const createSortHandler =
+        (property: keyof SortDataDrawings) => (event: React.MouseEvent<unknown>) => {
+            onRequestSort(event, property);
+        };
+  
+    return (
+    <TableHead sx={(theme) => ({bgcolor: theme.palette.backgroundCustom.dark, 'th': {
+        color: theme.palette.textCustom.primary}
+    })}>
+        <TableRow>
+          {headCellsSort.map((headCell) => (
+            columnsDisplay[headCell.id] && <TableCell
+              key={headCell.id}
+              align='center'
+              sortDirection={orderBy === headCell.id ? order : false}
+            >
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={createSortHandler(headCell.id as keyof SortDataDrawings)}
+                color="success"
+                sx={(theme) => ({
+                    color: `${theme.palette.textCustom.primary} !important`,
+                    "svg:active, :hover, svg:hover": {
+                        color: theme.palette.textCustom.primary,
+                    },
+                    ".MuiSvgIcon-root": {
+                        color: theme.palette.textCustom.primary,
+                    },
+                    "> span > svg": {
+                        color: theme.palette.textCustom.primary,
+                        display: "block",
+                    },
+                    '.MuiTableSortLabel-root.MuiTableSortLabel-active, \
+                    .MuiTableSortLabel-root:active, \
+                    .MuiTableSortLabel-root:hover, \
+                    .MuiTableSortLabel-icon': {
+                        color: `${theme.palette.textCustom.primary} !important`,
+                    }
+                })}
+              >
+                {headCell.label}
+                {/* {orderBy === headCell.id 
+                    ? (<> {order === 'desc' ? <KeyboardArrowUp/> : <KeyboardArrowDown />} </>) 
+                    : null
+                } */}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+          {headCells.map((headCell) => (
+            columnsDisplay[headCell.id] && <TableCell
+              align='center'
+            >
+                {headCell.label}
+            </TableCell>
+          ))}
+          {columnsDisplay.category && <TableCell
+              align='center'
+            >
+                Category
+            </TableCell>}
+        </TableRow>
+    </TableHead>);
+}  
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const HeadCells: {id: keyof DataDrawings, label: string}[] = [
+    {id: "_id", label: "Id"},
+    {id: "name", label: 'Name'},
+    {id: "userId", label: 'User Id'},
+    {id: "reviews", label: 'Reviews'},
+    {id: "rating", label: 'Rating'},
+    {id: "created", label: 'Created'},
+    {id: "lastUpdated", label: 'Last Updated'},
+    {id: "labels", label: 'Labels'},
+    {id: "category", label: 'Category'},
+];
 
 export const AllDrawings = ({userId}: {userId: string}) => {
+    const {data, isLoading, isError, refetch} = useAdminDrawingsQuery({userId})
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof SortDataDrawings>('created');
+    const [loading, setLoading] = useState<boolean>(false);
+    const loadingOrError = isLoading || isError;
+    const router = useRouter();
+    const [columns, setColumns] = useState<string[]>([
+        "Id",
+        "Name",
+        "Created",
+        "Reviews",
+        "Rating",
+        "Labels",
+        "Category",
+    ]);
+    const [columnsDisplay, setColumnsDisplay] = useState<{[key in keyof DataDrawings]: boolean}>({
+        _id: true,
+        userId: false,
+        name: true,
+        created: true, 
+        lastUpdated: false,
+        reviews: true,
+        rating: true,
+        labels: true,
+        category: true,
+    });
 
-    return <Container>
-    
+    const drawingSortTable = useMemo(
+        () => stableSort(mapDrawingsToTableData(data?.data?.drawings ?? []), getComparator(order, orderBy))
+        , [order, orderBy, data]
+    );
+
+    const handleRequestSort = (
+        event: React.MouseEvent<unknown>,
+        property: keyof SortDataDrawings,
+    ) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const handleDisplayColumns = (event: SelectChangeEvent<string[]>) => {
+        const {
+            target: { value },
+        } = event;
+
+        const columnsVisible = typeof value === 'string' ? value.split(',') : value;
+
+        setColumns(columnsVisible);
+    } 
+
+    const handleChangeColumns = (columnId: string) => {
+        const checkState = columnsDisplay[columnId as keyof DataDrawings];
+        setColumnsDisplay({...columnsDisplay, [columnId]: !checkState});
+    }
+
+    return  <Container>
+        <QueryFields 
+            showSortBy={false} 
+            showCategory={true}
+            onResetFilters={() => {
+                router.replace({
+                    query: {category: router.query.category},
+                });
+            }}
+        >
+            <FormControl sx={{ width: 150 }}>
+                <InputLabel 
+                    size="small"
+                    id="demo-multiple-name-label"
+                >Display columns</InputLabel>
+                <Select
+                    size="small"
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    multiple
+                    value={columns}
+                    onChange={handleDisplayColumns}
+                    input={<OutlinedInput label="Display columns" />}
+                >
+                    {HeadCells.map((column) => (
+                        <MenuItem
+                            key={column.label}
+                            value={column.label}
+                            sx={(theme) => ({
+                                ':hover': {
+                                    bgcolor: "#bcbcbc",
+                                },
+                                '&.Mui-selected, &.Mui-selected:hover': {
+                                    bgcolor: theme.palette.textCustom.disabled,
+                                }
+                            })}
+                            onClick={() => handleChangeColumns(column.id)}
+                        >
+                            {column.label}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </QueryFields>
+        {loadingOrError && <LoadingsAndErrors isLoading={isLoading} isError={isError} /> }
+
+        {!loadingOrError && (drawingSortTable.length 
+            ? <TableContainer component={Paper} sx={(theme) => ({
+                '.MuiSelect-iconOutlined, .MuiFormLabel-root, .MuiOutlinedInput-input': {
+                    color: `${theme.palette.backgroundCustom.dark} !important`,
+                },
+                '.MuiSelect-iconOpen': {
+                    color: `${theme.palette.backgroundCustom.dark} !important`,
+                },
+                '.MuiOutlinedInput-notchedOutline': {
+                    borderColor: theme.palette.backgroundCustom.dark,
+                },
+            })}>
+                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                    <EnhancedTableHead
+                        order={order}
+                        orderBy={orderBy}
+                        onRequestSort={handleRequestSort}
+                        columnsDisplay={columnsDisplay}
+                    />
+                    <TableBody>
+                        {drawingSortTable.map((drawing, index) => {
+                            const dateCreated = new Date(drawing.created).toLocaleDateString();
+                            const dateUpdated = new Date(drawing.lastUpdated).toLocaleDateString();
+
+                            return <TableRow key={drawing._id} sx={(theme) => ({
+                                bgcolor: (index % 2 === 1) ? '#bababa' : '#e0dfdf',
+                                ...((drawing._id === userId) 
+                                    ? {
+                                        boxShadow: `inset 0px 0px 0px 4px ${theme.palette.error.main}`
+                                    } 
+                                    : {}),
+                                ':hover': {
+                                    bgcolor: '#939393',
+                                }
+                            })}>
+                                {columnsDisplay._id && <TableCell align="center" component="th" scope="row">
+                                    {drawing._id}
+                                </TableCell>}
+                                {columnsDisplay.name && <TableCell align="center">{drawing.name}</TableCell>}
+                                {columnsDisplay.userId && <TableCell align="center">{drawing.userId}</TableCell>}
+                                {columnsDisplay.reviews && <TableCell align="center">{drawing.reviews}</TableCell>}
+                                {columnsDisplay.rating && <TableCell align="center">{drawing.rating}</TableCell>}
+                                {columnsDisplay.created &&<TableCell align="center">{dateCreated}</TableCell>}
+                                {columnsDisplay.lastUpdated && <TableCell align="center">{dateUpdated}</TableCell>}
+                                {columnsDisplay.labels &&<TableCell align="center">{drawing.labels}</TableCell>}
+                                {columnsDisplay.category && <TableCell align="center">
+                                    <FormControl sx={{ width: 150 }}>
+                                        <Select
+                                            labelId="demo-simple-select-standard-label"
+                                            size="small"
+                                            variant="outlined"
+                                            value={drawing.category}
+                                            onChange={async (event) => {
+                                                const value = event.target.value;
+
+                                                setLoading(true);
+                                                try {
+                                                    await modifyDrawingAdmin({
+                                                        id: drawing._id,
+                                                        category: value,
+                                                    })
+                                                } catch (err) {
+                                                    alert("An error occured!");
+                                                    refetch();
+                                                    setLoading(false);
+                                                }
+
+                                                refetch();
+                                                setLoading(false);                                                
+                                            }}
+                                            inputProps={{ 'aria-label': 'Without label' }}
+                                            disabled={loading}
+                                            sx={(theme) => ({
+                                                bgColor: theme.palette.backgroundCustom.dark,
+                                                color: `${theme.palette.textCustom.primary} !important`,
+                                            })}
+                                        >
+                                            {categories.map((option) => {
+                                                return <MenuItem 
+                                                    value={option} 
+                                                    sx={(theme) => ({
+                                                        ':hover': {
+                                                            bgcolor: "#bcbcbc",
+                                                        },
+                                                        '&.Mui-selected, &.Mui-selected:hover': {
+                                                            bgcolor: theme.palette.textCustom.disabled,
+                                                        }
+                                                    })}
+                                                >{option}</MenuItem>
+                                            })}
+                                        </Select>
+                                    </FormControl>
+                                </TableCell>}
+                            </TableRow>
+                        })}
+                    </TableBody>
+                </Table>
+              </TableContainer> 
+            : <Typography variant="body1" color="textCustom.primary">
+                {"No drawings found for the current filters"}
+              </Typography>
+            )
+        }
     </Container>;
 }

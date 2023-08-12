@@ -1,16 +1,58 @@
 
 export const categories = ["Top Art", "Top Amateur", "Gallery"];
+export const labelsDrawing = [
+    "Sport",
+    "Digital Art",
+    "Nature",
+    "Portrait",
+    "Traditional Art",
+]
+
+export enum QueryParams {
+    CURSOR = 'c',
+    SEARCH = 'q',
+    SEARCH_USER = 'q_u',
+    START_DATE = 'start_date',
+    END_DATE = 'end_date',
+    SORT_BY = "sort_by",
+    LABELS = "l",
+    CATEGORY = "cat"
+}
 
 export enum SortBy {
-    RECENT = "Recent" ,
+    NEWEST = "Newest" ,
     OLDEST =  "Oldest",
-    POPULAR = "Popular",
+    RATINGS_HIGH = "Higest Ratings",
+    RATINGS_LOW = "Lowest Ratings",
+    MOST_REVIEWED = "Most Reviewed",
+    LEAST_REVIEWED = "Least Reviewed",
+};
+   
+export const sortByOptions = [
+    SortBy.NEWEST, 
+    SortBy.OLDEST, 
+    SortBy.RATINGS_HIGH,
+    SortBy.RATINGS_LOW,
+    SortBy.MOST_REVIEWED,
+    SortBy.LEAST_REVIEWED,
+]
+
+export const QuerySortToApiSort: Record<SortBy, string> = {
+    [SortBy.NEWEST]: "newest",
+    [SortBy.OLDEST]: "oldest",
+    [SortBy.RATINGS_HIGH]: "highRatings",
+    [SortBy.RATINGS_LOW]: "lowRatings",
+    [SortBy.MOST_REVIEWED]: "reviewsUp",
+    [SortBy.LEAST_REVIEWED]: "reviewsDown",
 };
 
-export const sortByOptions = [
-    SortBy.RECENT, 
-    SortBy.OLDEST, 
-    SortBy.POPULAR
-]
+export const ApiSortToQuerySort: Record<string, SortBy> = {
+    newest: SortBy.NEWEST,
+    oldest: SortBy.OLDEST,
+    highRatings: SortBy.RATINGS_HIGH,
+    lowRatings: SortBy.RATINGS_LOW,
+    reviewsUp: SortBy.MOST_REVIEWED,
+    reviewsDown: SortBy.LEAST_REVIEWED,
+};
 
 export const HOST = "http://localhost:8080";

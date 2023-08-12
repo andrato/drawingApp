@@ -15,12 +15,20 @@ export type DrawingType = {
     lastUpdated: number;
     title: string;
     displayTitle?: string;
-    categories?: string[];
-    likes?: number;
-    comments?: number;
-    topArt?: boolean;
-    topAmateur?: boolean;
+    labels: string[];
+    rating: number;
+    reviews: number;
+    category: string;
     video: FileType;
     image: FileType;
     description?: string;
+}
+
+export enum SortBy {
+    NEWEST = "newest",
+    OLDEST = "oldest",
+    RATINGS_HIGH = "highRatings",
+    RATINGS_LOW = "lowRatings",
+    MOST_REVIEWED = "reviewsUp",
+    LEAST_REVIEWED = "reviewsDown",
 }

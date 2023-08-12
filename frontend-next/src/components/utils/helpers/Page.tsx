@@ -19,7 +19,7 @@ export const Page = ({
             sx={{
                 width: hasMarginX ? "calc(100% - 32px)" : "100%",
                 height: hasMarginY ? "calc(100% - 58px - 32px)" : "calc(100% - 58px)",
-                overflow: "scroll",
+                // overflow: "hidden",
                 ...(hasMarginY ? {py: 2} : {}),
                 ...(hasMarginX ? {px: 2} : {}),
                 ...(sx ? sx : {}),

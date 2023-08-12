@@ -10,7 +10,7 @@ const drawingSchema = new mongoose_1.Schema({
     created: {
         type: Number,
     },
-    categories: [String],
+    labels: [String],
     likes: {
         type: Number,
     },

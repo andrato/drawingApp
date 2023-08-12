@@ -1,4 +1,4 @@
-import { Alert, CircularProgress } from "@mui/material";
+import { Alert, Box, CircularProgress } from "@mui/material";
 
 export const LoadingsAndErrors = ({
     isLoading,

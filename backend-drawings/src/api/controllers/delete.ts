@@ -4,6 +4,7 @@ import { DrawingType } from "../utils/types";
 import { modelDrawing } from "../../mongo_schema";
 import { deleteFile } from "../utils/deleteS3";
 import { DeleteObjectCommandOutput } from "@aws-sdk/client-s3";
+import { validationResult } from "express-validator";
 
 export const deleteSchema = {
     userId: {
@@ -16,6 +17,14 @@ export const deleteSchema = {
 }
 
 export const deleteDrawing = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+            errors: errors.array(),
+        });
+    }
+
     const userId = req.query.userId;
 
     let drawings: DrawingType[] = [];

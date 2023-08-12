@@ -1,22 +1,15 @@
 import { Request, Response} from "express";
+import { DrawingType } from "../utils/types";
 import { modelDrawing } from "../../mongo_schema";
-import { DrawingType, SortBy } from "../utils/types";
-import { sortDrawings } from "../utils/helpers";
 import { param, validationResult } from "express-validator";
 
-export const getByCategoryChainValidation = [
+export const getAllAdminChainValidation = [
     param("category")
       .optional()
       .isString()
       .withMessage("Incorrect category!")
       .isIn(["topArt", "topAmateur"])
       .withMessage("category value is invalid!"),
-    param("sortBy")
-      .optional()
-      .isString()
-      .withMessage("Incorrect sortBy!")
-      .isIn(["newest", "oldest", "highRatings", "lowRatings", "reviewsUp", "reviewsDown"])
-      .withMessage("sortBy value is invalid!"),
     param("search")
       .optional()
       .isString()
@@ -35,32 +28,7 @@ export const getByCategoryChainValidation = [
       .withMessage("Incorrect labels!"),
 ];
 
-export const getByCategorySchema = {
-    startDate: {
-        isDecimal: {
-            errorMessage: 'startDate is wrong!',
-            location: "params",
-            optional: true,
-        },
-    },
-    endDate: {
-        isDecimal: {
-            errorMessage: 'endDate is wrong!',
-            location: "params",
-            optional: true,
-        },
-    },
-    labels: {
-        isLength: {
-            errorMessage: 'labels param is wrong!',
-            options: { min: 1 },
-            location: "params",
-            optional: true,
-        },
-    },
-}
-
-export const getByCategory = async (req: Request, res: Response) => {
+export const getAllAdmin = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -69,7 +37,7 @@ export const getByCategory = async (req: Request, res: Response) => {
         });
     }
 
-    const {category, sortBy, search, startDate, endDate, labels} = req.query;
+    const {category, search, startDate, endDate, labels} = req.query;
 
     const created = {
         ...(startDate ? {$gte: startDate} : {}), 
@@ -94,13 +62,16 @@ export const getByCategory = async (req: Request, res: Response) => {
         })
     }
 
-    let drawingsSorted: DrawingType[] = sortBy ? sortDrawings(drawings, sortBy as SortBy) : drawings;
-
-    const filteredDrawings = drawingsSorted.map((drawing) => ({
+    const filteredDrawings = drawings.map((drawing) => ({
         id: drawing._id,
-        created: drawing.created,
         displayTitle: drawing.displayTitle,
-        image: drawing.image,
+        userId: drawing.userId,
+        created: drawing.created,
+        lastUpdated: drawing.lastUpdated,
+        rating: drawing.rating,
+        reviews: drawing.reviews,
+        labels: drawing.labels,
+        category: drawing.category,
     }));
 
     return res.status(200).json({

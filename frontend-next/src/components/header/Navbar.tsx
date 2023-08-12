@@ -21,6 +21,11 @@ import { NavMobile } from "./NavMobile";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { getUserInfo } from "../common/helpers";
+import { QueryParams } from "../common/constants";
+
+type QueryProps = {
+    [key in QueryParams]?: string;
+}
 
 const StyledBoxLink = ({
     children, 
@@ -29,7 +34,7 @@ const StyledBoxLink = ({
     fontWeight = "normal"
 } : {
     children: string, 
-    to: string, 
+    to: string | {pathname: string, query: QueryProps}, 
     color?: string, 
     fontWeight?: string,
 }) => {

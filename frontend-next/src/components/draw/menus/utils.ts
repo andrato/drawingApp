@@ -4,14 +4,14 @@ export type SaveValuesType = {
     displayTitle: string;
     title: string;
     description: string,
-    categories: string[];
+    labels: string[];
 }
 
 export const defaultSaveValues = {
     displayTitle: "",
     title: "",
     description: "",
-    categories: [],
+    labels: [],
 }
 
 export const SaveValuesSchema = Yup.object().shape({
@@ -19,7 +19,7 @@ export const SaveValuesSchema = Yup.object().shape({
         .required('Required'),
     title: Yup.string()
         .required('Required'),
-    categories: Yup.array()
+    labels: Yup.array()
         .optional(),
     description: Yup.string()
         .optional(),

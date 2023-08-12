@@ -1,7 +1,13 @@
-import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
+import { Category } from "@/components/profile/helpers";
 import axios from "axios"
 
-export const HOST_DRAWING = "http://localhost:8080/drawing";
+export const HOST = "http://localhost:8080/drawing";
+export const HOST_DRAWINGS = HOST + "/";
+export const HOST_DRAWINGS_ADMIN = HOST + "/getAdmin";
+export const HOST_DRAWING = HOST + "/drawing";
+export const HOST_USER_DRAWINGS = HOST + "/user";
+export const HOST_CATEGORY_DRAWINGS = HOST + "/";
+export const HOST_MODIFY_ADMIN = HOST + "/drawingAdmin";
 
 export type ErrorType = {
     msg: string;
@@ -26,14 +32,26 @@ export type DrawingType = {
     lastUpdated: number;
     title: string;
     displayTitle: string;
-    categories?: string[];
-    likes?: number;
-    comments?: number;
-    topArt?: boolean;
-    topAmateur?: boolean;
+    labels?: string[];
+    reviews?: number;
+    rating?: number;
     video: FileType;
     image: FileType;
     description?: string;
+    category: string;
+}
+
+export type DrawingAdminType = {
+    id: string;
+    userId: string;
+    created: number;
+    lastUpdated: number;
+    title: string;
+    displayTitle: string;
+    labels?: string[];
+    rating: number;
+    reviews: number;
+    category: string;
 }
 
 export type DrawingTypePartial = {
@@ -45,12 +63,10 @@ export type DrawingTypePartial = {
 
 
 export type DrawingsResponseSuccessType = {
-    status: 0;
     drawings: DrawingTypePartial[];
 };
 
 export type DrawingResponseSuccessType = {
-    status: 0;
     drawing: DrawingType;
 };
 
@@ -67,26 +83,124 @@ const config = {
 };
 
 export const getDrawings = () => {
-    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/", {...config});
+    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWINGS, {...config});
 }
 
-export const getDrawingByCategory = (category: string) => {
-    if (category === "Gallery") {
-        return getDrawings();
+const computeCategory = (category?: string | null) => {
+    if (!category) {
+        return undefined;
     }
 
-    let computedCateg = "topArt";
-    if (category === "Top Amateur") {
-        computedCateg = "topAmateur";
+    if (category === Category.TOP_AMATEUR) {
+        return "topAmateur";
+    } else if (category === Category.TOP_ART) {
+        return "topArt";
     }
 
-    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/category", {...config, params: {category: computedCateg}});
+    return undefined;
+}
+
+const computeCategoryForModify = (category?: string | null) => {
+    if (!category) {
+        return undefined;
+    }
+
+    if (category === Category.TOP_AMATEUR) {
+        return "topAmateur";
+    } else if (category === Category.TOP_ART) {
+        return "topArt";
+    }
+
+    return "gallery";
+}
+
+export const getDrawingByCategory = ({
+    category,
+    sortBy,
+    search,
+    startDate,
+    endDate,
+    labels,
+}: {   
+    category?: string | null;
+    sortBy?: string | null;
+    search?: string | null ;
+    startDate?: number | null; 
+    endDate?: number | null;
+    labels?: string[] | null;
+}) => {
+    const computedCateg = computeCategory(category);
+
+    return axios.get<DrawingsResponseSuccessType>(HOST_CATEGORY_DRAWINGS, {...config, params: {
+        category: computedCateg ?? undefined,
+        sortBy: sortBy ?? undefined,
+        search: search ?? undefined,
+        startDate: startDate ?? undefined,
+        endDate: endDate ?? undefined,
+        labels: labels?.join() ?? undefined,
+    }});
 }
 
 export const getDrawingByUser = (userId: string) => {
-    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWING + "/user", {...config, params: {userId}});
+    return axios.get<DrawingsResponseSuccessType>(HOST_USER_DRAWINGS, {...config, params: {userId}});
 }
 
 export const getDrawing = (id: string) => {
-    return axios.get<DrawingResponseSuccessType>(HOST_DRAWING + "/drawing", {...config, params: {drawingId: id}});
+    return axios.get<DrawingResponseSuccessType>(HOST_DRAWING, {...config, params: {drawingId: id}});
+}
+
+export const modifyDrawingAdmin = ({
+    id,
+    category,
+}: {
+    id: string, 
+    category?: string,
+}) => {
+    const computedCateg = computeCategoryForModify(category);
+
+    return axios.post<DrawingResponseSuccessType>(
+        HOST_MODIFY_ADMIN, 
+        {category: computedCateg, drawingId: id},
+        {...config}
+    );
+}
+
+export const modifyDrawing = ({
+    id,
+    ...props
+}: {
+    id: string, 
+    description?: string,
+    displayTitle?: string,
+    labels?: string[],
+}) => {
+    return axios.post<DrawingResponseSuccessType>(
+        HOST_DRAWING, 
+        {...props}, 
+        {...config, params: {drawingId: id}}
+    );
+}
+
+export const getDrawingsAdmin = ({
+    category,
+    search,
+    startDate,
+    endDate,
+    labels,
+}: {   
+    category?: string | null;
+    search?: string | null ;
+    startDate?: number | null; 
+    endDate?: number | null;
+    labels?: string[] | null;
+}) => {
+    const computedCateg = computeCategory(category);
+
+    return axios.get<{drawings: DrawingAdminType}>(HOST_DRAWINGS_ADMIN, {...config, params: {
+        category: computedCateg ?? undefined,
+        search: search ?? undefined,
+        startDate: startDate ?? undefined,
+        endDate: endDate ?? undefined,
+        labels: labels?.join() ?? undefined,
+    }});
 }

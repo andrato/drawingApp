@@ -8,6 +8,7 @@ export const defaultDrawingInProgress: DrawingType = {
         filename: "",
         size: 0,
     },
+    category: "gallery",
     image: {
         location: "",
         filename: "",
@@ -32,11 +33,10 @@ export type DrawingType = {
     lastUpdated: number;
     title: string;
     displayTitle?: string;
-    categories?: string[];
-    likes?: number;
-    comments?: number;
-    topArt?: boolean;
-    topAmateur?: boolean;
+    labels?: string[];
+    rating?: number;
+    reviews?: number;
+    category?: string;
     video: FileType;
     image: FileType;
 }

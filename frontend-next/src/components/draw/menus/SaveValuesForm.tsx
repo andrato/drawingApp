@@ -4,6 +4,7 @@ import { Box, Button, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Se
 import { FormikErrors, FormikTouched } from 'formik';
 import { getIsValid, SaveValuesType } from "./utils";
 import { ReactNode } from "react";
+import { labelsDrawing } from "@/components/common/constants";
 
 const TextFieldStyled = (props: TextFieldProps) => {
     return <TextField 
@@ -61,14 +62,6 @@ export const SaveValuesForm = ({
     const canContinue = getIsValid(values);
     const theme = useTheme();
 
-    const categories = [
-        "Sport",
-        "Digital Art",
-        "Nature",
-        "Portrait",
-        "Traditional Art",
-    ]
-
     return <Box sx={{
         mt:2
     }}>
@@ -116,13 +109,13 @@ export const SaveValuesForm = ({
                 labelId="demo-multiple-chip-label"
                 id="demo-multiple-chip"
                 multiple
-                value={values["categories"]}
+                value={values["labels"]}
                 onChange={(event) => {
                     const {
                         target: { value },
                     } = event;
               
-                    setFieldValue("categories", value);
+                    setFieldValue("labels", value);
                 }}
                 input={<OutlinedInput id="select-multiple-chip" label="Select category" />}
                 renderValue={(selected) => (
@@ -134,11 +127,11 @@ export const SaveValuesForm = ({
                 )}
             MenuProps={MenuProps}
             >
-                {categories.map((name) => (
+                {labelsDrawing.map((name) => (
                     <MenuItem
                     key={name}
                     value={name}
-                    style={getStyles(name, values.categories, theme)}
+                    style={getStyles(name, values.labels, theme)}
                     >
                         {name}
                     </MenuItem>

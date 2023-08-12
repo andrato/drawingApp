@@ -18,6 +18,13 @@ const Container = ({children}: {children: ReactNode}) => (<Box sx={(theme) => ({
     alignItems: "left",
     [theme.breakpoints.down(BREAKPOINT)]: {
         p: 2
+    },
+    overflowX: "hidden",
+    // WebkitOverflowScrolling: {
+    //     display: "block"
+    // }
+    "::-webkit-scrollbar": {
+        display: "block",
     }
 })}>
     {children}
@@ -118,7 +125,7 @@ export default function GalleryItem() {
                     imgPath={drawing.userInfo.imgPath} 
                     date={drawing.created} 
                     drawingVideoPath={drawing.video.location}
-                    contentCateg={drawing.categories}
+                    contentCateg={drawing.labels}
                     contentText={drawing.description}
                 />
                 <Reviews drawingId={id} userId={drawing.userId} setReviewInfo={setReviewInfo}/>

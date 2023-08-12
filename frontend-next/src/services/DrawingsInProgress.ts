@@ -45,7 +45,7 @@ export const publishDrawing = (drawing : {
     title: string ; 
     displayTitle: string;
     description?: string;
-    categories: string[];
+    labels: string[];
 }) => {
     const drawingId = localStorage.getItem(LocalStorageKeys.DRAWING_ID) ?? undefined;
     const user = JSON.parse(localStorage.getItem(LocalStorageKeys.USER_INFO) ?? '{"id": "guest"}');

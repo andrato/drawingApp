@@ -1,11 +1,11 @@
-import { Box, CardMedia, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, CardMedia, Grid, Pagination, SelectChangeEvent, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { Page } from "@/components/utils/helpers/Page";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import { DrawingTypePartial, HOST_DRAWING, getDrawingByCategory } from "@/services/Drawings";
-import { SortBy, sortByOptions } from "@/components/common/constants";
+import { DrawingTypePartial, HOST_CATEGORY_DRAWINGS, getDrawingByCategory } from "@/services/Drawings";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
+import { QueryFields } from "./QueryFields";
+import { useDrawingsQuery } from "./useDrawingsQuery";
 
 export const useItemsPerPage = () => {
     const theme = useTheme();
@@ -34,18 +34,14 @@ export const Container = ({children, width}: {children: ReactNode, width?: strin
 
 export const DrawingsCategory = ({category}: {category: string}) => {
     const router = useRouter();
-    const [sortBy, setSortBy] = useState<SortBy>(SortBy.RECENT);
     const [itemsPage, setItemsPage] = useState<DrawingTypePartial[]>([]);
     const itemsPerPage = useItemsPerPage();
     const pageNumber = Number(router.query["page"] ?? 1);
     // partea in care cerem datele de la backend
-    const {data, isLoading, isError, error} = useQuery({
-        queryKey: [HOST_DRAWING, category],
-        queryFn: () => getDrawingByCategory(category), 
-        refetchOnMount: false,
-    });
+    const {data, isLoading, isError, error} = useDrawingsQuery({category})
     const drawings: DrawingTypePartial[] = data?.data.drawings ?? []; 
     const pages = Math.max(Math.ceil(drawings.length / itemsPerPage), 1);
+    const loadingOrError = isLoading || isError;
 
     useEffect(() => {
         const computeItems = (pageNumber: number) => {
@@ -72,10 +68,6 @@ export const DrawingsCategory = ({category}: {category: string}) => {
         setItemsPage(itemsAux);
     }, [itemsPerPage, pageNumber, drawings])
 
-    if (isLoading || isError) {
-        return <Container><LoadingsAndErrors isLoading={isLoading} isError={isError} /></Container>
-    }
-
     const handlePageChange = (event: any, value: number) => {
         router.replace({
             query: { ...router.query, page: value },
@@ -89,102 +81,59 @@ export const DrawingsCategory = ({category}: {category: string}) => {
     return (
         <Container>
             <div>
-                <Box>
-                    <FormControl>
-                    <InputLabel 
-                        id="demo-simple-select-standard-label"
-                        size="small"
-                        sx={(theme) => ({
-                            fontSize: "0.9rem",
-                            color: theme.palette.textCustom.primary,
-                            '&.Mui-focused': {
-                                color: theme.palette.textCustom.focus,
-                                borderColor: theme.palette.textCustom.focus,
-                            },
-                        })}
-                    >Sort By
-                    </InputLabel>
-                    <Select
-                        labelId="demo-simple-select-standard-label"
-                        size="small"
-                        variant="outlined"
-                        // value={sortBy}
-                        onChange={(event) => setSortBy(event.target.value as SortBy)}
-                        label="Sort by"
-                        color="success"
-                        // inputProps={{
-                        //     color: "red",
-                        //     sx: {
-                        //         bgcolor: filtersColors.backgoundInput,
-                        //     }
-                        // }}
-                        sx={(theme) => ({
-                            backgroundColor: theme.palette.backgroundCustom.dark,
-                            mb: 3,
-                            width: "180px",
-                            fontSize: "0.9rem",
-                            color: theme.palette.textCustom.primary,
-                            'svg': {
-                                color: theme.palette.primary.main,
-                            },
-                        })}
-                    >
-                        {sortByOptions.map((option) => {
-                            return <MenuItem value={option} sx={{fontSize: "0.9rem"}}>{option}</MenuItem>
-                        })}
-                    </Select>
-                    </FormControl>
-                </Box>
-                
-                {drawings.length ? (<Grid container spacing={1} sx={{
-                    mb: 2,
-                }}>
-                    {itemsPage?.length && itemsPage.map((item) => {
-                        return (
-                            <Grid item md={2} sm={3} xs={4} key={item.id}>
-                                <Box sx={{position: "relative"}}>
-                                    <CardMedia
-                                        component="img"
-                                        image={item.image.location}
-                                        alt={item.displayTitle}
-                                        sx={{
-                                            mr: 1,
-                                            position: "relative",
-                                        }}
-                                    />
-                                    <Box 
-                                        onClick={() => {
-                                            handleClick(item.id);
-                                        }}
-                                        sx={{
-                                            position: "absolute",
-                                            top: 0,
-                                            left: 0,
-                                            width: "100%",
-                                            height: "100%",
-                                            background: "rgba(0, 0, 0, 0.7)",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            opacity: 0,
+                <QueryFields />
+                {loadingOrError && <LoadingsAndErrors isLoading={isLoading} isError={isError} /> }
+                {!loadingOrError && (drawings.length 
+                    ? (<Grid container spacing={1} sx={{
+                        mb: 2,
+                      }}>
+                        {itemsPage?.length && itemsPage.map((item) => {
+                            return (
+                                <Grid item md={2} sm={3} xs={4} key={item.id}>
+                                    <Box sx={{position: "relative"}}>
+                                        <CardMedia
+                                            component="img"
+                                            image={item.image.location}
+                                            alt={item.displayTitle}
+                                            sx={{
+                                                mr: 1,
+                                                position: "relative",
+                                            }}
+                                        />
+                                        <Box 
+                                            onClick={() => {
+                                                handleClick(item.id);
+                                            }}
+                                            sx={{
+                                                position: "absolute",
+                                                top: 0,
+                                                left: 0,
+                                                width: "100%",
+                                                height: "100%",
+                                                background: "rgba(0, 0, 0, 0.7)",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                opacity: 0,
 
-                                            ':hover': {
-                                                opacity: 1,
-                                            },
-                                        }}
-                                    >
-                                        <Typography variant="body1" color="textCustom.primary">
-                                            {item.displayTitle}
-                                        </Typography>
+                                                ':hover': {
+                                                    opacity: 1,
+                                                },
+                                            }}
+                                        >
+                                            <Typography variant="body1" color="textCustom.primary">
+                                                {item.displayTitle}
+                                            </Typography>
+                                        </Box>
                                     </Box>
-                                </Box>
-                            </Grid>
-                        )
-                    })}
-                </Grid>) : (<Typography variant="body1" color="textCustom.primary">
-                    {"There are no drawings at this moment in this category"}
-                </Typography>)}
+                                </Grid>
+                            )
+                          })}
+                       </Grid>) 
+                    : (<Typography variant="body1" color="textCustom.primary">
+                        {"There are no drawings at this moment in this category"}
+                      </Typography>))}
             </div>
             <Pagination count={pages} 
                 showFirstButton 
