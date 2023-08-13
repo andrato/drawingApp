@@ -6,7 +6,6 @@ import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { useDrawingsQuery } from "../category/useDrawingsQuery";
 import { SortBy } from "../common/constants";
 import { getUserInfo } from "../common/helpers";
-import { useUserDrawingsQuery } from "./useUserDrawingsQuery";
 
 export const Container = ({children}: {children: ReactNode}) => {
     return (<Box sx={(theme) => ({

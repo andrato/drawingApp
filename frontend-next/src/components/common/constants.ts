@@ -1,5 +1,5 @@
 
-export const categories = ["Top Art", "Top Amateur", "Gallery"];
+export const categories = ["Top Art", "Top Amateur", "All"];
 export const labelsDrawing = [
     "Sport",
     "Digital Art",

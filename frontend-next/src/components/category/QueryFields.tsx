@@ -74,7 +74,7 @@ export const QueryFields = ({
 
     useEffect(() => {
 
-    }, [sortBy, endDate, startDate, labels]);
+    }, [sortBy, endDate, startDate, labels, category]);
 
     return <Box sx={SearchBarSx}>
         {children}

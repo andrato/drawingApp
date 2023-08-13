@@ -76,7 +76,7 @@ export const mapUsersToTableData = (users: UserType[]): Data[] => {
 export enum Category {
     TOP_ART = "Top Art",
     TOP_AMATEUR = "Top Amateur",
-    GALLERY = "Gallery",
+    GALLERY = "All",
 }
 
 export const mapApiToCategory = (category: string): Category => {
