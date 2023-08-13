@@ -37,8 +37,8 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
     useEffect(() => {
         const userInfo = getUserInfo();
         const firstName = (userInfo && userInfo?.firstName) ?? "";
-        const lastname = (userInfo && userInfo?.lastName) ?? "";
-        setInitials(firstName[0] + lastname[0]);
+        const lastName = (userInfo && userInfo?.lastName) ?? "";
+        setInitials(firstName[0] + lastName[0]);
     }, []);
 
     useEffect(() => {

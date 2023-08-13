@@ -3,6 +3,7 @@ import axios from "axios"
 export const HOST_USER = "http://localhost:8080";
 export const USER_INFO_API = HOST_USER + "/user/info";
 export const ADMIN_USERS_API = HOST_USER + "/user/users";
+export const USERS_FILTERS_API = HOST_USER + "/user/filters";
 export const ADMIN_MODIFY_USER_RIGHTS = HOST_USER + "/admin/modify";
 export const ADMIN_DELETE_USER_RIGHTS = HOST_USER + "/admin/delete";
 
@@ -56,6 +57,10 @@ export const getUser = (userId: string) => {
 
 export const getUsers = () => {
     return axios.get<{users: UserType[]}>(ADMIN_USERS_API, {...config});
+}
+
+export const getUsersFilters = () => {
+    return axios.get<{users: UserType[]}>(USERS_FILTERS_API, {...config});
 }
 
 export const modifyUser = (userId: string) => {
