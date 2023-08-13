@@ -1,10 +1,10 @@
 import { Box, CardMedia, Grid, Pagination, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { DrawingTypePartial, HOST_USER_DRAWINGS, getDrawingByUser} from "@/services/Drawings";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
-import { Container } from "../category/DrawingsCategory";
+import { Page } from "../utils/helpers/Page";
 
 const useItemsPerPage = () => {
     const theme = useTheme();
@@ -19,6 +19,18 @@ const useItemsPerPage = () => {
 
     return 3 * 5;
 }
+
+const Container = ({children, width}: {children: ReactNode, width?: string}) => (
+    <Page hasMarginX={true} sx={{
+        display: "flex",
+        flexDirection: "column", 
+        justifyContent: "space-between",
+        width: "calc(100% - 240px)",
+        height: "calc(100% - 36px)",
+    }}>
+        {children}
+    </Page>
+)
 
 export const ProfileDrawings = ({userId}: {userId: string}) => {
     const router = useRouter();
@@ -81,7 +93,7 @@ export const ProfileDrawings = ({userId}: {userId: string}) => {
                 }}>
                     {itemsPage?.length && itemsPage.map((item) => {
                         return (
-                            <Grid item md={3} sm={4} xs={4} key={item.id}>
+                            <Grid item md={2} sm={4} xs={4} key={item.id}>
                                 <Box sx={{position: "relative"}}>
                                     <CardMedia
                                         component="img"

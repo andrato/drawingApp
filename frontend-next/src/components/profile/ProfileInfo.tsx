@@ -4,14 +4,20 @@ import { ReactNode, useEffect, useState } from "react";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { getUserInfo } from "../common/helpers";
 import { USER_INFO_API, getUser } from "@/services/User";
+import { UserProfileDrawings } from "./UserProfileDrawings";
 
-const AVATAR_SIZE = 140;
+export const AVATAR_SIZE = 140;
+export const PROFILE_WIDTH = 270;
 
 const Container = ({children}: {children: ReactNode}) => (
     <Box sx={{
         position: "relative",
         width: "calc(100% - 240px)",
         m: 2,
+        display: "flex",
+        flexDirection: "row",
+        gap: 2, 
+        justifyContent: "space-between",
     }}>
         {children}
     </Box>
@@ -26,6 +32,7 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
         refetchOnMount: false,
         enabled: Boolean(userId) && userId !== null,
     });
+    const user = data?.data.user;
 
     useEffect(() => {
         const userInfo = getUserInfo();
@@ -41,24 +48,23 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
         return <Container><LoadingsAndErrors isLoading={isLoading} isError={isError} /></Container>
     }
 
-    if (!data) {
-        return <Container><LoadingsAndErrors isLoading={false} isError={true} /></Container>
-    }
-
     return <Container>
         <Paper sx={(theme) => ({
             p: 2,
             bgcolor: theme.palette.backgroundCustom.profileInfo,
             display: "flex",
-            direction: "row",
+            flexDirection: "column",
+            height: `calc(100% - ${2 * 16}px)`,
+            gap: 3,
+            width: PROFILE_WIDTH,
         })}>
             <Box sx={(theme) => ({
-                width: "20%",
-                minWidth: `calc(${AVATAR_SIZE}px + 40px)`,
+                width: "100%",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                color: theme.palette.textCustom.primary
+                color: theme.palette.textCustom.primary,
+                mb: 1,
             })}>
                 <Avatar
                     alt={initials}
@@ -72,19 +78,37 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
                 </Typography>}
             </Box>
             <Box sx={(theme) => ({
-                m: 2,
-                width: "80%",
+                display: "flex",
+                flexDirection: "column",
+                color: theme.palette.textCustom.primary,
+                gap: 1,
+            })}>
+                <Typography variant="body2">
+                    <strong>{"Member since: "}</strong>
+                    {user?.created ? (new Date(user.created)).toDateString() : "-"}
+                </Typography>
+                <Typography variant="body2">
+                    <strong>{"Rating: "}</strong>
+                    {user?.rating ?? "-"}
+                </Typography>
+                <Typography variant="body2">
+                    <strong>{"Reviews: "}</strong>
+                    {user?.reviews ?? "-"}
+                </Typography>
+            </Box>
+            <Box sx={(theme) => ({
                 display: "flex",
                 flexDirection: "column",
                 color: theme.palette.textCustom.primary
             })}>
-                <Typography variant="body1">
-                    About
+                <Typography variant="body2">
+                    <strong>About</strong>
                 </Typography >
                 <Typography variant="body2">
                     {data.data.user?.profile && Object.keys(data.data.user?.profile).length ? "ceva" : "No description available"}
                 </Typography>
             </Box>
-        </Paper>    
+        </Paper>
+        <UserProfileDrawings />
     </Container>;
 }

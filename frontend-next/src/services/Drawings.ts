@@ -121,6 +121,7 @@ export const getDrawingByCategory = ({
     startDate,
     endDate,
     labels,
+    userId,
 }: {   
     category?: string | null;
     sortBy?: string | null;
@@ -128,6 +129,7 @@ export const getDrawingByCategory = ({
     startDate?: number | null; 
     endDate?: number | null;
     labels?: string[] | null;
+    userId?: string;
 }) => {
     const computedCateg = computeCategory(category);
 
@@ -138,6 +140,7 @@ export const getDrawingByCategory = ({
         startDate: startDate ?? undefined,
         endDate: endDate ?? undefined,
         labels: labels?.join() ?? undefined,
+        userId
     }});
 }
 

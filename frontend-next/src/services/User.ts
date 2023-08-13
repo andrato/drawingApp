@@ -22,6 +22,8 @@ export type UserType = {
     imgLocation: string;
     isAdmin: boolean;
     drawings: number;
+    rating: number | null;
+    reviews: number;
     profile: {
         about: {
             type: String,
@@ -55,10 +57,6 @@ export const getUser = (userId: string) => {
 export const getUsers = () => {
     return axios.get<{users: UserType[]}>(ADMIN_USERS_API, {...config});
 }
-
-// export const getUsers = () => {
-//     return axios.get<{users: UserType[]}>(ADMIN_USERS_API, {...config});
-// }
 
 export const modifyUser = (userId: string) => {
     return axios.get(ADMIN_MODIFY_USER_RIGHTS, {...config, params: {userId: userId}});

@@ -8,8 +8,7 @@ import {
     getAll, 
     getAllAdmin, 
     getAllAdminChainValidation, 
-    getByCategory, 
-    getByCategoryChainValidation, 
+    getAllChainValidation, 
     getByUser, 
     getByUserSchema, 
     getDrawing, 
@@ -20,8 +19,7 @@ import {
 
 const router: express.Router = express.Router();
 
-// router.get("/", getAll);
-router.get("/", getByCategoryChainValidation, getByCategory);
+router.get("/", getAllChainValidation, getAll);
 router.get("/drawing", checkSchema(getDrawingSchema), getDrawing);
 router.get("/user", checkSchema(getByUserSchema), getByUser);
 router.post("/delete", checkSchema(deleteSchema), deleteDrawing);

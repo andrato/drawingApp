@@ -2,6 +2,7 @@ import { Request, Response} from "express";
 import {modelUserInfo} from "../../mongo_schema";
 import { UserType } from "../helpers/types";
 import { validationResult } from "express-validator";
+import axios from "axios";
 
 export const getUsers = async (req: Request, res: Response) => {
     const errors = validationResult(req);
