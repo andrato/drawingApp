@@ -18,12 +18,13 @@ export const useDrawingsQuery = ({
     enabled?: boolean;
     limit?: number;
 }) => {
-    const {sortBy, search, startDate, endDate, labels, category: categoryParams} = useQueryParams();
+    const {sortBy, search, startDate, endDate, labels, category: categoryParams, userId: userIdParams} = useQueryParams();
     const computedSortBy = userSortBy ? QuerySortToApiSort[userSortBy] : sortBy;
     const computedCategory = categoryParams ?? category;
+    const computedUserId = userIdParams ?? userId;
 
     return useQuery({
-        queryKey: [HOST_CATEGORY_DRAWINGS, computedCategory, computedSortBy, search, startDate, endDate, {...labels}],
+        queryKey: [HOST_CATEGORY_DRAWINGS, computedCategory, computedSortBy, search, startDate, endDate, computedUserId, {...labels}],
         queryFn: () => getDrawingByCategory({
             sortBy: computedSortBy, 
             search, 
@@ -31,7 +32,7 @@ export const useDrawingsQuery = ({
             endDate: endDate ? (new Date(endDate)).getTime() : undefined,
             labels,
             category: computedCategory,
-            userId,
+            userId: computedUserId,
             limit,
         }), 
         refetchOnMount,

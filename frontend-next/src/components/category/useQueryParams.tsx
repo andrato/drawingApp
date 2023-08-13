@@ -11,6 +11,7 @@ export const useQueryParams = () => {
     const startDate = searchParams.get(QueryParams.START_DATE);
     const endDate = searchParams.get(QueryParams.END_DATE);
     const category = searchParams.get(QueryParams.CATEGORY);
+    const userId = searchParams.get(QueryParams.USER_ID);
 
     return {
         cursor,
@@ -21,5 +22,6 @@ export const useQueryParams = () => {
         startDate,
         endDate,
         category,
+        userId,
     }
 }

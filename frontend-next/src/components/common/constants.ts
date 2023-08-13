@@ -16,7 +16,8 @@ export enum QueryParams {
     END_DATE = 'end_date',
     SORT_BY = "sort_by",
     LABELS = "l",
-    CATEGORY = "cat"
+    CATEGORY = "cat",
+    USER_ID = "user_id",
 }
 
 export enum SortBy {

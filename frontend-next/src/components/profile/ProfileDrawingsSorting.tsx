@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { useDrawingsQuery } from "../category/useDrawingsQuery";
-import { SortBy } from "../common/constants";
+import { QueryParams, QuerySortToApiSort, SortBy } from "../common/constants";
 import { Add, AddIcCallOutlined } from "@mui/icons-material";
 
 export const LIMIT_DRAWINGS_NUMBER = 5;
@@ -94,11 +94,21 @@ export const ProfileDrawingsSorting = ({
                 {drawings.length  && showMore && <Fab 
                         color="success" 
                         aria-label="add"
-                        sx={{
+                        sx={(theme) => ({
                             ml: 2,
+                            color: theme.palette.backgroundCustom.main,
+                        })}
+                        onClick={() => {
+                            router.push({
+                                pathname: "/gallery",
+                                query: {
+                                    [QueryParams.SORT_BY]: QuerySortToApiSort[sortBy],
+                                    [QueryParams.USER_ID]: userId
+                                },
+                            });
                         }}
                     >
-                        ...
+                        <Add />
                     </Fab>
                 }
             </Box>
