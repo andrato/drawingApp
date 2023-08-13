@@ -1,4 +1,4 @@
-import { Box, CardMedia, Grid, Pagination, SelectChangeEvent, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Alert, Box, CardMedia, Grid, Pagination, SelectChangeEvent, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { Page } from "@/components/utils/helpers/Page";
 import { useRouter } from "next/router";
@@ -130,9 +130,7 @@ export const DrawingsCategory = ({category}: {category: string}) => {
                             )
                           })}
                        </Grid>) 
-                    : (<Typography variant="body1" color="textCustom.primary">
-                        {"There are no drawings at this moment in this category"}
-                      </Typography>))}
+                    : (<Alert severity="info" sx={{width: "auto"}}>There are no drawings at this moment in this category</Alert>))}
             </div>
             <Pagination count={pages} 
                 showFirstButton 
