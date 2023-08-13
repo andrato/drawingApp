@@ -82,7 +82,7 @@ export const userInfo = async (req: Request, res: Response) => {
     return res.json({
         status: 0,
         user: {
-            id: existingUser._id,
+            _id: existingUser._id,
             firstName: existingUser.firstName,
             lastName: existingUser.lastName,
             profile: existingUser.profile ?? null,

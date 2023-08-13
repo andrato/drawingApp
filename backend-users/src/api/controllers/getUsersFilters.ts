@@ -100,7 +100,7 @@ export const getUsersFilters = async (req: Request, res: Response) => {
         });
 
         return {
-            id: user._id,
+            _id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
             profile: user.profile ?? null,

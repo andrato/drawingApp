@@ -1,4 +1,4 @@
-import { Box, CardMedia, Grid, Pagination, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Alert, Box, CardMedia, Grid, Pagination, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
@@ -148,9 +148,7 @@ export const ProfileDrawings = ({userId}: {userId: string}) => {
                                 </Grid>
                             )
                         })}
-                    </Grid>) : (<Typography variant="body1" color="textCustom.primary">
-                        {"There are no drawings at this moment in this category"}
-                    </Typography>)}
+                    </Grid>) : <Alert severity="info" sx={{width: "100%"}}>There are no drawings at this moment in this category</Alert>}
                 </div>
                 <Pagination count={pages} 
                     showFirstButton 

@@ -9,7 +9,7 @@ export const sortByOptionsUser = [
     SortBy.MOST_REVIEWED,
 ]
 
-export const UserProfileDrawings = () => {
+export const UserProfileDrawings = ({userId}: {userId: string}) => {
     return <Box sx={{
         display: "flex",
         flexDirection: "column",
@@ -19,7 +19,7 @@ export const UserProfileDrawings = () => {
     }}>
         {
             sortByOptionsUser.map((sortBy) => {
-                return <ProfileDrawingsSorting sortBy={sortBy} />
+                return <ProfileDrawingsSorting sortBy={sortBy} userId={userId}/>
             })
         }
     </Box>

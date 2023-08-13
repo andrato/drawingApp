@@ -1,11 +1,13 @@
-import { Box, CardMedia, Typography } from "@mui/material";
+import { Alert, Box, CardMedia, Fab, Typography } from "@mui/material";
 import { DrawingTypePartial } from "@/services/Drawings";
 import { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { useDrawingsQuery } from "../category/useDrawingsQuery";
 import { SortBy } from "../common/constants";
-import { getUserInfo } from "../common/helpers";
+import { Add, AddIcCallOutlined } from "@mui/icons-material";
+
+export const LIMIT_DRAWINGS_NUMBER = 5;
 
 export const Container = ({children}: {children: ReactNode}) => {
     return (<Box sx={(theme) => ({
@@ -24,15 +26,17 @@ export const Container = ({children}: {children: ReactNode}) => {
 
 export const ProfileDrawingsSorting = ({
     sortBy,
+    userId,
 }: {
     sortBy: SortBy;
+    userId: string;
 }) => {
-    const userInfo = getUserInfo();
-    const userId = userInfo?.id;
     const {data, isLoading, isError, error} = useDrawingsQuery({
         userSortBy: sortBy, 
         refetchOnMount: true,
         userId,
+        limit: LIMIT_DRAWINGS_NUMBER,
+        enabled: Boolean(userId) && Boolean(SortBy),
     });
     const router = useRouter();
 
@@ -41,6 +45,7 @@ export const ProfileDrawingsSorting = ({
     }
 
     const drawings: DrawingTypePartial[] = data?.data.drawings;
+    const showMore = drawings.length === LIMIT_DRAWINGS_NUMBER;
 
     const handleClick = (id: string) => {
         router.push(`/gallery/${id}`);
@@ -61,33 +66,41 @@ export const ProfileDrawingsSorting = ({
                 },
                 alignItems: "center"
             }}>
-                {drawings.map((item) => {
-                    return (
-                        <Box sx={{
-                            height: "90%",
-                        }}>
-                            <CardMedia
-                                key={item.id}
-                                component="img"
-                                image={item.image.location}
-                                alt="Paella dish"
-                                onClick={() => handleClick(item.id)}
-                                sx={{
-                                    mr: 1,
-                                    transition: "all .2s ease-in-out", 
-                                    position: "relative",
-                                    width: "auto",
-                                    height: "100%",
-                                    ":hover" : {
-                                        transform: "scale(1.15)",
-                                        zIndex: 1,
-                                        boxShadow: 2,
-                                    }
-                                }}
-                            />
-                        </Box>
-                    )
-                })}
+                {drawings.length ? drawings.map((item) => (
+                    <Box sx={{
+                        height: "90%",
+                    }}>
+                        <CardMedia
+                            key={item.id}
+                            component="img"
+                            image={item.image.location}
+                            alt="Paella dish"
+                            onClick={() => handleClick(item.id)}
+                            sx={{
+                                mr: 1,
+                                transition: "all .2s ease-in-out", 
+                                position: "relative",
+                                width: "auto",
+                                height: "100%",
+                                ":hover" : {
+                                    transform: "scale(1.15)",
+                                    zIndex: 1,
+                                    boxShadow: 2,
+                                }
+                            }}
+                        />
+                    </Box>)
+                ) : <Alert severity="info" sx={{width: "100%"}}>No drawings...Maybe on the next visit!</Alert>}
+                {drawings.length  && showMore && <Fab 
+                        color="success" 
+                        aria-label="add"
+                        sx={{
+                            ml: 2,
+                        }}
+                    >
+                        ...
+                    </Fab>
+                }
             </Box>
         </Container>
     );

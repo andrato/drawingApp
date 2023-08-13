@@ -1,7 +1,7 @@
-import { ReactNode, useEffect, useState } from "react";
-import { Box, Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, SxProps, TextField, Theme } from "@mui/material";
+import { ReactNode} from "react";
+import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, SxProps, TextField, Theme, useMediaQuery, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
-import { QueryParams, SortBy, QuerySortToApiSort, labelsDrawing, sortByOptions, ApiSortToQuerySort, categories } from "@/components/common/constants";
+import { QueryParams, SortBy, QuerySortToApiSort, sortByOptions, ApiSortToQuerySort } from "@/components/common/constants";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
@@ -11,7 +11,7 @@ import { useQueryParams } from "../category/useQueryParams";
 const SearchBarSx: SxProps<Theme> = (theme) => ({
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     gap: 2,
 
     '.MuiSelect-iconOutlined, .MuiFormLabel-root, .MuiOutlinedInput-input': {
@@ -33,8 +33,9 @@ export const UserQueryFields = ({
     onResetFilters?: () => void,
 }) => {
     const router = useRouter();
-    // const [labels, setLabelsQuery] = useState<string[]>([]);
-    const {sortBy, search, startDate, endDate, labels, category} = useQueryParams();
+    const {sortBy, search, startDate, endDate} = useQueryParams();
+    const theme = useTheme();
+    const isMdScreenUp = useMediaQuery(theme.breakpoints.up('md'));
 
     const onChangeSearch = (e: any) => {
         const value = e.target.value;
@@ -54,23 +55,9 @@ export const UserQueryFields = ({
 
     const debouncedOnChange = debounce(onChangeSearch, 500);
 
-    const handleChangeLabels = (event: SelectChangeEvent<string[]>) => {
-        const {
-            target: { value },
-        } = event;
+    // useEffect(() => {
 
-        const newLabels = typeof value === 'string' ? value.split(',') : value;
-
-        // setLabelsQuery(newLabels);
-
-        router.replace({
-            query: { ...router.query, [QueryParams.LABELS]: newLabels},
-        });
-    };
-
-    useEffect(() => {
-
-    }, [sortBy, endDate, startDate, labels, category]);
+    // }, [sortBy, endDate, startDate, ]);
 
     return <Box sx={SearchBarSx}>
         {children}
@@ -88,7 +75,7 @@ export const UserQueryFields = ({
                 labelId="demo-simple-select-standard-label"
                 size="small"
                 variant="outlined"
-                defaultValue={ApiSortToQuerySort[sortBy]}
+                value={ApiSortToQuerySort[sortBy]}
                 onChange={(event) => {
                     const value = event.target.value as SortBy;
                     
@@ -147,24 +134,41 @@ export const UserQueryFields = ({
             defaultValue={search}
             onChange={debouncedOnChange}
         />
-        <Button 
-            variant="contained" 
-            size="small" 
-            startIcon={<RestartAlt />}
-            onClick={() => {onResetFilters ? onResetFilters() : handleReset()}}
-            sx={(theme) => ({
-                m: 0,
-                height: "37px",
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.backgroundCustom.main,
-                fontWeight: "bold",
-                textTransform: 'none',
-                ':hover': {
-                    backgroundColor: theme.palette.primary.light,
-                },
-            })}
-        >
-                Reset
-        </Button>
+        {isMdScreenUp ? <Button 
+                variant="contained" 
+                size="small" 
+                startIcon={<RestartAlt />}
+                onClick={() => {onResetFilters ? onResetFilters() : handleReset()}}
+                sx={(theme) => ({
+                    m: 0,
+                    height: "37px",
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.backgroundCustom.main,
+                    fontWeight: "bold",
+                    textTransform: 'none',
+                    ':hover': {
+                        backgroundColor: theme.palette.primary.light,
+                    },
+                })}
+            >
+                    Reset
+            </Button> : <IconButton
+                size="small" 
+                onClick={() => {onResetFilters ? onResetFilters() : handleReset()}}
+                sx={(theme) => ({
+                    m: 0,
+                    height: "37px",
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.backgroundCustom.main,
+                    fontWeight: "bold",
+                    textTransform: 'none',
+                    borderRadius: "20%",
+                    ':hover': {
+                        backgroundColor: theme.palette.primary.light,
+                    },
+                })}
+            >
+                <RestartAlt />
+            </IconButton>}
     </Box>
 }

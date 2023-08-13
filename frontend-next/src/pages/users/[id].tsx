@@ -1,51 +1,64 @@
-import { Avatar, Box, Paper, Typography } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import { ReactNode, useEffect, useState } from "react";
-import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
-import { getUserInfo } from "../common/helpers";
+import { UserProfileDrawings } from "@/components/profile/UserProfileDrawings";
+import { Page } from "@/components/utils/helpers/Page";
 import { USER_INFO_API, getUser } from "@/services/User";
-import { UserProfileDrawings } from "./UserProfileDrawings";
+import { Alert, Avatar, Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 export const AVATAR_SIZE = 140;
 export const PROFILE_WIDTH = 270;
 
-const Container = ({children}: {children: ReactNode}) => (
-    <Box sx={{
-        position: "relative",
-        width: "calc(100% - 240px)",
-        m: 2,
+// const Container = ({children}: {children: ReactNode}) => (
+//     <Box sx={{
+//         position: "relative",
+//         width: "100%",
+//         m: 2,
+//         display: "flex",
+//         flexDirection: "row",
+//         gap: 2, 
+//         justifyContent: "space-between",
+//     }}>
+//         {children}
+//     </Box>
+// );
+export const Container = ({children}: {children: ReactNode}) => (
+    <Page hasMarginX={true} sx={{
         display: "flex",
-        flexDirection: "row",
-        gap: 2, 
+        flexDirection: "row", 
         justifyContent: "space-between",
+        overflow: "auto",
+        gap: 2,
     }}>
         {children}
-    </Box>
+    </Page>
 )
 
-export const ProfileInfo = ({userId}: {userId: string}) => {
-    const [initials, setInitials] = useState<string>("");
+export default function UserPage()  {
+    const router = useRouter();
+    const id = router.query.id as string;
 
     const {data, isLoading, isError, error} = useQuery({
-        queryKey: [USER_INFO_API, userId],
-        queryFn: () => getUser(userId), 
+        queryKey: [USER_INFO_API, id],
+        queryFn: () => getUser(id), 
         refetchOnMount: false,
-        enabled: Boolean(userId) && userId !== null,
+        enabled: Boolean(id) && id !== null,
     });
     const user = data?.data.user;
+    const initials = (user?.firstName[0] ?? "") + (user?.lastName[0] ?? "")
 
-    useEffect(() => {
-        const userInfo = getUserInfo();
-        const firstName = (userInfo && userInfo?.firstName) ?? "";
-        const lastName = (userInfo && userInfo?.lastName) ?? "";
-        setInitials(firstName[0] + lastName[0]);
-    }, []);
+    if (isLoading) {
+        return <Container><CircularProgress /></Container>
+    }
 
-    useEffect(() => {
-    }, [isLoading]);
+    if (isError) {
+        return <Container>      
+            <Alert severity="error">Error occured when loading data</Alert>
+        </Container>
+    }
 
-    if (isLoading || isError) {
-        return <Container><LoadingsAndErrors isLoading={isLoading} isError={isError} /></Container>
+    if (null === user) {
+        return null;
     }
 
     return <Container>
@@ -54,7 +67,6 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
             bgcolor: theme.palette.backgroundCustom.profileInfo,
             display: "flex",
             flexDirection: "column",
-            height: `calc(100% - ${2 * 16}px)`,
             gap: 3,
             width: PROFILE_WIDTH,
         })}>
@@ -113,6 +125,6 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
                 </Typography>
             </Box>
         </Paper>
-        <UserProfileDrawings userId={userId}/>
+        <UserProfileDrawings userId={id}/>
     </Container>;
 }

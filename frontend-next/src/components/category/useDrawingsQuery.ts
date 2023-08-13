@@ -8,6 +8,7 @@ export const useDrawingsQuery = ({
     refetchOnMount=false,
     userSortBy,
     userId,
+    limit,
     enabled = true,
 }: {
     category?: string;
@@ -15,6 +16,7 @@ export const useDrawingsQuery = ({
     userSortBy?: SortBy;
     userId?: string;
     enabled?: boolean;
+    limit?: number;
 }) => {
     const {sortBy, search, startDate, endDate, labels, category: categoryParams} = useQueryParams();
     const computedSortBy = userSortBy ? QuerySortToApiSort[userSortBy] : sortBy;
@@ -29,7 +31,8 @@ export const useDrawingsQuery = ({
             endDate: endDate ? (new Date(endDate)).getTime() : undefined,
             labels,
             category: computedCategory,
-            userId
+            userId,
+            limit,
         }), 
         refetchOnMount,
         enabled,

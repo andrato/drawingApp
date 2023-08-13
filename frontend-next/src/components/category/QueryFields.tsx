@@ -37,8 +37,6 @@ const SearchSubElemSx: SxProps<Theme> = (theme) => ({
     gap: 2,
 })
 
-
-
 export const QueryFields = ({
     showSortBy = true,
     showCategory=false,
@@ -54,7 +52,7 @@ export const QueryFields = ({
     // const [labels, setLabelsQuery] = useState<string[]>([]);
     const {sortBy, search, startDate, endDate, labels, category} = useQueryParams();
     const theme = useTheme();
-    const isMdScreenUp = useMediaQuery(theme.breakpoints.up(980));
+    const isMdScreenUp = useMediaQuery(theme.breakpoints.up('md'));
 
     const onChangeSearch = (e: any) => {
         const value = e.target.value;

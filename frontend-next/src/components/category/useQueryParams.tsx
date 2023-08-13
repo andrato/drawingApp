@@ -6,6 +6,7 @@ export const useQueryParams = () => {
     const cursor = searchParams.get(QueryParams.CURSOR);
     const sortBy = searchParams.get(QueryParams.SORT_BY) ?? SortBy.NEWEST;
     const search = searchParams.get(QueryParams.SEARCH);
+    const searchUser = searchParams.get(QueryParams.SEARCH_USER);
     const labels = searchParams.getAll(QueryParams.LABELS) ?? [];
     const startDate = searchParams.get(QueryParams.START_DATE);
     const endDate = searchParams.get(QueryParams.END_DATE);
@@ -15,6 +16,7 @@ export const useQueryParams = () => {
         cursor,
         sortBy,
         search,
+        searchUser,
         labels,
         startDate,
         endDate,

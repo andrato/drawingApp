@@ -33,6 +33,10 @@ export const getAllChainValidation = [
       .optional()
       .isDecimal()
       .withMessage("Incorrect endDate!"),
+    param("limit")
+      .optional()
+      .isDecimal()
+      .withMessage("Incorrect limit!"),
     param("labels")
       .optional()
       .isString()
@@ -48,7 +52,7 @@ export const getAll = async (req: Request, res: Response) => {
         });
     }
 
-    const {category, sortBy, search, startDate, endDate, labels, userId} = req.query;
+    const {category, sortBy, search, startDate, endDate, labels, userId, limit} = req.query;
 
     const created = {
         ...(startDate ? {$gte: startDate} : {}), 
@@ -85,8 +89,10 @@ export const getAll = async (req: Request, res: Response) => {
         image: drawing.image,
     }));
 
+    const computedLimit = limit as unknown as number;
+    
     return res.status(200).json({
         status: 0,
-        drawings: filteredDrawings,
+        drawings: limit ? filteredDrawings.slice(0, computedLimit) : filteredDrawings,
     });
 }
