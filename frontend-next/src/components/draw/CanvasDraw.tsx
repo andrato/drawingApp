@@ -25,12 +25,26 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /* ********************************************************** */
     /* Canvas stuff */
     const {width, height, color, lineWidth} = props;
-    const {saveRecording, saveImage, onMouseDown, addLayer, addInitialLayer, setVideoRef, setDivRef} = useOnDraw(onDraw);
+    const {
+        saveRecording, 
+        saveImage, 
+        onMouseDown, 
+        addLayer, 
+        addInitialLayer, 
+        setVideoRef, 
+        setDivRef,
+        setCurrentLayer
+    } = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
     // for layers
-    const newLayers = useRef<CanvasElem[]>([]);
+    const newLayers = useRef<CanvasElem[]>([{
+        name: 'Default',
+        position: 0,
+        selected: true,
+        visibility: true,
+    }]);
 
     /* ***************************************** */
     /*                For parent                 */
@@ -54,8 +68,17 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     useEffect(() => {
         subscribe("setLayers", (event: CustomEvent<CanvasElem[]>) => {
             console.log("in event");
-            // setLayers(event.detail);
-            newLayers.current = event.detail;
+            const layer = event.detail[0];
+
+            const elem = newLayers.current.find((elem) => elem.name === layer.name);
+
+            if(!elem) {
+                console.error("Layer not found");
+
+                return;
+            }
+
+            setCurrentLayer(layer.position);
         });
         subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
             console.log("in event");
@@ -65,9 +88,6 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                 return;
             }
 
-            // const newLayers = layers;
-            // layers.push(event.detail[0]);
-            // setLayers(newLayers);
             newLayers.current.push(event.detail[0]);
             addLayer(event.detail[0].name);
         });
@@ -219,6 +239,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                     height={height}
                     width={width}
                     onMouseDown={onMouseDown}
+                    id="Default"
                     style={{
                         zIndex: 2,
                         display: "inline-block",
@@ -249,27 +270,6 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                         right: 0,
                     }}
                 />
-                {/* {newLayers.current.map((layer) => {
-                    return (<canvas 
-                        key={layer.name}
-                        ref={addLayer} 
-                        height={height}
-                        width={width}
-                        onMouseDown={onMouseDown}
-                        style={{
-                            zIndex: 1,
-                            position: "absolute", 
-                            display: "inline-block", 
-                            backgroundColor: "white",
-                            width: `${width}px`,
-                            height: `${height}px`,
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            left: 0,
-                            right: 0,
-                        }}
-                    />)
-                })}        */}
             </Box>
         </Box>
     )

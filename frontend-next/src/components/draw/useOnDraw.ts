@@ -150,7 +150,6 @@ export function useOnDraw(onDraw: Function) {
         let length = refsArray.current.length + 1;
         refsArray.current = Array(length).fill(null).map((_, i) => refsArray.current[i] || ref);
         canvasRef.current = refsArray.current[refsArray.current.length - 1];
-        // position.current = length-1;
 
         if (!started && length > 1) {
             const ctx = getRef(1)?.getContext('2d');
@@ -167,6 +166,12 @@ export function useOnDraw(onDraw: Function) {
     function addLayer (name: string) {
         let length = refsArray.current.length + 1;
 
+        /* if we already have an elem with this name => return */
+        const elem = document.getElementById(name);
+        if (elem !== null) {
+            return;
+        }
+
         const newLayer = document.createElement("canvas");
         newLayer.id = name;
         newLayer.width=500;
@@ -179,6 +184,21 @@ export function useOnDraw(onDraw: Function) {
         canvasRef.current = refsArray.current[refsArray.current.length - 1];
         // position.current = length-1;
     }
+
+    function setCurrentLayer (position: number) {
+        if (position < 0 || position + 1 > refsArray.current.length - 1) {
+            console.error("userOnDraw - setLayer error");
+
+            return null;
+        }
+
+        if (position === 0) {
+            canvasRef.current = getRef(1);
+        } else {
+            canvasRef.current = getRef(position + 1);
+        }
+    }
+
 
     const setVideoRef = (ref: HTMLCanvasElement) => {
         videoRef.current = ref;
@@ -271,6 +291,7 @@ export function useOnDraw(onDraw: Function) {
 
     return {
         addLayer, 
+        setCurrentLayer,
         addInitialLayer,
         onMouseDown,
         clearLayer,
