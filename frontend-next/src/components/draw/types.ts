@@ -5,6 +5,7 @@ export type HandleActionsCanvasType = {
 }
 
 export type CanvasElem = {
+    id: string;
     position: number;
     name: string;
     selected: boolean;

@@ -40,6 +40,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     const containerHeight = height + 64; // 16 = container spacing
     // for layers
     const newLayers = useRef<CanvasElem[]>([{
+        id: "layers0",
         name: 'Default',
         position: 0,
         selected: true,
@@ -70,7 +71,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             console.log("in event");
             const layer = event.detail[0];
 
-            const elem = newLayers.current.find((elem) => elem.name === layer.name);
+            const elem = newLayers.current.find((elem) => elem.id === layer.id);
 
             if(!elem) {
                 console.error("Layer not found");
@@ -82,14 +83,14 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         });
         subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
             console.log("in event");
-            const elem = newLayers.current.find((elem) => elem.name === event.detail[0].name);
+            const elem = newLayers.current.find((elem) => elem.id === event.detail[0].id);
 
             if(elem) {
                 return;
             }
 
             newLayers.current.push(event.detail[0]);
-            addLayer(event.detail[0].name);
+            addLayer(event.detail[0].id);
         });
     
         return () => {
@@ -239,7 +240,6 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                     height={height}
                     width={width}
                     onMouseDown={onMouseDown}
-                    id="Default"
                     style={{
                         zIndex: 2,
                         display: "inline-block",
@@ -253,6 +253,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                     }}
                 />
                 <canvas 
+                    id="layers0"
                     ref={addInitialLayer} 
                     height={height}
                     width={width}

@@ -10,6 +10,7 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
     const [open, setOpen] = useState<boolean>(false);
     const [name, setName] = useState<string | null>(null);
     const [layers, setLayers] = useState<CanvasElem[]>([{
+        id: "layers0",
         name: 'Default',
         position: 0,
         selected: true,
@@ -32,6 +33,7 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
 
     const handleChange = (name: string) => {
         const newLayer = {
+            id: "layers" + layers.length,
             name: name,
             position: layers.length,
             selected: true,
