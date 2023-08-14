@@ -71,7 +71,8 @@ export const StyledButton = ({children, ...props}:{children: ReactNode} & IconBu
 )
 
 export type PropsSettings = {
-    setLineWidth: Function,
+    setLineWidth: Function;
+    setOpacity: Function;
 }
 
 export function MenuRight ({...propsSettings}: PropsSettings) {
@@ -114,10 +115,6 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
     const handleClickSettings = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         setActiveButtonSettings(e.currentTarget.id);
     }
-
-    const handleClickLayers = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        setActiveButtonLayers(e.currentTarget.id);
-    }
     
     return (<Box 
         sx={{
@@ -139,12 +136,12 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
                 <StyledMenuButton 
                     id="settings" 
                     handleClick={handleClickSettings}
-                    width="44%"
+                    width="100%"
                 >
-                    Brush Settings
+                    Settings
                 </StyledMenuButton>
                 
-                <StyledMenuButton 
+                {/* <StyledMenuButton 
                     id="history" 
                     handleClick={handleClickSettings}
                     width="28%"
@@ -158,17 +155,17 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
                     width="28%"
                 >
                     Color
-                </StyledMenuButton>
+                </StyledMenuButton> */}
             </Box>
             { buttonsSettings === "settings" && 
                 <ButtonBodySettings {...propsSettings}/>
             }
-            { buttonsSettings === "color" && 
+            {/* { buttonsSettings === "color" && 
                 <ColorSettings />
             }
             { buttonsSettings === "history" && 
                 <HistorySettings />
-            }
+            } */}
         </Box>
 
         <Box 

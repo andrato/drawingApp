@@ -1,6 +1,6 @@
 import { Box, IconButton, Typography } from "@mui/material";
-import { MouseEvent, useState } from "react";
-import { AddBoxOutlined, LayersOutlined, VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
+import { MouseEvent, useEffect, useState } from "react";
+import { AddBoxOutlined, DeleteOutline, LayersOutlined, RestartAlt, RestartAltOutlined, VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { PropsSettings, StyledButton, StyledMenuButton } from "./MenuRight";
 import { NewLayerDialog } from "../utils/NewLayerDialog";
 import { CanvasElem } from "../types";
@@ -11,11 +11,15 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
     const [name, setName] = useState<string | null>(null);
     const [layers, setLayers] = useState<CanvasElem[]>([{
         id: "layers0",
-        name: 'Default',
+        name: 'default',
         position: 0,
         selected: true,
         visibility: true,
     }]);
+
+    useEffect(() => {
+        sessionStorage.setItem("counterLayers", "0");
+    }, [])
 
     const handleClick = (selectedLayer: CanvasElem) => {
         const newLayers = layers.map((layer) => ({
@@ -32,10 +36,13 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
     }
 
     const handleChange = (name: string) => {
+        const index = Number(sessionStorage.getItem("counterLayers")) + 1;
+        sessionStorage.setItem("counterLayers", index.toString());
+
         const newLayer = {
-            id: "layers" + layers.length,
+            id: "layers" + index,
             name: name,
-            position: layers.length,
+            position: index,
             selected: true,
             visibility: true,
         }
@@ -64,6 +71,27 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
         }));
 
         setLayers(newArray);
+
+        publish("setVisibility", [{
+            ...selectedLayer,
+            visibility: !selectedLayer.visibility,
+        }]);
+    }
+
+    const handleDeleteCurrentLayer = () => {
+        publish("deleteLayer", []);
+
+        const newLayers = layers;
+        let updatedLayers = newLayers.filter((layer) => layer.selected ? false : true)
+
+        if (updatedLayers?.length) {
+            updatedLayers[0].selected = true;
+            setLayers(updatedLayers);
+        };
+    }
+
+    const handleResetCurrentLayer = () => {
+        publish("resetLayer", []);
     }
 
     return <>
@@ -117,7 +145,7 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
                     </Box>
                     <IconButton
                         onClick={(event) => handleChangeVisibility(event, layer)}
-                        disabled={layer.name === "Default"}
+                        disabled={layer.id === "layers0"}
                         size="small"
                         sx={(theme) => ({
                             color: theme.palette.textCustom.primary,
@@ -136,12 +164,34 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
             height: "25px",
             display: "flex",
             flexDirection: "row",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             px: 1,
+            gap: 2,
         })}>
-            <StyledButton onClick={() => setOpen(true)}>
-                <AddBoxOutlined />
-            </StyledButton>
+            <div>
+                <StyledButton onClick={() => setOpen(true)}>
+                    <AddBoxOutlined />
+                </StyledButton>
+            </div>
+            <Box sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                px: 1,
+                gap: 2,
+            }}>
+                <StyledButton 
+                    onClick={handleResetCurrentLayer}
+                >
+                    <RestartAltOutlined />
+                </StyledButton>
+                <StyledButton 
+                    onClick={handleDeleteCurrentLayer} 
+                    disabled={layers[0].selected}
+                >
+                    <DeleteOutline />
+                </StyledButton>
+            </Box>
         </Box>
         <NewLayerDialog
             name={name}

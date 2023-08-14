@@ -6,13 +6,14 @@ import {
     CanvasElem,
     HandleActionsCanvasType,
 } from "./types";
-import { subscribe, unsubscribe } from "./events";
+import { publish, subscribe, unsubscribe } from "./events";
 
 export type CanvasProps = {
     color: string, 
     lineWidth: number, 
     width: number, 
     height: number,
+    opacity: number,
 }
 
 const defaulName = "Default";
@@ -24,7 +25,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /*                           VARIABLES                        */
     /* ********************************************************** */
     /* Canvas stuff */
-    const {width, height, color, lineWidth} = props;
+    const {width, height, color, lineWidth, opacity} = props;
     const {
         saveRecording, 
         saveImage, 
@@ -33,7 +34,10 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         addInitialLayer, 
         setVideoRef, 
         setDivRef,
-        setCurrentLayer
+        setCurrentLayer,
+        setVisibility,
+        deleteLayer,
+        resetLayer,
     } = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
@@ -67,8 +71,14 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     }));
 
     useEffect(() => {
-        subscribe("setLayers", (event: CustomEvent<CanvasElem[]>) => {
-            console.log("in event");
+        subscribe("deleteLayer", (event: CustomEvent<CanvasElem[]>) => {
+            deleteLayer();
+        });
+        subscribe("resetLayer", (event: CustomEvent<CanvasElem[]>) => {
+            resetLayer();
+        });
+
+        subscribe("setVisibility", (event: CustomEvent<CanvasElem[]>) => {
             const layer = event.detail[0];
 
             const elem = newLayers.current.find((elem) => elem.id === layer.id);
@@ -79,10 +89,22 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                 return;
             }
 
-            setCurrentLayer(layer.position);
+            setVisibility(layer.id, layer.visibility);
+        });
+        subscribe("setLayers", (event: CustomEvent<CanvasElem[]>) => {
+            const layer = event.detail[0];
+
+            const elem = newLayers.current.find((elem) => elem.id === layer.id);
+
+            if(!elem) {
+                console.error("Layer not found");
+
+                return;
+            }
+
+            setCurrentLayer(layer.id);
         });
         subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
-            console.log("in event");
             const elem = newLayers.current.find((elem) => elem.id === event.detail[0].id);
 
             if(elem) {
@@ -94,8 +116,11 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         });
     
         return () => {
-          unsubscribe("setLayers", () => {});
-          unsubscribe("addLayer", () => {});
+            unsubscribe("resetLayer", () => {});
+            unsubscribe("deleteLayer", () => {});
+            unsubscribe("setVisibility", () => {});
+            unsubscribe("setLayers", () => {});
+            unsubscribe("addLayer", () => {});
         }
       }, []);
 
@@ -138,6 +163,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         start = start ?? end;
         ctx.beginPath();
         ctx.lineWidth = lineWidth;
+        ctx.globalAlpha = opacity / 100;
         ctx.strokeStyle = color;
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);

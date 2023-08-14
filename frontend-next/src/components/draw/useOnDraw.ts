@@ -163,42 +163,45 @@ export function useOnDraw(onDraw: Function) {
         }
     }
 
-    function addLayer (name: string) {
+    function addLayer (id: string) {
         let length = refsArray.current.length + 1;
 
         /* if we already have an elem with this name => return */
-        const elem = document.getElementById(name);
+        const elem = document.getElementById(id);
         if (elem !== null) {
             return;
         }
 
         const newLayer = document.createElement("canvas");
-        newLayer.id = name;
+        newLayer.id = id;
         newLayer.width=500;
         newLayer.height=500;
         newLayer.onmousedown=onMouseDown;
         newLayer.style.cssText = `z-index: ${length}; position: absolute; display: inline-block; width: 500px; height: 500px; margin-left: auto; margin-right: auto; left: 0px; right: 0px;`;
         document.getElementById("layersContainers")?.appendChild(newLayer);
         
-        refsArray.current = Array(length).fill(null).map((_, i) => refsArray.current[i] || newLayer);
-        canvasRef.current = refsArray.current[refsArray.current.length - 1];
-        // position.current = length-1;
+        canvasRef.current = newLayer;
     }
 
-    function setCurrentLayer (position: number) {
-        if (position < 0 || position + 1 > refsArray.current.length - 1) {
-            console.error("userOnDraw - setLayer error");
+    function setCurrentLayer (id: string) {
+        const elem = document.getElementById(id);
 
-            return null;
+        if (elem === null) {
+            return;
         }
 
-        if (position === 0) {
-            canvasRef.current = getRef(1);
-        } else {
-            canvasRef.current = getRef(position + 1);
-        }
+        canvasRef.current = elem as HTMLCanvasElement;
     }
 
+    function setVisibility (id: string, visibility: boolean) {
+        const layer = document.getElementById(id);
+
+        if (layer === null) {
+            return;
+        }
+
+        layer.style.display = visibility ? 'inline-block' : 'none';
+    }
 
     const setVideoRef = (ref: HTMLCanvasElement) => {
         videoRef.current = ref;
@@ -230,6 +233,30 @@ export function useOnDraw(onDraw: Function) {
         stopRecording();
     }
 
+    function deleteLayer() {
+        const elem = canvasRef.current;
+
+        if (elem) {
+            canvasRef.current = refsArray.current[0];
+            elem.remove();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    function resetLayer() {
+        const ref = canvasRef.current;
+
+        const ctx = ref?.getContext('2d');
+
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
+    // TODO: not really used => to delete?
     function clearLayer(pos?: number) {
         const ref = getRef(pos);
         const ctx = ref?.getContext('2d');
@@ -293,6 +320,9 @@ export function useOnDraw(onDraw: Function) {
         addLayer, 
         setCurrentLayer,
         addInitialLayer,
+        setVisibility,
+        deleteLayer,
+        resetLayer,
         onMouseDown,
         clearLayer,
         startRecording,
