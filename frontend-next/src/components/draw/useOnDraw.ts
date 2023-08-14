@@ -238,6 +238,7 @@ export function useOnDraw(onDraw: Function) {
 
         if (elem) {
             canvasRef.current = refsArray.current[0];
+            elem.removeAttribute("id");
             elem.remove();
 
             return true;

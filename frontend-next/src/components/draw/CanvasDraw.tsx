@@ -42,14 +42,6 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
-    // for layers
-    const newLayers = useRef<CanvasElem[]>([{
-        id: "layers0",
-        name: 'Default',
-        position: 0,
-        selected: true,
-        visibility: true,
-    }]);
 
     /* ***************************************** */
     /*                For parent                 */
@@ -81,37 +73,14 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         subscribe("setVisibility", (event: CustomEvent<CanvasElem[]>) => {
             const layer = event.detail[0];
 
-            const elem = newLayers.current.find((elem) => elem.id === layer.id);
-
-            if(!elem) {
-                console.error("Layer not found");
-
-                return;
-            }
-
             setVisibility(layer.id, layer.visibility);
         });
         subscribe("setLayers", (event: CustomEvent<CanvasElem[]>) => {
             const layer = event.detail[0];
 
-            const elem = newLayers.current.find((elem) => elem.id === layer.id);
-
-            if(!elem) {
-                console.error("Layer not found");
-
-                return;
-            }
-
             setCurrentLayer(layer.id);
         });
         subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
-            const elem = newLayers.current.find((elem) => elem.id === event.detail[0].id);
-
-            if(elem) {
-                return;
-            }
-
-            newLayers.current.push(event.detail[0]);
             addLayer(event.detail[0].id);
         });
     

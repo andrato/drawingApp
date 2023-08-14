@@ -63,6 +63,8 @@ export const StyledButton = ({children, ...props}:{children: ReactNode} & IconBu
             ':hover': {
                 backgroundColor: theme.palette.canvas.menuBtnHover,
             },
+            borderRadius: 0,
+            width: "25px",
         })}
         {...props}
     >

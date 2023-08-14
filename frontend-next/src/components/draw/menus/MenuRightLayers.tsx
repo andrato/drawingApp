@@ -138,9 +138,7 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
                         display: "flex",
                         alignItems: "center",
                     }}>
-                        <LayersOutlined sx={{
-                            mr: 1,
-                        }}/>
+                        <LayersOutlined sx={{mr: 1,}} fontSize="small"/>
                         <Typography variant="body2" sx={{fontSize: "12px"}}>{layer.name}</Typography>
                     </Box>
                     <IconButton
@@ -154,7 +152,7 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
                             }
                         })}
                     >
-                        {layer.visibility ? <VisibilityOutlined /> : <VisibilityOffOutlined />}
+                        {layer.visibility ? <VisibilityOutlined fontSize="small"/> : <VisibilityOffOutlined fontSize="small"/>}
                     </IconButton>  
                 </Box>
             })}
@@ -169,8 +167,10 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
             gap: 2,
         })}>
             <div>
-                <StyledButton onClick={() => setOpen(true)}>
-                    <AddBoxOutlined />
+                <StyledButton 
+                    onClick={() => setOpen(true)}
+                >
+                    <AddBoxOutlined fontSize="small"/>
                 </StyledButton>
             </div>
             <Box sx={{
@@ -178,18 +178,18 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
                 flexDirection: "row",
                 justifyContent: "flex-end",
                 px: 1,
-                gap: 2,
+                gap: 1,
             }}>
                 <StyledButton 
                     onClick={handleResetCurrentLayer}
                 >
-                    <RestartAltOutlined />
+                    <RestartAltOutlined fontSize="small" />
                 </StyledButton>
                 <StyledButton 
                     onClick={handleDeleteCurrentLayer} 
                     disabled={layers[0].selected}
                 >
-                    <DeleteOutline />
+                    <DeleteOutline fontSize="small"/>
                 </StyledButton>
             </Box>
         </Box>
