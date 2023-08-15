@@ -52,9 +52,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         },
 
         getDrawingVideo () {
-            const ceva = saveRecording();
-            return ceva;
-
+            return saveRecording();
         },
 
         getDrawingImage() {

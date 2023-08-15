@@ -15,7 +15,7 @@ export const Home = () => {
             }}>
                 {
                     categories.map((category) => {
-                       return  <HomeCategory category={category} />
+                       return  <HomeCategory key={category} category={category} />
                     })
                 }
             </Box>

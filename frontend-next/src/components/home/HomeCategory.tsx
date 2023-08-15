@@ -48,7 +48,7 @@ export const HomeCategory = ({
                 height: "calc(100% - 24px)",
                 width: "100%",
                 display: "flex", 
-                overflowX: "hidden",
+                overflowX: "scroll",
                 "::-webkit-scrollbar": {
                     display: "none",
                 },
@@ -56,14 +56,16 @@ export const HomeCategory = ({
             }}>
                 {drawings.map((item) => {
                     return (
-                        <Box sx={{
-                            height: "90%",
-                        }}>
+                        <Box 
+                            key={item.id}
+                            sx={{
+                                height: "90%",
+                            }}
+                        >
                             <CardMedia
-                                key={item.id}
                                 component="img"
                                 image={item.image.location}
-                                alt="Paella dish"
+                                alt={item.displayTitle}
                                 onClick={() => handleClick(item.id)}
                                 sx={{
                                     mr: 1,

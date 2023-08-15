@@ -93,6 +93,7 @@ export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string 
             </Typography>
             <TextField
                 hiddenLabel
+                placeholder="Select a name"
                 id="filename"
                 variant="filled"
                 size="small"

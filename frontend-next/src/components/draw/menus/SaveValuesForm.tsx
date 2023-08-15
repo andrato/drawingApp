@@ -152,7 +152,7 @@ export const SaveValuesForm = ({
                 width: "100%",
             }}
         >
-            Publish
+            Publish drawing
         </Button>
     </Box>
 };

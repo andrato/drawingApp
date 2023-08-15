@@ -46,7 +46,7 @@ export const DialogUser = ({
             onClose={() => onHandleClose()}
         >
             <DialogTitleComponent onClose={onHandleClose}>
-                <Typography variant="h6" sx={{mr: 3}}>{title}</Typography>
+                <Typography variant="body1" sx={{mr: 3}}>{title}</Typography>
             </DialogTitleComponent>
             <DialogContent sx={{
                 width: "300px",

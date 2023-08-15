@@ -13,7 +13,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 export const drawTheme = makeThemeA();
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 export default function App({ Component, pageProps }: AppProps) {  
     const { store, props } = wrapper.useWrappedStore(pageProps);

@@ -119,6 +119,7 @@ export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
         })}>
             {[...layers].reverse().map((layer) => {
                 return <Box 
+                    key={layer.id}
                     onClick={() => handleClick(layer)}
                     sx={(theme) => ({
                         height: "40px",

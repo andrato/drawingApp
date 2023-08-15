@@ -1,8 +1,9 @@
 import React, {Component, ReactElement, ReactNode} from 'react'
 import {render, RenderOptions} from '@testing-library/react'
-import { drawTheme } from '../src/pages/_app'
+import { drawTheme, queryClient } from '../src/pages/_app'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { makeThemeA } from '../makeThemeA'
+import { QueryClientProvider } from '@tanstack/react-query'
 
 // const queryClient = new QueryClient();
 
@@ -17,7 +18,11 @@ import { makeThemeA } from '../makeThemeA'
 
 export const MockTheme = ({ children }: any) => {
   const theme = makeThemeA();
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return <ThemeProvider theme={theme}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+  </ThemeProvider>;
 }
 
 export * from '@testing-library/react'

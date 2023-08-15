@@ -20,8 +20,8 @@ export const useDrawingsQuery = ({
 }) => {
     const {sortBy, search, startDate, endDate, labels, category: categoryParams, userId: userIdParams} = useQueryParams();
     const computedSortBy = userSortBy ? QuerySortToApiSort[userSortBy] : sortBy;
-    const computedCategory = categoryParams ?? category;
-    const computedUserId = userIdParams ?? userId;
+    const computedCategory = category ?? categoryParams;
+    const computedUserId =  userIdParams ?? userId;
 
     return useQuery({
         queryKey: [HOST_CATEGORY_DRAWINGS, computedCategory, computedSortBy, search, startDate, endDate, computedUserId, {...labels}],

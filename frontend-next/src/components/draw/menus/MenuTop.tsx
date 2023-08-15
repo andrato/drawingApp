@@ -83,8 +83,12 @@ export function MenuTop ({
 
         // we have the videoFile => send it to backend
         const formData = new FormData();
-        formData.append('files', drawingVideoFile, name);
-        formData.append('files', drawingImageFile, name);
+        try {
+            formData.append('files', drawingVideoFile, name);
+            formData.append('files', drawingImageFile, name);
+        } catch (err) {
+            console.log("error on forma data");
+        }
 
         return formData;
     }
@@ -168,11 +172,11 @@ export function MenuTop ({
                 >
                     Publish
                 </ButtonStyled>
-                <ButtonStyled 
+                {/* <ButtonStyled 
                     startIcon={<NoteAdd />}
                 >
                     New file
-                </ButtonStyled>
+                </ButtonStyled> */}
                 <ButtonStyled 
                     startIcon={<RestartAlt />}
                     onClick={showDialog}

@@ -1,7 +1,7 @@
 import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import axios from "axios"
 
-const HOST = "http://localhost:8080/progress";
+export const HOST = "http://localhost:8080/progress";
 
 export type ErrorType = {
     msg: string;

@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    image: andratommmm/api-gateway:1.0
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetprod
+  backend-auth:
+    image: andratommmm/backend-auth:1.0
+    expose:
+      - "8001"
+    ports:
+      - "8001:8001"
+    networks:
+      - mynetprod
+  backend-drawings-in-progress:
+    image: andratommmm/backend-drawings-in-progress:1.0
+    expose:
+      - "8002"
+    ports:
+      - "8002:8002"
+    networks:
+      - mynetprod
+  backend-drawings:
+    image: andratommmm/backend-drawings:1.0
+    expose:
+      - "8003"
+    ports:
+      - "8003:8003"
+    networks:
+      - mynetprod
+  backend-users:
+    image: andratommmm/backend-users:2.0
+    expose:
+      - "8004"
+    ports:
+      - "8004:8004"
+    networks:
+      - mynetprod
+  backend-comments:
+    image: andratommmm/backend-comments:1.0
+    expose:
+      - "8005"
+    ports:
+      - "8005:8005"
+    networks:
+      - mynetprod
+
+networks:
+  mynetprod:
+    driver: bridge
+    ipam:
+      driver: default
