@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api-gateway:
-    image: andratommmm/api-gateway:1.0
+    image: andratommmm/api-gateway:2.0
     expose:
       - "8080"
     ports:
@@ -18,7 +18,7 @@ services:
     networks:
       - mynetprod
   backend-drawings-in-progress:
-    image: andratommmm/backend-drawings-in-progress:1.0
+    image: andratommmm/backend-drawings-in-progress:2.0
     expose:
       - "8002"
     ports:

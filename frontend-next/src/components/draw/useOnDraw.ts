@@ -3,11 +3,14 @@ import { createRef, useCallback, useEffect, useRef } from "react";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { CanvasRecorder } from "./utils/CanvasRecorder";
 import domtoimage from 'dom-to-image-more';
+import { subscribe, unsubscribe } from "./events";
 
 export type Point = {
     x: number,
     y: number,
 }
+
+const LAYER_SIZE = 500;
 
 /*
     first ref/canvas => the aux one
@@ -59,8 +62,8 @@ export function useOnDraw(onDraw: Function) {
     function initMouseMoveListener() {
         if (!getRef()) return;
 
-        const mouseMoveListener = (e: MouseEvent) => {
-            const ref = getRef();
+        const mouseMoveListener = (e: PointerEvent) => {
+            const ref = canvasRef.current;
             const refAux = getRef(0);
 
             if (!isDrawingRef.current) {
@@ -71,20 +74,25 @@ export function useOnDraw(onDraw: Function) {
             const ctxAux = refAux?.getContext('2d');
             const buttonActive = getActiveButton();
 
-            if (buttonActive === "circle" || buttonActive === "square") {
+            if (refAux && ctx) {
+                refAux.style.opacity = "0.5",
+                ctx.globalAlpha = 0.5;
+            }
+
+            // if (buttonActive === "circle" || buttonActive === "square") {
                 if (prevPointRef.current === null) {
                     prevPointRef.current = point;
                 }
                 clearLayer(0);
-                onDraw(ctxAux, point, prevPointRef.current);
-            } else {
-                onDraw(ctx, point, prevPointRef.current);
-                prevPointRef.current = point;
-            }
+                onDraw(ctxAux, point, prevPointRef.current, e);
+            // } else {
+            //     onDraw(ctx, point, prevPointRef.current, e);
+            //     prevPointRef.current = point;
+            // }
         }
 
         mouseMoveListenerRef.current = mouseMoveListener;
-        window.addEventListener<"mousemove">("mousemove", mouseMoveListener);
+        window.addEventListener<"pointermove">("pointermove", mouseMoveListener);
     }
 
     function initMouseUpListener() {
@@ -128,7 +136,21 @@ export function useOnDraw(onDraw: Function) {
     useEffect(() => {
         initMouseUpListener();
         initMouseMoveListener();
+
+
         // initRecordEvents();
+
+        // subscribe("opacityChanged", () => {
+        //     addLayer(event.detail[0].id);
+        // });
+        // subscribe("layerOpacityChanged", (event: CustomEvent<CanvasElem[]>) => {
+        //     addLayer(event.detail[0].id);
+        // });
+    
+        // return () => {
+        //     // unsubscribe("opacityChanged", () => {});
+        //     // unsubscribe("layerOpacityChanged", () => {});
+        // }
 
         return () => {
             // remove the listeners
@@ -174,10 +196,10 @@ export function useOnDraw(onDraw: Function) {
 
         const newLayer = document.createElement("canvas");
         newLayer.id = id;
-        newLayer.width=500;
-        newLayer.height=500;
+        newLayer.width=LAYER_SIZE;
+        newLayer.height=LAYER_SIZE;
         newLayer.onmousedown=onMouseDown;
-        newLayer.style.cssText = `z-index: ${length}; position: absolute; display: inline-block; width: 500px; height: 500px; margin-left: auto; margin-right: auto; left: 0px; right: 0px;`;
+        newLayer.style.cssText = `z-index: ${length}; position: absolute; display: inline-block; width: ${LAYER_SIZE}px; height: ${LAYER_SIZE}px; margin-left: auto; margin-right: auto; left: 0px; right: 0px;`;
         document.getElementById("layersContainers")?.appendChild(newLayer);
         
         canvasRef.current = newLayer;

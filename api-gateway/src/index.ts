@@ -21,7 +21,6 @@ const app:Express = express();
 // app.use(upload());
 app.use(cors());
 
-
 app.use('/drawing/*', proxy('http://backend-drawings:8003', {
     proxyReqPathResolver:  (req) => {
         const urlPath = url.parse(req.originalUrl).path;
@@ -30,6 +29,7 @@ app.use('/drawing/*', proxy('http://backend-drawings:8003', {
 }));
 
 app.use('/progress/*', proxy('http://backend-drawings-in-progress:8002', {
+    limit: '500mb',
     proxyReqPathResolver:  (req) => {
         const urlPath = url.parse(req.originalUrl).path;
         return urlPath?.replace("/progress", "") ?? "";

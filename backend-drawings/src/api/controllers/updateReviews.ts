@@ -37,9 +37,6 @@ export const updateReviews = async (req: Request, res: Response) => {
 
     const {drawingId, rating, reviews} = req.body;
 
-    console.log("rating: " + rating);
-    console.log("reviews: " + reviews);
-
     try {
         drawing = await modelDrawing.findByIdAndUpdate(drawingId, { $set: { rating, reviews} }, {
             returnDocument: "after",

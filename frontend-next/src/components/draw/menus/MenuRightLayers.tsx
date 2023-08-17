@@ -1,12 +1,12 @@
 import { Box, IconButton, Typography } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
 import { AddBoxOutlined, DeleteOutline, LayersOutlined, RestartAlt, RestartAltOutlined, VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
-import { PropsSettings, StyledButton, StyledMenuButton } from "./MenuRight";
+import { StyledButton, StyledMenuButton } from "./MenuRight";
 import { NewLayerDialog } from "../utils/NewLayerDialog";
 import { CanvasElem } from "../types";
 import { publish } from "../events";
 
-export const MenuRightLayers = ({...propsSettings}: PropsSettings) => {
+export const MenuRightLayers = () => {
     const [open, setOpen] = useState<boolean>(false);
     const [name, setName] = useState<string | null>(null);
     const [layers, setLayers] = useState<CanvasElem[]>([{

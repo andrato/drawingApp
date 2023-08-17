@@ -2,11 +2,6 @@ import { Box, Slider, Input, Typography } from "@mui/material";
 import { useState, useEffect, ReactNode } from "react";
 import { useButtonsLeft } from "./useButtonsLeft";
 
-type Props = {
-    setLineWidth: Function,
-    setOpacity: Function,
-}
-
 const CustomSlider = ({
     onBlur,
     onChange,
@@ -76,18 +71,19 @@ const CustomSlider = ({
     </>
 }
 
-function PencilSettings (props: Props) {
+function PencilSettings () {
     const [lineWidth, setLineWidth] = useState(1);
     const [opacity, setOpacity] = useState(100);
 
     function handleSliderChange(e: any) {
         setLineWidth(e.target.value);
-        props.setLineWidth(e.target.value);
+        sessionStorage.setItem('lineWidth', e.target.value);
+        // props.setLineWidth(e.target.value);
     }
 
     function handleOpacityChange(e: any) {
         setOpacity(e.target.value);
-        props.setOpacity(e.target.value);
+        sessionStorage.setItem('opacity', e.target.value);
     }
 
     const handleBlur = () => {
@@ -128,7 +124,7 @@ function PencilSettings (props: Props) {
     </Box>)
 }
 
-function BrushSettings(props: Props) {
+function BrushSettings() {
     console.log("in brush settings");
 
     return (<Box>
@@ -146,17 +142,18 @@ const ButtonSettings: Record<string, Function> = {
     "circle": PencilSettings,
 }
 
-export function ButtonBodySettings(props: Props) {
+export function ButtonBodySettings() {
     const { getActiveButton } = useButtonsLeft();
     const [button, setButton] = useState<string | null>();
-    const Component = button ? ButtonSettings[button] : Box;
+    // const Component = button ? ButtonSettings[button] : Box;
 
     useEffect(() => {
         setButton(getActiveButton());
     }, []);
 
     return (<>
-        <Component {...props}/>
+        {/* <Component /> */}
+        <PencilSettings />
     </>)
 }
 

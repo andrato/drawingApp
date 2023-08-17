@@ -3,6 +3,8 @@ import { DrawingType, SortBy } from "../utils/types";
 export const sortDrawings = (drawings: DrawingType[], sortBy: SortBy) => {
     let newDrawings: DrawingType[] = [];
 
+    console.log("in helpers");
+    
     switch(sortBy) {
         case SortBy.NEWEST: {
             newDrawings = drawings.sort((a,b) => b.created - a.created);

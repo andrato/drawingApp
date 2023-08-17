@@ -20,6 +20,7 @@ const customJestConfig = {
     coverageProvider: 'v8',
     collectCoverageFrom: [
       '<rootDir>/src/components/draw/*.{js,jsx,ts,tsx}',
+      '<rootDir>/src/components/home/*.{js,jsx,ts,tsx}',
       '!**/*.d.ts',
       '!**/node_modules/**',
       '!<rootDir>/out/**',

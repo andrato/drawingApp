@@ -7,7 +7,7 @@ import { validationResult } from "express-validator";
 export const getDrawingSchema = {
     drawingId: {
         isLength: {
-            errorMessage: 'displayTitle param missing!',
+            errorMessage: 'drawingId param missing!',
             options: { min: 1 },
             location: "params",
         },

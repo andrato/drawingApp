@@ -19,9 +19,8 @@ dotenv.config();
 
 /* app */
 const app:Express = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '500mb'}));
 app.use(cors());
-
 // define app routes
 app.use(router);
 

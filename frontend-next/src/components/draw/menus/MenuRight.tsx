@@ -72,12 +72,7 @@ export const StyledButton = ({children, ...props}:{children: ReactNode} & IconBu
     </IconButton>
 )
 
-export type PropsSettings = {
-    setLineWidth: Function;
-    setOpacity: Function;
-}
-
-export function MenuRight ({...propsSettings}: PropsSettings) {
+export function MenuRight () {
     const [mouseDown, setMouseDown] = useState(false);
     const [top, setTop] = useState<number>();
     const { setActiveButtonSettings, setActiveButtonLayers, getActiveButtonSettings } = useButtonsRight();
@@ -160,7 +155,7 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
                 </StyledMenuButton> */}
             </Box>
             { buttonsSettings === "settings" && 
-                <ButtonBodySettings {...propsSettings}/>
+                <ButtonBodySettings />
             }
             {/* { buttonsSettings === "color" && 
                 <ColorSettings />
@@ -190,7 +185,7 @@ export function MenuRight ({...propsSettings}: PropsSettings) {
             bottom: 0,
             minHeight: "100px",
         }}>
-            <MenuRightLayers {...propsSettings}/>
+            <MenuRightLayers />
         </Box>
         
     </Box >)

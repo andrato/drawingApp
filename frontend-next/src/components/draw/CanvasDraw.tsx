@@ -9,11 +9,8 @@ import {
 import { publish, subscribe, unsubscribe } from "./events";
 
 export type CanvasProps = {
-    color: string, 
-    lineWidth: number, 
     width: number, 
     height: number,
-    opacity: number,
 }
 
 const defaulName = "Default";
@@ -25,7 +22,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /*                           VARIABLES                        */
     /* ********************************************************** */
     /* Canvas stuff */
-    const {width, height, color, lineWidth, opacity} = props;
+    const {width, height} = props;
     const {
         saveRecording, 
         saveImage, 
@@ -94,12 +91,13 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /* ******************************s**************************** */
     /*                          DRAW STUFF                        */
     /* ********************************************************** */
-    function onDraw(ctx: CanvasRenderingContext2D | null | undefined, point: Point, prevPoint: Point ) {
+    function onDraw(ctx: CanvasRenderingContext2D | null | undefined, point: Point, prevPoint: Point, event?: any) {
         switch (getActiveButton()) {
             case 'pencil': 
-                handleDrawLine(prevPoint, point, ctx);
+                handleDrawBrush(prevPoint, point, ctx, event);
                 break;
             case 'brush':
+                handleDrawBrush(prevPoint, point, ctx, event);
                 break;
             case 'pen':
                 break;
@@ -118,6 +116,62 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         }
     }
 
+    const getProps = () => {
+        const lineWidth = Number(sessionStorage.getItem('lineWidth') ?? 1);
+        const opacity = Number(sessionStorage.getItem("opacity") ?? 100);
+        const color = sessionStorage.getItem("color") ?? "#000000";
+
+        return {
+            lineWidth,
+            opacity,
+            color,
+        }
+    }
+
+    const getLineWidth = (e: any) => {
+        const {lineWidth} = getProps();
+
+        return (e.pressure) ? (e.pressure * lineWidth) : lineWidth;
+        // switch (e.pointerType) {
+        //     case 'touch': {
+        //         if (e.width < 10 && e.height < 10) {
+        //             return (e.width + e.height) * 2 + 10;
+        //         } else {
+        //             return (e.width + e.height - 40) / 2;
+        //         }
+        //     }
+        //     case 'pen': 
+        //         return e.pressure * 8;
+        //     default: 
+        //         return (e.pressure) ? e.pressure * 8 : 4;
+        // }
+      }
+
+    /* function to draw a line */
+    function handleDrawBrush (
+        start: Point, 
+        end: Point, 
+        ctx: CanvasRenderingContext2D | null | undefined,
+        event?: any,
+    ) {
+        if(!ctx) return;
+
+        const {lineWidth, opacity, color} = getProps();
+
+        ctx.globalCompositeOperation="source-over";
+        start = start ?? end;
+        ctx.beginPath();
+        ctx.lineWidth = getLineWidth(event);
+        // ctx.globalAlpha = opacity / 100;
+        ctx.strokeStyle = color;
+        ctx.lineJoin = 'round';
+        ctx.fillStyle = `rgba(255, 255, 255, ${opacity / 100})`;
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.lineCap = 'round';
+        ctx.stroke(); // we don't want our shape to be filled
+    }
+
     /* function to draw a line */
     function handleDrawLine (
         start: Point, 
@@ -125,6 +179,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         ctx: CanvasRenderingContext2D | null | undefined,
     ) {
         if(!ctx) return;
+
+        const {lineWidth, opacity, color} = getProps();
 
         ctx.globalCompositeOperation="source-over";
         start = start ?? end;
@@ -146,6 +202,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     ) {
         if(!ctx) return;
 
+        const {lineWidth} = getProps();
+
         ctx.globalCompositeOperation="destination-out";
         start = start ?? end;
         ctx.beginPath();
@@ -163,6 +221,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     ) {
         if(!ctx) return;
 
+        const {lineWidth, color} = getProps();
+
         ctx.lineWidth = lineWidth;
         ctx.strokeStyle = color;
         ctx.beginPath();
@@ -176,6 +236,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         ctx: CanvasRenderingContext2D | null | undefined,
     ) {
         if(!ctx) return;
+
+        const {lineWidth, color} = getProps();
 
         ctx.globalCompositeOperation = "copy";
         ctx.lineWidth = lineWidth;

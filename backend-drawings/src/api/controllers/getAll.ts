@@ -78,6 +78,8 @@ export const getAll = async (req: Request, res: Response) => {
         })
     }
 
+    console.log("sortBy is: " + sortBy);
+
     let drawingsSorted: DrawingType[] = sortBy ? sortDrawings(drawings, sortBy as SortBy) : drawings;
 
     const filteredDrawings = drawingsSorted.map((drawing) => ({

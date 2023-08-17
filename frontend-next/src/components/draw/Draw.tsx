@@ -30,8 +30,6 @@ const DrawingContainer = ({children}: {children: ReactNode}) => (
 export function Draw() {
     const handleActionsCanvas = useRef<HandleActionsCanvasType>(defaultValues);
     const [color, setColor] = useState("#000000");
-    const [lineWidth, setLineWidth] = useState(1);
-    const [opacity, setOpacity] = useState(100);
     const theme = useTheme();
     const subtractHeight = Number((theme.customSizes.drawTopMenuHeight).slice(0,-2)) +
                         Number((theme.customSizes.drawBorderHeight).slice(0,-2)) + "px";
@@ -63,6 +61,9 @@ export function Draw() {
         window.addEventListener('beforeunload', handleWindowClose);
         router.events.on('routeChangeStart', handleBrowseAway);
 
+        // set color
+        sessionStorage.setItem('color', "#000000");
+
         return () => {
             window.removeEventListener('beforeunload', handleWindowClose);
             router.events.off('routeChangeStart', handleBrowseAway);
@@ -78,6 +79,7 @@ export function Draw() {
 
     /* Functions */
     function setColorForDrawing (color: string) {
+        sessionStorage.setItem('color', color);
         setColor(color);
     }
 
@@ -152,9 +154,6 @@ export function Draw() {
                     <DrawContainer 
                         width={500} 
                         height={500} 
-                        color={color} 
-                        lineWidth={lineWidth} 
-                        opacity={opacity}
                         ref={handleActionsCanvas}
                     />
                 </Box>
@@ -163,7 +162,7 @@ export function Draw() {
                     backgroundColor: theme.palette.canvas.menuBg,
                     zIndex: 1,
                 })}>
-                    <MenuRight setLineWidth={setLineWidth} setOpacity={setOpacity}/>
+                    <MenuRight />
                 </Box>
             </Box>
         </DrawingContainer>

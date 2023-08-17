@@ -10,7 +10,7 @@ export const adminModifyChainValidation = [
     body("category")
         .isString()
         .withMessage("Incorrect category!")
-        .isIn(["topArt", "topAmateur", "Gallery"])
+        .isIn(["topArt", "topAmateur", "gallery"])
         .withMessage("category value is invalid!"),
 ];
 
