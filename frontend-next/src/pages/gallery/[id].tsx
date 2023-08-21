@@ -81,7 +81,7 @@ export default function GalleryItem() {
         >
             <div ref={ref}>
                 <Box sx={{width: "100%"}}>
-                    <Player videoUrl={drawing.video.location}/>
+                    <Player videoUrl={drawing.video.location} imageUrl={drawing.image.location}/>
                 </Box>
                 <Box sx={{
                     mt: 1,

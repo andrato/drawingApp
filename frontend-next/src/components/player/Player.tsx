@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React from 'react';
 
-const Player = ({videoUrl}: {videoUrl: string}) => {
+const Player = ({videoUrl, imageUrl}: {videoUrl: string, imageUrl: string}) => {
     let url = videoUrl;
     //ToDo: fix this
     if (videoUrl.startsWith("fra")) {
@@ -16,7 +16,12 @@ const Player = ({videoUrl}: {videoUrl: string}) => {
             //     width: "100%",
             // }
         })}>
-            <video height="100%" width="100%" controls>
+            <video 
+                height="100%" 
+                width="100%" 
+                controls
+                poster={imageUrl}
+            >
                 <source src={url} type="video/mp4" />
             </video>
         </Box>            
