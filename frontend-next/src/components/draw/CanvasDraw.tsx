@@ -162,13 +162,12 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         start = start ?? end;
         ctx.beginPath();
         ctx.lineWidth = getLineWidth(event);
-        // ctx.globalAlpha = opacity / 100;
+        ctx.globalAlpha = opacity / 100;
         ctx.strokeStyle = color;
         ctx.lineJoin = 'round';
-        ctx.fillStyle = `rgba(255, 255, 255, ${opacity / 100})`;
+        ctx.lineCap = 'round';
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
-        ctx.lineCap = 'round';
         ctx.stroke(); // we don't want our shape to be filled
     }
 
@@ -296,7 +295,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                     width={width}
                     onMouseDown={onMouseDown}
                     style={{
-                        zIndex: 2,
+                        zIndex: 100,
                         display: "inline-block",
                         position: "absolute", 
                         width: `${width}px`,

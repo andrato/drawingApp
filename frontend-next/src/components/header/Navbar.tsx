@@ -194,7 +194,6 @@ export function Navbar() {
 	const isMdScreenUp = useMediaQuery(theme.breakpoints.up(980));
     const [firstName, setFirstName] = useState<string>("");
     
-
     useEffect(() => {
         setUserToken(localStorage.getItem(LocalStorageKeys.USER_TOKEN));
 

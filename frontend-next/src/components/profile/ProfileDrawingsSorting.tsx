@@ -91,7 +91,7 @@ export const ProfileDrawingsSorting = ({
                         />
                     </Box>)
                 ) : <Alert severity="info" sx={{width: "100%"}}>No drawings...Maybe on the next visit!</Alert>}
-                {drawings.length  && showMore && <Fab 
+                {Boolean(drawings.length) && showMore && <Fab 
                         color="primary" 
                         size="small"
                         aria-label="add"

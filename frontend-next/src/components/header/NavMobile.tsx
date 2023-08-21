@@ -8,6 +8,8 @@ import { SignIn } from "../user/SignIn";
 import { Result } from "../user/Result";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { userInfo } from "os";
+import { getUserInfo } from "../common/helpers";
 
 const NavHeader = ({children}: {children: ReactNode}) => (
     <Box 
@@ -98,9 +100,20 @@ export const NavMobile = ({
     const [drawer, setDrawer] = useState(false);
     const userToken = useRef<string | null>(null);
     const theme = useTheme();
+    const [firstName, setFirstName] = useState<string>("");
+    
+    useEffect(() => {
+        
+    }, [])
 
     useEffect(() => {
         userToken.current = localStorage.getItem(LocalStorageKeys.USER_TOKEN)
+
+        // setUserToken(localStorage.getItem(LocalStorageKeys.USER_TOKEN));
+
+        const userInfo = getUserInfo();
+        const firstName = (userInfo && userInfo?.firstName) ?? "";
+        setFirstName(firstName);
     }, [])
 
     return (
@@ -140,12 +153,12 @@ export const NavMobile = ({
                 <div>
                     <NavHeader>
                         {userToken.current ? (<NavbarAuth>
-                            <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary, mr: 2, color: theme.palette.backgroundCustom.main})}>A</Avatar>
+                            <Avatar sx={(theme) => ({ width: 32, height: 32, bgcolor: theme.palette.textCustom.secondary, mr: 2, color: theme.palette.backgroundCustom.main})}>{firstName[0]}</Avatar>
                             <Typography variant="body2" sx={(theme) => ({
                                 color: theme.palette.textCustom.primary, 
                                 fontWeight: "bold",
                             })}>
-                                {`Welcome, Andra`}
+                                {`Welcome, ${firstName}`}
                             </Typography>  
                         </NavbarAuth>) : (
                             <Typography variant="body2" sx={(theme) => ({

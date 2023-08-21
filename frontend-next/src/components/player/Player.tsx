@@ -1,7 +1,13 @@
 import { Box } from '@mui/material';
 import React from 'react';
 
-const Player = ({url}: {url: string}) => {
+const Player = ({videoUrl}: {videoUrl: string}) => {
+    let url = videoUrl;
+    //ToDo: fix this
+    if (videoUrl.startsWith("fra")) {
+        url = "https://drawings-media.fra1.cdn.digitaloceanspaces.com/videos/" + url.split('/').reverse()[0];
+    }
+
     return (
         <Box sx={(theme) => ({
             width: "100%",
@@ -11,7 +17,7 @@ const Player = ({url}: {url: string}) => {
             // }
         })}>
             <video height="100%" width="100%" controls>
-                <source src={url} type="video/webm" />
+                <source src={url} type="video/mp4" />
             </video>
         </Box>            
     )

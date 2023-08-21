@@ -1,3 +1,5 @@
+"use client"
+
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import Player from '@/components/player/Player';
 import { Alert, Box, CircularProgress, Rating, Typography } from '@mui/material';
@@ -79,7 +81,7 @@ export default function GalleryItem() {
         >
             <div ref={ref}>
                 <Box sx={{width: "100%"}}>
-                    <Player url={drawing.video.location}/>
+                    <Player videoUrl={drawing.video.location}/>
                 </Box>
                 <Box sx={{
                     mt: 1,

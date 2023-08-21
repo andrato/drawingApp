@@ -3,14 +3,14 @@ import { createRef, useCallback, useEffect, useRef } from "react";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { CanvasRecorder } from "./utils/CanvasRecorder";
 import domtoimage from 'dom-to-image-more';
-import { subscribe, unsubscribe } from "./events";
+// import { subscribe, unsubscribe } from "./events";
 
 export type Point = {
     x: number,
     y: number,
 }
 
-const LAYER_SIZE = 500;
+const LAYER_SIZE = 700;
 
 /*
     first ref/canvas => the aux one
@@ -25,7 +25,6 @@ export function useOnDraw(onDraw: Function) {
     const prevPointRef = useRef<Point|null>(null);
     const {getActiveButton} = useButtonsLeft();
     const recorder = CanvasRecorder();
-    const position = useRef<number>(0);
     let started = false;
     const videoRef = useRef<HTMLCanvasElement | null>(null);
     const divRef = useRef<HTMLDivElement | null>(null);
@@ -56,6 +55,7 @@ export function useOnDraw(onDraw: Function) {
     /* ***************************************** */
     function onMouseDown() {
         isDrawingRef.current = true;
+        // console.log("onMouseDown - " + isDrawingRef.current);
         startRecording();
     }
 
@@ -69,26 +69,29 @@ export function useOnDraw(onDraw: Function) {
             if (!isDrawingRef.current) {
                 return;
             }
+
+            // console.log("mouseMoveListener - " + isDrawingRef.current);
+
             const point = computePointInCanvas(e.clientX, e.clientY) as Point;
             const ctx = ref?.getContext('2d');
             const ctxAux = refAux?.getContext('2d');
             const buttonActive = getActiveButton();
 
-            if (refAux && ctx) {
-                refAux.style.opacity = "0.5",
-                ctx.globalAlpha = 0.5;
-            }
+            // if (refAux && ctx) {
+            //     refAux.style.opacity = "0.5",
+            //     ctx.globalAlpha = 0.5;
+            // }
 
-            // if (buttonActive === "circle" || buttonActive === "square") {
+            if (buttonActive === "circle" || buttonActive === "square") {
                 if (prevPointRef.current === null) {
                     prevPointRef.current = point;
                 }
                 clearLayer(0);
                 onDraw(ctxAux, point, prevPointRef.current, e);
-            // } else {
-            //     onDraw(ctx, point, prevPointRef.current, e);
-            //     prevPointRef.current = point;
-            // }
+            } else {
+                onDraw(ctx, point, prevPointRef.current, e);
+                prevPointRef.current = point;
+            }
         }
 
         mouseMoveListenerRef.current = mouseMoveListener;
@@ -106,6 +109,8 @@ export function useOnDraw(onDraw: Function) {
             prevPointRef.current = null;
             pauseRecording();
 
+            // console.log("mouseUpListener - l-a pus pe false" + isDrawingRef.current);
+
             // copy from layer aux to current layer
             const buttonActive = getActiveButton();
 
@@ -118,15 +123,15 @@ export function useOnDraw(onDraw: Function) {
         }
 
         mouseUpListenerRef.current = mouseUpListener;
-        window.addEventListener<"mouseup">("mouseup", mouseUpListener);
+        window.addEventListener<"pointerup">("pointerup", mouseUpListener);
     }
 
     function removeListeners() {
         if (mouseMoveListenerRef.current) {
-            window.removeEventListener("mousemove", mouseMoveListenerRef.current);
+            window.removeEventListener("pointermove", mouseMoveListenerRef.current);
         }
         if (mouseUpListenerRef.current) {
-            window.removeEventListener("mouseup", mouseUpListenerRef.current);
+            window.removeEventListener("pointerup", mouseUpListenerRef.current);
         }
     }
 
@@ -156,7 +161,7 @@ export function useOnDraw(onDraw: Function) {
             // remove the listeners
             removeListeners();
         }
-    }, [onDraw])
+    }, [])
 
     function addInitialLayer(ref: HTMLCanvasElement) {
         if (!ref) {

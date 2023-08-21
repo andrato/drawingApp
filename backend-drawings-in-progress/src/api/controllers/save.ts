@@ -44,6 +44,8 @@ export const save = async (req: Request, res: Response) => {
         }
     };
 
+    console.log("Location is: " + newDrawing.video.location);
+
     // if drawingId exists => drawing should exists
     if (drawingId !== 'undefined') {
         let existingDrawing: (DrawingType & {_id: string} | null) = null;

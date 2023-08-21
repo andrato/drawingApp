@@ -69,6 +69,9 @@ export function Draw() {
             router.events.off('routeChangeStart', handleBrowseAway);
             localStorage.removeItem(LocalStorageKeys.FILENAME);
             localStorage.removeItem(LocalStorageKeys.DRAWING_ID);
+            sessionStorage.removeItem("lineWidth");
+            sessionStorage.removeItem("opacity");
+            sessionStorage.removeItem("color");
         };
     }, []);
 
@@ -152,8 +155,8 @@ export function Draw() {
                     overflow: "visible",
                 })}>
                     <DrawContainer 
-                        width={500} 
-                        height={500} 
+                        width={700} 
+                        height={700} 
                         ref={handleActionsCanvas}
                     />
                 </Box>
