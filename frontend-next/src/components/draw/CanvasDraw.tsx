@@ -254,8 +254,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     return (
         <Box id="ceva" sx={{
             position: "absolute",
-            width: `max(100%, ${containerWidth}px)`,
-            height: `max(100%, ${containerHeight}px)`,
+            width: `max(100%, ${width}px)`,
+            height: `max(100%, ${height}px)`,
             display: "grid",
             alignItems: "center",
             justifyContent: "center",

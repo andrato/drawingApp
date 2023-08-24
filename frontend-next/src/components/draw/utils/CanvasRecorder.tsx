@@ -1,4 +1,6 @@
 import { LocalStorageKeys } from '@/components/utils/constants/LocalStorage';
+import { injectMetadata } from './Seek';
+import fixWebmDuration from 'fix-webm-duration';
 
 interface CanvasRecorder {
   start: () => void;
@@ -13,6 +15,7 @@ interface CanvasRecorder {
 export const CanvasRecorder = (): CanvasRecorder => {
     let stream: MediaStream;
     let recordedBlobs: Blob[] = [];
+    let startTime: number;
     let supportedType: string | null = null;
     let mediaRecorder: MediaRecorder | null = null;
 
@@ -60,10 +63,10 @@ export const CanvasRecorder = (): CanvasRecorder => {
         let types = [
             'video/webm',
             'video/webm,codecs=vp9',
-            'video/vp8',
             'video/webm;codecs=vp8',
-            'video/webm;codecs=daala',
             'video/webm;codecs=h264',
+            'video/webm;codecs=daala',
+            'video/vp8',
             'video/mpeg'
         ]
         
@@ -85,6 +88,7 @@ export const CanvasRecorder = (): CanvasRecorder => {
 
         try {
             mediaRecorder = new MediaRecorder(stream, options);
+            startTime = Date.now();
         } catch (e) {
             console.error('Exception while creating MediaRecorder:', e);
             alert('MediaRecorder is not supported by this browser.');
@@ -106,22 +110,36 @@ export const CanvasRecorder = (): CanvasRecorder => {
         stream = mediaStream;
     }
 
-    const download = () => {
-        return new Blob(recordedBlobs, { type: supportedType ?? ""})
-        // return new File(recordedBlobs, "randomName", { type: supportedType ?? ""});
+    const download = async () => {
+        // const smth = new Blob(recordedBlobs, { type: supportedType ?? ""})
+        // let file: Blob | undefined;
+        // try {
+        //     file = await injectMetadata(smth);
+        // } catch (err) {
 
-        // // Save the file
-        // const url = window.URL.createObjectURL(file);
-        // const a = document.createElement('a');
-        // a.style.display = 'none';
-        // a.href = url;
-        // a.download = `${fileName}.webm`;
-        // document.body.appendChild(a);
-        // a.click();
-        // setTimeout(() => {
-        //     document.body.removeChild(a);
-        //     window.URL.revokeObjectURL(url);
-        // }, 100);
+        // }
+        const duration = Date.now() - startTime;
+        let buggyBlob = new Blob(recordedBlobs, { type: 'video/webm' });
+        const goodBlob = await fixWebmDuration(buggyBlob, duration, {logger: false});
+        const newerBlob = await injectMetadata(buggyBlob);
+        // const file = new Blob(recordedBlobs, { type: supportedType ?? ""});
+
+        if (!newerBlob) {
+            return;
+        }
+        
+        // Save the file
+        const url = window.URL.createObjectURL(newerBlob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `randomName.webm`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
     }
 
     const save = () => {

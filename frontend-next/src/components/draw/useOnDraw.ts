@@ -318,8 +318,9 @@ export function useOnDraw(onDraw: Function) {
             recorder.createStream(videoRef.current);
             recorder.start();
 
-            const context = videoRef.current.getContext('2d');
+            const context = videoRef.current.getContext('2d'); 
             saveFrames.current = setInterval(async () => {
+                // ToDo: check if it's circle/square and record from there
                 if (divRef.current) {
                     const canvas = await domtoimage.toCanvas(divRef.current) as HTMLCanvasElement;
                     context?.drawImage(canvas, 0, 0);
@@ -336,7 +337,9 @@ export function useOnDraw(onDraw: Function) {
     }, []);
 
     const saveRecording = useCallback(() => {
-        return recorder.save();
+        // return recorder.save();
+        recorder.download();
+        return null;
     }, [])
 
     const pauseRecording = useCallback(() => {

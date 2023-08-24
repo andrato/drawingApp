@@ -8,6 +8,8 @@ const Player = ({videoUrl, imageUrl}: {videoUrl: string, imageUrl: string}) => {
         url = "https://drawings-media.fra1.cdn.digitaloceanspaces.com/videos/" + url.split('/').reverse()[0];
     }
 
+    // url = "https://drawings-media.fra1.cdn.digitaloceanspaces.com/videos/randomName.webm";
+
     return (
         <Box sx={(theme) => ({
             width: "100%",
