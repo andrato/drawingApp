@@ -1,6 +1,5 @@
 import { LocalStorageKeys } from '@/components/utils/constants/LocalStorage';
 import { injectMetadata } from './Seek';
-import fixWebmDuration from 'fix-webm-duration';
 
 interface CanvasRecorder {
   start: () => void;
@@ -15,7 +14,6 @@ interface CanvasRecorder {
 export const CanvasRecorder = (): CanvasRecorder => {
     let stream: MediaStream;
     let recordedBlobs: Blob[] = [];
-    let startTime: number;
     let supportedType: string | null = null;
     let mediaRecorder: MediaRecorder | null = null;
 
@@ -88,7 +86,6 @@ export const CanvasRecorder = (): CanvasRecorder => {
 
         try {
             mediaRecorder = new MediaRecorder(stream, options);
-            startTime = Date.now();
         } catch (e) {
             console.error('Exception while creating MediaRecorder:', e);
             alert('MediaRecorder is not supported by this browser.');
@@ -118,9 +115,7 @@ export const CanvasRecorder = (): CanvasRecorder => {
         // } catch (err) {
 
         // }
-        const duration = Date.now() - startTime;
         let buggyBlob = new Blob(recordedBlobs, { type: 'video/webm' });
-        const goodBlob = await fixWebmDuration(buggyBlob, duration, {logger: false});
         const newerBlob = await injectMetadata(buggyBlob);
         // const file = new Blob(recordedBlobs, { type: supportedType ?? ""});
 

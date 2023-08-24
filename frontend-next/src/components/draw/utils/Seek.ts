@@ -2,7 +2,7 @@ import {Decoder, Encoder, tools, Reader} from 'ts-ebml';
 
 /*
  * Needed for Chrome; MediaStream does not add seek and length info to the file
- */
+**/
 const readAsArrayBuffer = function(blob: Blob) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
