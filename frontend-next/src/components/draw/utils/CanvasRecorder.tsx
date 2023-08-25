@@ -6,7 +6,7 @@ interface CanvasRecorder {
   stop: () => void;
   save: () => File | null;
   pause: () => void;
-  download: () => Blob;
+  download: () => void;
   createStream: <T extends HTMLCanvasElement>(canvas: T) => void;
   captureMediaStream: <T extends MediaStream>(mediaStream: T) => void;
 }
@@ -79,9 +79,12 @@ export const CanvasRecorder = (): CanvasRecorder => {
             return;
         }
 
+        /* check https://www.wowza.com/blog/what-is-video-bitrate-and-what-bitrate-should-you-use*/
         let options = {
             mimeType: supportedType,
             videoBitsPerSecond: 2500000, // 25000000000 = 2.5 Mbps
+            VideoFrame: 30,
+            CompressionStream: 2,
         }
 
         try {
@@ -158,9 +161,3 @@ export const CanvasRecorder = (): CanvasRecorder => {
         captureMediaStream,
     }
 }
-
-// const recordScreen = async () => {
-//     stream = await navigator.mediaDevices.getDisplayMedia({
-//         video: { mediaSource: 'screen' }
-//     })  
-// }

@@ -1,10 +1,10 @@
 import { useSearchParams } from 'next/navigation'
-import { QueryParams, SortBy } from '../common/constants';
+import { QueryParams, QuerySortToApiSort, SortBy } from '../common/constants';
 
 export const useQueryParams = () => {
     const searchParams = useSearchParams();
     const cursor = searchParams.get(QueryParams.CURSOR);
-    const sortBy = searchParams.get(QueryParams.SORT_BY) ?? SortBy.NEWEST;
+    const sortBy = searchParams.get(QueryParams.SORT_BY) ?? QuerySortToApiSort[SortBy.NEWEST];
     const search = searchParams.get(QueryParams.SEARCH);
     const searchUser = searchParams.get(QueryParams.SEARCH_USER);
     const labels = searchParams.getAll(QueryParams.LABELS) ?? [];
