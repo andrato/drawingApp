@@ -58,12 +58,12 @@ export const publish = async (req: Request, res: Response) => {
     let existingDrawing: (DrawingType | null) = null;
     const mongoId = new mongoose.Types.ObjectId(drawingId);
 
-    if (drawingId === 'undefined') {
-        return res.status(500).json({
-            status: 1, 
-            error: "No drawing found! Make sure you draw something before save/publish!",
-        });
-    }
+    // if (drawingId === 'undefined') {
+    //     return res.status(500).json({
+    //         status: 1, 
+    //         error: "No drawing found! Make sure you draw something before save/publish!",
+    //     });
+    // }
 
     // check if there is already a drawing with a name
     try {

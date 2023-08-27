@@ -1,3 +1,4 @@
+import { getUserInfo } from "@/components/common/helpers";
 import { Category } from "@/components/profile/helpers";
 import axios from "axios"
 
@@ -5,6 +6,8 @@ export const HOST = "http://localhost:8080/drawing";
 export const HOST_DRAWINGS = HOST + "/";
 export const HOST_DRAWINGS_ADMIN = HOST + "/getAdmin";
 export const HOST_DRAWING = HOST + "/drawing";
+export const HOST_MODIFY_DRAWING = HOST + "/modifyDrawing";
+export const HOST_DELETE_DRAWING = HOST + "/deleteDrawing";
 export const HOST_USER_DRAWINGS = HOST + "/user";
 export const HOST_CATEGORY_DRAWINGS = HOST + "/";
 export const HOST_MODIFY_ADMIN = HOST + "/drawingAdmin";
@@ -171,22 +174,6 @@ export const modifyDrawingAdmin = ({
     );
 }
 
-export const modifyDrawing = ({
-    id,
-    ...props
-}: {
-    id: string, 
-    description?: string,
-    displayTitle?: string,
-    labels?: string[],
-}) => {
-    return axios.post<DrawingResponseSuccessType>(
-        HOST_DRAWING, 
-        {...props}, 
-        {...config, params: {drawingId: id}}
-    );
-}
-
 export const getDrawingsAdmin = ({
     category,
     search,
@@ -209,4 +196,28 @@ export const getDrawingsAdmin = ({
         endDate: endDate ?? undefined,
         labels: labels?.join() ?? undefined,
     }});
+}
+
+export const deleteDrawing = (drawingId: string) => {
+    const userInfo = getUserInfo();
+    const drawingWithUser = {drawingId, userId: userInfo.id};
+
+    return axios.post(
+        HOST_DELETE_DRAWING, 
+        {},
+        {...config, params: drawingWithUser}
+    );
+}
+
+export const modifyDrawing = (props: {
+    drawingId: string; 
+    description?: string; 
+    displayTitle?: string;
+    labels?: string[];
+}) => {
+    return axios.post<DrawingResponseSuccessType>(
+        HOST_MODIFY_DRAWING, 
+        props,
+        {...config}
+    );
 }

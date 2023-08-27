@@ -26,7 +26,7 @@ services:
     networks:
       - mynetprod
   backend-drawings:
-    image: andratommmm/backend-drawings:1.0
+    image: andratommmm/backend-drawings:2.0
     expose:
       - "8003"
     ports:

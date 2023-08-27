@@ -49,6 +49,8 @@ export const SaveValuesForm = ({
     touched,
     isSubmitting,
     errorRequest,
+    buttonText = "Publish drawing",
+    showTitle = true,
 } : {
     values: SaveValuesType;
     errors: FormikErrors<SaveValuesType>;
@@ -58,6 +60,8 @@ export const SaveValuesForm = ({
     touched: FormikTouched<SaveValuesType>;
     isSubmitting: boolean;
     errorRequest?: string | null;
+    buttonText?: string;
+    showTitle?: boolean;
 } ) => {
     const canContinue = getIsValid(values);
     const theme = useTheme();
@@ -69,6 +73,7 @@ export const SaveValuesForm = ({
             label={"Title"}
             error={Boolean(errors.title) && Boolean(touched.title)}
             helperText={errors.title}
+            value={values["displayTitle"]}
             defaultValue={values["displayTitle"]}
             InputProps={{
                 name: "displayTitle",
@@ -77,7 +82,7 @@ export const SaveValuesForm = ({
                 onBlur,
             }}
         />
-        <TextFieldStyled 
+        {showTitle && <TextFieldStyled 
             label={"File Name"}
             error={Boolean(errors.title) && Boolean(touched.title)}
             helperText={errors.title}
@@ -89,7 +94,7 @@ export const SaveValuesForm = ({
                 onChange,
                 onBlur,
             }}
-        />
+        />}
         <TextFieldStyled 
             label={"Description"}
             multiline
@@ -152,7 +157,7 @@ export const SaveValuesForm = ({
                 width: "100%",
             }}
         >
-            Publish drawing
+            {buttonText}
         </Button>
     </Box>
 };

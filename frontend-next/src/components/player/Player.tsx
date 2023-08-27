@@ -24,7 +24,7 @@ const Player = ({videoUrl, imageUrl}: {videoUrl: string, imageUrl: string}) => {
                 controls
                 poster={imageUrl}
             >
-                <source src={url} type="video/mp4" />
+                <source src={url} type="video/webm" />
             </video>
         </Box>            
     )

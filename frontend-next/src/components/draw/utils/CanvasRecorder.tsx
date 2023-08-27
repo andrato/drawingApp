@@ -1,10 +1,11 @@
 import { LocalStorageKeys } from '@/components/utils/constants/LocalStorage';
 import { injectMetadata } from './Seek';
+import getBlobDuration from 'get-blob-duration';
 
 interface CanvasRecorder {
   start: () => void;
   stop: () => void;
-  save: () => File | null;
+  save: () => Promise<Blob | null>;
   pause: () => void;
   download: () => void;
   createStream: <T extends HTMLCanvasElement>(canvas: T) => void;
@@ -83,8 +84,8 @@ export const CanvasRecorder = (): CanvasRecorder => {
         let options = {
             mimeType: supportedType,
             videoBitsPerSecond: 2500000, // 25000000000 = 2.5 Mbps
-            VideoFrame: 30,
-            CompressionStream: 2,
+            // VideoFrame: 30,
+            // CompressionStream: 2,
         }
 
         try {
@@ -111,21 +112,22 @@ export const CanvasRecorder = (): CanvasRecorder => {
     }
 
     const download = async () => {
-        // const smth = new Blob(recordedBlobs, { type: supportedType ?? ""})
-        // let file: Blob | undefined;
-        // try {
-        //     file = await injectMetadata(smth);
-        // } catch (err) {
-
-        // }
         let buggyBlob = new Blob(recordedBlobs, { type: 'video/webm' });
+        // const size = await getBlobDuration(buggyBlob);
+        // const newerBlob: Blob = {
+        //     ...buggyBlob,
+        //     size,
+        // }
+
         const newerBlob = await injectMetadata(buggyBlob);
-        // const file = new Blob(recordedBlobs, { type: supportedType ?? ""});
 
         if (!newerBlob) {
             return;
         }
+
+        // const file = new File([newerBlob], 'sample.txt', { type: newerBlob.type })
         
+
         // Save the file
         const url = window.URL.createObjectURL(newerBlob);
         const a = document.createElement('a');
@@ -140,15 +142,29 @@ export const CanvasRecorder = (): CanvasRecorder => {
         }, 100);
     }
 
-    const save = () => {
+    const save = async () => {
         if (null === supportedType) {
             console.error("type no supported");
             return null;
         }
 
+        /* add metadata for seek tot the blob */
+        let buggyBlob = new Blob(recordedBlobs, { type: 'video/webm' });
+        let newerBlob: Blob | undefined;
+        try {
+            newerBlob = await injectMetadata(buggyBlob);
+        } catch (err) {
+            console.error("A")
+        }
+
+        if (!newerBlob) {
+            return null;
+        }
+
+        /* create file */
         const filename = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN";
 
-        return new File(recordedBlobs, filename, { type: supportedType });
+        return new File([buggyBlob], filename, { type: supportedType });
     }
 
     return {

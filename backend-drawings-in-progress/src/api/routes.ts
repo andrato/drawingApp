@@ -7,6 +7,6 @@ const router: express.Router = express.Router();
 
 router.post("/save", checkSchema(saveSchema), upload.array('files'), save);
 router.get("/check", checkSchema(checkDrawingSchema), check);
-router.post("/publish", checkSchema(publishSchema), upload.array('files'), publish);
+router.post("/publish", checkSchema(publishSchema), publish);
 
 export default router;

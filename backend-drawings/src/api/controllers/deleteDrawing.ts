@@ -3,11 +3,18 @@ import { Request, Response} from "express";
 import { DrawingType } from "../utils/types";
 import { modelDrawing } from "../../mongo_schema";
 import { deleteFile } from "../utils/deleteS3";
-import { DeleteObjectCommandOutput } from "@aws-sdk/client-s3";
-import { validationResult } from "express-validator";
+import { param, validationResult } from "express-validator";
+import { Types } from "mongoose";
 
-export const deleteAllSchema = {
+export const deleteDrawingSchema = {
     userId: {
+        isLength: {
+            errorMessage: 'userId param missing!',
+            options: { min: 1 },
+            location: "params",
+        },
+    },
+    drawingId: {
         isLength: {
             errorMessage: 'userId param missing!',
             options: { min: 1 },
@@ -16,7 +23,7 @@ export const deleteAllSchema = {
     },
 }
 
-export const deleteAll = async (req: Request, res: Response) => {
+export const deleteDrawing = async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -25,29 +32,35 @@ export const deleteAll = async (req: Request, res: Response) => {
         });
     }
 
-    const userId = req.query.userId;
+    const drawingId = req.query.drawingId as string;
+    const userId = req.query.userId as string;
 
-    let drawings: DrawingType[] = [];
+    let drawing: DrawingType | null = null;
+    const mongoId = new Types.ObjectId(drawingId);
     try {
-        drawings = await modelDrawing.find({userId: userId});
-        
+        drawing = await modelDrawing.findOne({_id: mongoId});
     } catch (err) {
         return res.status(500).json({
-            status: 1, 
             error: "An error occured! Please try again later!",
         })
     }
 
+    if (!drawing) {
+        return res.status(500).json({
+            error: "No drawing found!",
+        })
+    }
+
+    if (drawing.userId !== userId) {
+        return res.status(400).json({
+            error: "No permission for this action!",
+        })
+    }
+
     // delete media from aws
-    const promisesImages: Promise<DeleteObjectCommandOutput>[]= drawings.map((drawing) => 
-        deleteFile(drawing.image.filename, "images")
-    );
-    const promisesVideos: Promise<DeleteObjectCommandOutput>[]= drawings.map((drawing) => 
-        deleteFile(drawing.video.filename, "videos")
-    );
     try {
-        await Promise.all(promisesImages);
-        await Promise.all(promisesVideos);
+        deleteFile(drawing.image.filename, "images")
+        deleteFile(drawing.video.filename, "videos")
     } catch (err) {
         return res.status(500).json({
             status: 1, 
@@ -55,10 +68,9 @@ export const deleteAll = async (req: Request, res: Response) => {
         })
     }
     
-
     // delete from DB
     try {
-        await modelDrawing.deleteMany({userId: userId});
+        await modelDrawing.deleteOne({_id: mongoId});
     } catch (err) {
         return res.status(500).json({
             status: 1, 

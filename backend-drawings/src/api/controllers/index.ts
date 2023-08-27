@@ -2,6 +2,8 @@ export * from "./getAll";
 export * from "./getByUser";
 export * from "./getDrawing";
 export * from "./delete";
+export * from "./deleteDrawing";
 export * from "./updateReviews";
 export * from "./getAllAdmin";
 export * from "./adminModify";
+export * from "./modifyDrawing";

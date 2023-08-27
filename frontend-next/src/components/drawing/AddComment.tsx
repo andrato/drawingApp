@@ -1,13 +1,12 @@
 import { Alert, Button, Collapse, IconButton, Paper, Rating, TextField, Typography } from "@mui/material";
 import { isUserLoggedIn } from "../common/helpers";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReviewType, postComment } from "@/services/CommentsAndRatings";
+import { useMutation } from "@tanstack/react-query";
+import { postComment } from "@/services/CommentsAndRatings";
 import { Close } from "@mui/icons-material";
 
 export const AddComment = ({drawingId, updateComments, userId}: {drawingId: string, updateComments: (comment: CommentType) => void; userId: string}) => {
     const userLogged = isUserLoggedIn(); 
-    const queryClient = useQueryClient();
     const [comment, setComment] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const {mutate: addComment, isLoading, isSuccess} = useMutation({

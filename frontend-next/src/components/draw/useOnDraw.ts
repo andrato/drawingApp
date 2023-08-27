@@ -336,8 +336,8 @@ export function useOnDraw(onDraw: Function) {
         recorder.stop();
     }, []);
 
-    const saveRecording = useCallback(() => {
-        return recorder.save();
+    const saveRecording = useCallback(async () => {
+        return await recorder.save();
         // recorder.download();
         // return null;
     }, [])

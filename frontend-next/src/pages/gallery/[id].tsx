@@ -127,8 +127,10 @@ export default function GalleryItem() {
                     imgPath={drawing.userInfo.imgPath} 
                     date={drawing.created} 
                     drawingVideoPath={drawing.video.location}
-                    contentCateg={drawing.labels}
-                    contentText={drawing.description}
+                    labels={drawing.labels}
+                    description={drawing.description}
+                    title={drawing.title}
+                    displayTitle={drawing.displayTitle}
                 />
                 <Reviews drawingId={id} userId={drawing.userId} setReviewInfo={setReviewInfo}/>
             </div>
