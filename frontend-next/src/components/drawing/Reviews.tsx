@@ -6,7 +6,7 @@ import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { Review } from './Review';
 import { debounce } from "lodash";
 import { AddReview } from "./AddReview";
-import { isSameUser } from "../common/helpers";
+import { getUserInfo, isSameUser } from "../common/helpers";
 
 export const Reviews = ({
     drawingId, 

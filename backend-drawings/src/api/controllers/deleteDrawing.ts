@@ -5,6 +5,7 @@ import { modelDrawing } from "../../mongo_schema";
 import { deleteFile } from "../utils/deleteS3";
 import { param, validationResult } from "express-validator";
 import { Types } from "mongoose";
+import axios from "axios";
 
 export const deleteDrawingSchema = {
     userId: {
@@ -75,6 +76,16 @@ export const deleteDrawing = async (req: Request, res: Response) => {
         return res.status(500).json({
             status: 1, 
             error: "An error occured! Please try again later!",
+        })
+    }
+
+    // add drawing to user
+    try {
+        await axios.post("http://backend-users:8004/drawing", {}, { params: {userId: drawing.userId, operation: "subtract"}});
+    } catch (err) {
+        return res.status(200).json({
+            status: 0, 
+            error: "Error saving for users",
         })
     }
 

@@ -5,13 +5,13 @@ import { getReviewsAndRating } from "../utils/helpers";
 import { validationResult } from "express-validator";
 
 export const reviewsSchema = {
-    userId: {
-        isLength: {
-            errorMessage: 'userId is wrong or missing!',
-            options: { min: 1 },
-            location: "params",
-        },
-    },
+    // userId: {
+    //     isLength: {
+    //         errorMessage: 'userId is wrong or missing!',
+    //         options: { min: 1 },
+    //         location: "params",
+    //     },
+    // },
     drawingId: {
         isLength: {
             errorMessage: 'drawingId is wrong or missing!',
@@ -31,7 +31,7 @@ export const getReviews = async (req: Request, res: Response) => {
     }
 
     const drawingId = req.query.drawingId as string;
-    const userId = req.query.userId as string;
+    const userId = req.query.userId as string | undefined;
     
     let reviews: CommentRatingType[] = [];
 

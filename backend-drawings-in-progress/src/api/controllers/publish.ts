@@ -130,7 +130,7 @@ export const publish = async (req: Request, res: Response) => {
 
     // add drawing to user
     try {
-        await axios.post("http://backend-users:8004/addDrawing", {}, { params: {userId: existingDrawing.userId}});
+        await axios.post("http://backend-users:8004/drawing", {}, { params: {userId: existingDrawing.userId}});
     } catch (err) {
         return res.status(200).json({
             status: 0, 

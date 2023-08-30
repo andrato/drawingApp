@@ -3,6 +3,22 @@ import { LocalStorageKeys } from "../utils/constants/LocalStorage";
 export const isSameUser = (userId: string) => {
     const userInfo = localStorage.getItem(LocalStorageKeys.USER_INFO);
 
+    if (!userInfo || !JSON.parse(userInfo)?.id) {
+        return false;
+    }
+
+    const loggedUserId = JSON.parse(userInfo)?.id;
+
+    if (loggedUserId === userId) {
+        return true;
+    }
+
+    return false;
+}
+
+export const isSameUserOrGuest = (userId: string) => {
+    const userInfo = localStorage.getItem(LocalStorageKeys.USER_INFO);
+
     if (!userInfo) {
         return true;
     }

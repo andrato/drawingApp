@@ -1,5 +1,5 @@
 import { Alert, Box, Button, Collapse, IconButton, Paper, Rating, TextField, Typography } from "@mui/material";
-import { isSameUser, isUserLoggedIn } from "../common/helpers";
+import { isSameUserOrGuest, isUserLoggedIn } from "../common/helpers";
 import { ReactNode, SyntheticEvent, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ReviewType, postReview } from "@/services/CommentsAndRatings";
@@ -75,14 +75,12 @@ export const AddReview = ({
     }
 
     if (!userLogged) {
-        <Container isEditing={false}>
-            <Typography>
-                You must be logged in to post a comment!
-            </Typography>
-        </Container>
+        return <Alert severity="info" sx={{my: 2, mb: 1}}>
+            You must be logged in to post a comment!
+        </Alert>
     }
 
-    if(isSameUser(userId)) {
+    if(isSameUserOrGuest(userId)) {
         return null;
     }
 

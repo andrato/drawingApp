@@ -42,7 +42,7 @@ export const postReview = (data: {comment: string | null, rating: number, drawin
 }
 export const getReviews = (drawingId: string) => {
     const userInfo = getUserInfo();
-    return axios.get<Reviews>(HOST_REVIEWS + "/", {...config, params: {drawingId, userId: userInfo.id}});
+    return axios.get<Reviews>(HOST_REVIEWS + "/", {...config, params: {drawingId, userId: userInfo?.id ?? undefined}});
 }
 
 
