@@ -4,11 +4,13 @@ import { Button, IconButton, TextField, Tooltip, Typography } from "@mui/materia
 import { checkDrawing } from "@/services/DrawingsInProgress";
 import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import { Info } from "@mui/icons-material";
+import { useLocalUser } from "@/components/common/helpers";
 
 export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string | null, onFilenameChange: (name: string) => void, onClose: () => void}) => {
     const [open, setIsOpen] = useState<boolean>(!Boolean(name));
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const {isLoggedIn} = useLocalUser();
 
     const isNameOk = (name: string) => {
         if (!name || name.length === 0) {
@@ -80,7 +82,7 @@ export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string 
         title="New drawing"
         onHandleClose={onClose}
     > 
-        <form onSubmit={handleSubmit}>
+        {isLoggedIn ? <form onSubmit={handleSubmit}>
             <Typography variant="body2" sx={{mb: 1}}>
                 Select a name for the drawing
                 <Tooltip title={`Spaces and special characters are not allowed! Name should not start with upper letter or number, but can contain them.`}>
@@ -115,6 +117,25 @@ export const StartingDialog = ({name, onFilenameChange, onClose}: {name: string 
             >
                 Create Drawing
             </Button>
-        </form>
+        </form> : <>
+            <Typography variant="body2" color="error" sx={{mb: 3}}>
+                You are not a member yet! Any drawing you make will not be saved!
+            </Typography>
+            <Button
+                variant="contained"
+                color="success"
+                disabled={loading}
+                onClick={() => {
+                    localStorage?.setItem(LocalStorageKeys.GUEST_APPROVE, '1');
+                    setIsOpen(false);
+                    onFilenameChange('guest');
+                }}
+                sx={{
+                    width: "100%",
+                }}
+            >
+                Create Drawing Anyway
+            </Button>
+        </>}
     </DialogDrawing>
 }

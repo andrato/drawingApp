@@ -17,6 +17,7 @@ import { SaveValuesForm } from "./SaveValuesForm";
 import { DialogDrawing } from "../utils/DialogDrawing";
 import { AxiosError } from "axios";
 import { upperFirst } from "lodash";
+import { useLocalUser } from "@/components/common/helpers";
 
 const ButtonStyled = ({children, ...props} : {children: React.ReactNode} & ButtonProps) => (
     <Button
@@ -29,6 +30,9 @@ const ButtonStyled = ({children, ...props} : {children: React.ReactNode} & Butto
             mr: "4px",
             ':hover': {
                 backgroundColor: theme.palette.canvas.menuBtnHover,
+            },
+            ':disabled': {
+                color: theme.palette.textCustom.disabled,
             }
         })}
     >
@@ -48,6 +52,7 @@ export function MenuTop ({
     const [open, setOpen] = useState(false);
     const dialogTitleReset = "Are you sure you want to start over?";
     const dialogDescriptionReset = "Once you 'Agree' with this, all your work will be lost. Please make sure you know what you are doing!";
+    const {isLoggedIn} = useLocalUser();
 
     /* Dialog stuff */
     const showDialog = () => {
@@ -163,12 +168,14 @@ export function MenuTop ({
                 <ButtonStyled 
                     startIcon={<Save />}
                     onClick={saveDrawing}
+                    disabled={!isLoggedIn}
                 >
                     Save
                 </ButtonStyled>
                 <ButtonStyled 
                     startIcon={<Publish />}
                     onClick={() => setOpenSave(true)}
+                    disabled={!isLoggedIn}
                 >
                     Publish
                 </ButtonStyled>

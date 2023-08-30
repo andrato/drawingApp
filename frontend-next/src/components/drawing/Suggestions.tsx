@@ -62,8 +62,9 @@ export const Suggestions = ({height}: {height: number | null}) => {
             pt: 2,
         })}>
             <Typography variant="subtitle2" sx={({palette}) => ({color: palette.textCustom.subHeader, mb: 2})}>Drawings you might also like</Typography>
-            {drawings.map((item) => <Box sx={{position: "relative", mb: 2}}>
+            {drawings.map((item, pos) => <Box sx={{position: "relative", mb: 2}}>
                 <CardMedia
+                    key={pos}
                     component="img"
                     image={item.image.location}
                     alt={item.displayTitle}

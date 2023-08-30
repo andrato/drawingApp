@@ -65,6 +65,9 @@ export const StyledButton = ({children, ...props}:{children: ReactNode} & IconBu
             },
             borderRadius: 0,
             width: "25px",
+            ':disabled': {
+                color: theme.palette.textCustom.disabled,
+            }
         })}
         {...props}
     >

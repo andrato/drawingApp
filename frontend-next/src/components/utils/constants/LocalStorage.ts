@@ -3,4 +3,5 @@ export enum LocalStorageKeys {
     USER_TOKEN = "userToken",
     FILENAME="filename",
     DRAWING_ID = "drawingId",
+    GUEST_APPROVE = "drawAsGuest"
 }

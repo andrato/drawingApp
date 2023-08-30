@@ -10,6 +10,7 @@ import { MenuRight } from "./menus/MenuRight";
 import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import { StartingDialog } from "./utils/StartingDialog";
 import { useRouter } from "next/router";
+import { isUserLoggedIn } from "../common/helpers";
 
 const defaultValues = {
     handleClearCanvas: () => {},
@@ -30,6 +31,8 @@ const DrawingContainer = ({children}: {children: ReactNode}) => (
 export function Draw() {
     const handleActionsCanvas = useRef<HandleActionsCanvasType>(defaultValues);
     const [color, setColor] = useState("#000000");
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const drawAsGuest = useRef<boolean>(false);
     const theme = useTheme();
     const subtractHeight = Number((theme.customSizes.drawTopMenuHeight).slice(0,-2)) +
                         Number((theme.customSizes.drawBorderHeight).slice(0,-2)) + "px";
@@ -38,6 +41,9 @@ export function Draw() {
     const router = useRouter();
 
     useEffect(() => {
+        setIsLoggedIn(isUserLoggedIn());
+        drawAsGuest.current = Boolean(localStorage.getItem(LocalStorageKeys.GUEST_APPROVE));
+
         const warningText =
           'If you leave the page, you will not be able to continue the drawing later. Are you sure do you want to continue?';
 

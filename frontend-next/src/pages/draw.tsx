@@ -1,3 +1,5 @@
+"use client"
+
 import { Draw } from "@/components/draw/Draw";
 // import { wrapper } from "./store";
 

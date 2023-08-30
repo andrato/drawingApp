@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { LocalStorageKeys } from "../utils/constants/LocalStorage";
 
 export const isSameUser = (userId: string) => {
@@ -86,4 +87,33 @@ export const getUserInfo = () => {
     const userInfo = JSON.parse(userLocalhost);
 
     return userInfo;
+}
+
+
+export const useLocalUser = () => {
+    const [localUser, setLocalUser] = useState<{
+        isLoggedIn: boolean;
+        guestApprove: boolean;
+        userToken?: string | null;
+    }>({
+        isLoggedIn: false,
+        guestApprove: false,
+        userToken: null,
+    });
+
+    useEffect(() => {
+        const userInfo = localStorage.getItem(LocalStorageKeys.USER_INFO);
+        const userToken = localStorage.getItem(LocalStorageKeys.USER_TOKEN);
+        const guestApprove = Boolean(localStorage.getItem(LocalStorageKeys.GUEST_APPROVE));
+
+        const isLoggedIn = Boolean(userInfo) && Boolean(userToken);
+
+        setLocalUser({
+            isLoggedIn,
+            guestApprove,
+            userToken
+        })
+    }, [])
+
+    return localUser;
 }
