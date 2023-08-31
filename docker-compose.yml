@@ -47,7 +47,7 @@ services:
     networks:
       - mynet
   backend-users:
-    image: andratommmm/backend-users:base.3.0
+    image: andratommmm/backend-users:base.1.0
     volumes:
       - ./backend-users/src:/app/src
     expose:

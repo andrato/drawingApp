@@ -34,7 +34,7 @@ services:
     networks:
       - mynetprod
   backend-users:
-    image: andratommmm/backend-users:3.0
+    image: andratommmm/backend-users:4.0
     expose:
       - "8004"
     ports:

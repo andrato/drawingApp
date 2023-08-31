@@ -33,11 +33,13 @@ export const DialogUser = ({
     onHandleClose,
     children,
     title,
+    size,
 }: {
     open: boolean;
     onHandleClose: (step?: Step) => void;
     children: ReactNode,
-    title: string
+    title: string,
+    size?: number,
 }) => {
 
     return (
@@ -49,7 +51,7 @@ export const DialogUser = ({
                 <Typography variant="body1" sx={{mr: 3}}>{title}</Typography>
             </DialogTitleComponent>
             <DialogContent sx={{
-                width: "300px",
+                width: size ?? "300px",
                 p: 2
             }}>
                 {children}

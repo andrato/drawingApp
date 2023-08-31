@@ -1,10 +1,10 @@
-import { Avatar, Box, Paper, Typography } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { Avatar, Box, Button, Paper, Typography } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { getUserInfo } from "../common/helpers";
-import { USER_INFO_API, getUser } from "@/services/User";
 import { UserProfileDrawings } from "./UserProfileDrawings";
+import { ProfileEditDialog } from "./ProfileEditDialog";
+import { useProfileUser } from "./useProfileUser";
 
 export const AVATAR_SIZE = 140;
 export const PROFILE_WIDTH = 270;
@@ -25,14 +25,10 @@ const Container = ({children}: {children: ReactNode}) => (
 
 export const ProfileInfo = ({userId}: {userId: string}) => {
     const [initials, setInitials] = useState<string>("");
+    const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
 
-    const {data, isLoading, isError, error} = useQuery({
-        queryKey: [USER_INFO_API, userId],
-        queryFn: () => getUser(userId), 
-        refetchOnMount: false,
-        enabled: Boolean(userId) && userId !== null,
-    });
-    const user = data?.data.user;
+    const {user, isLoading, isError, error} = useProfileUser(userId);
+    const sameUser = user?._id === userId;
 
     useEffect(() => {
         const userInfo = getUserInfo();
@@ -73,9 +69,18 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
                 >
                     {initials}
                 </Avatar>
-                {data.data.user && <Typography variant="body1" sx={{mt: 2}}>
-                    {data.data.user?.firstName + " " + data.data.user?.lastName}
+                {user && <Typography variant="body1" sx={{mt: 2}}>
+                    {user.firstName + " " + user.lastName}
                 </Typography>}
+                {sameUser && <Button 
+                    variant="contained" 
+                    size="small" 
+                    onClick={() => setIsEditOpen(true)}
+                    sx={{mt: 1}}
+                >
+                    Edit
+                </Button>
+                }
             </Box>
             <Box sx={(theme) => ({
                 display: "flex",
@@ -109,10 +114,11 @@ export const ProfileInfo = ({userId}: {userId: string}) => {
                     <strong>About</strong>
                 </Typography >
                 <Typography variant="body2">
-                    {data.data.user?.profile && Object.keys(data.data.user?.profile).length ? "ceva" : "No description available"}
+                    {user?.profile && user?.profile.about?.length ? user?.profile.about : "No description available"}
                 </Typography>
             </Box>
         </Paper>
         <UserProfileDrawings userId={userId}/>
+        <ProfileEditDialog isOpen={isEditOpen} setIsOpen={setIsEditOpen} userId={userId}/>
     </Container>;
 }

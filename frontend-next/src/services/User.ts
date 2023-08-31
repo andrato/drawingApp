@@ -6,6 +6,7 @@ export const ADMIN_USERS_API = HOST_USER + "/user/users";
 export const USERS_FILTERS_API = HOST_USER + "/user/filters";
 export const ADMIN_MODIFY_USER_RIGHTS = HOST_USER + "/admin/modify";
 export const ADMIN_DELETE_USER_RIGHTS = HOST_USER + "/admin/delete";
+export const PROFILE_MODIFY = "http://localhost:8080/user/";
 
 export type ErrorType = {
     msg: string;
@@ -26,10 +27,8 @@ export type UserType = {
     rating: number | null;
     reviews: number;
     profile: {
-        about: {
-            type: String,
-        },
-        birthdate: Number,
+        about: string,
+        birthdate: number,
     }
 }
 
@@ -69,4 +68,13 @@ export const modifyUser = (userId: string) => {
 
 export const deleteUser = (userId: string) => {
     return axios.get(ADMIN_DELETE_USER_RIGHTS, {...config, params: {userId: userId}});
+}
+
+export const modifyProfile = (props : {
+    userId: string;
+    firstName?: string;
+    lastName?: string;
+    about?: string;
+}) => {
+    return axios.post(PROFILE_MODIFY, props, {...config});
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { LocalStorageKeys } from "../utils/constants/LocalStorage";
 
 export const isSameUser = (userId: string) => {
-    const userInfo = localStorage.getItem(LocalStorageKeys.USER_INFO);
+    const userInfo = localStorage?.getItem(LocalStorageKeys.USER_INFO);
 
     if (!userInfo || !JSON.parse(userInfo)?.id) {
         return false;
@@ -89,7 +89,6 @@ export const getUserInfo = () => {
     return userInfo;
 }
 
-
 export const useLocalUser = () => {
     const [localUser, setLocalUser] = useState<{
         isLoggedIn: boolean;
@@ -111,9 +110,9 @@ export const useLocalUser = () => {
         setLocalUser({
             isLoggedIn,
             guestApprove,
-            userToken
+            userToken,
         })
-    }, [])
+    }, []);
 
     return localUser;
 }
