@@ -2,7 +2,7 @@ import { Box, IconButton, IconButtonProps, Typography, useTheme } from "@mui/mat
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { BoxProps } from "@mui/system";
 import { useButtonsRight } from "./useButtonsRight";
-import { ButtonBodySettings, ColorSettings, HistorySettings } from "./RightFirstPart";
+import { ActionsMenuRightType, ButtonBodySettings } from "./RightFirstPart";
 import { MenuRightLayers } from "./MenuRightLayers";
 
 export const StyledMenuButton = ({
@@ -73,9 +73,13 @@ export const StyledButton = ({children, ...props}:{children: ReactNode} & IconBu
     >
         {children}
     </IconButton>
-)
+);
 
-export function MenuRight () {
+export function MenuRight ({
+    actionsMenuRight,
+}: {
+    actionsMenuRight?: ActionsMenuRightType;
+}) {
     const [mouseDown, setMouseDown] = useState(false);
     const [top, setTop] = useState<number>();
     const { setActiveButtonSettings, setActiveButtonLayers, getActiveButtonSettings } = useButtonsRight();
@@ -158,7 +162,7 @@ export function MenuRight () {
                 </StyledMenuButton> */}
             </Box>
             { buttonsSettings === "settings" && 
-                <ButtonBodySettings />
+                <ButtonBodySettings actionsMenuRight={actionsMenuRight}/>
             }
             {/* { buttonsSettings === "color" && 
                 <ColorSettings />

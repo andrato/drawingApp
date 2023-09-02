@@ -11,6 +11,7 @@ import {
     FaEraser,
     FaPenNib,
 } from "react-icons/fa";
+import { Buttons } from "./utils";
 
 const IconButtonStyled = ({
     children, 
@@ -49,32 +50,33 @@ const IconButtonStyled = ({
     </div>)
 }
 
-export function MenuLeft ({color, setColor} : {color: string, setColor: Function}) {
+export function MenuLeft ({color, setColor, onClick} : {color: string, setColor: Function, onClick: (button: Buttons) => void}) {
     /* for left buttons */
     const { setActiveButton } = useButtonsLeft();
 
     const onHandleClickLeft = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         setActiveButton(e.currentTarget.id);
+        onClick(e.currentTarget.id as Buttons);
     }
 
     return (
         <>
-            <IconButtonStyled id="pencil" onHandleClickLeft={onHandleClickLeft}>
+            <IconButtonStyled id={Buttons.PENCIL} onHandleClickLeft={onHandleClickLeft}>
                 <Create fontSize="small"/>
             </IconButtonStyled>
-            <IconButtonStyled id="brush" onHandleClickLeft={onHandleClickLeft}>
+            <IconButtonStyled id={Buttons.BRUSH} onHandleClickLeft={onHandleClickLeft}>
                 <Brush fontSize="small"/>
             </IconButtonStyled>
-            <IconButtonStyled id="pen" onHandleClickLeft={onHandleClickLeft}>
+            <IconButtonStyled id={Buttons.PEN} onHandleClickLeft={onHandleClickLeft}>
                 <FaPenNib style={{padding: "2px"}}/>
             </IconButtonStyled>
-            <IconButtonStyled id="eraser" onHandleClickLeft={onHandleClickLeft}>
+            <IconButtonStyled id={Buttons.ERASER} onHandleClickLeft={onHandleClickLeft}>
                 <FaEraser style={{padding: "2px"}}/>
             </IconButtonStyled>
-            <IconButtonStyled id="square" onHandleClickLeft={onHandleClickLeft}>
+            <IconButtonStyled id={Buttons.SQUARE} onHandleClickLeft={onHandleClickLeft}>
                 <SquareOutlined fontSize="small"/>
             </IconButtonStyled>
-            <IconButtonStyled id="circle" onHandleClickLeft={onHandleClickLeft}>
+            <IconButtonStyled id={Buttons.CIRCLE} onHandleClickLeft={onHandleClickLeft}>
                 <CircleOutlined fontSize="small"/>
             </IconButtonStyled>
 

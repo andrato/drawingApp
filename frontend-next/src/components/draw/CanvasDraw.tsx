@@ -5,8 +5,10 @@ import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { 
     CanvasElem,
     HandleActionsCanvasType,
+    OptionsType,
 } from "./types";
 import { publish, subscribe, unsubscribe } from "./events";
+import { SessionStorageVars } from "./menus/utils";
 
 export type CanvasProps = {
     width: number, 
@@ -39,6 +41,14 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     const {getActiveButton} = useButtonsLeft();
     const containerWidth = width + 64; // 16 = container spacing
     const containerHeight = height + 64; // 16 = container spacing
+    const options = useRef<OptionsType>({
+        lineWidth: 1,
+        opacity: 100,
+        color: "#000000",
+        sameColorAsLine: false,
+        fillColor: "#000000",
+        isFillEnabled: false,
+    });
 
     /* ***************************************** */
     /*                For parent                 */
@@ -78,6 +88,10 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
             addLayer(event.detail[0].id);
         });
+
+        subscribe("optionSettings", (event: CustomEvent<OptionsType>) => {
+            options.current = event.detail;
+        });
     
         return () => {
             unsubscribe("resetLayer", () => {});
@@ -85,6 +99,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             unsubscribe("setVisibility", () => {});
             unsubscribe("setLayers", () => {});
             unsubscribe("addLayer", () => {});
+            unsubscribe("optionSettings", () => {});
         }
       }, []);
 
@@ -94,7 +109,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     function onDraw(ctx: CanvasRenderingContext2D | null | undefined, point: Point, prevPoint: Point, event?: any) {
         switch (getActiveButton()) {
             case 'pencil': 
-                handleDrawBrush(prevPoint, point, ctx, event);
+                handleDrawLine(prevPoint, point, ctx);
                 break;
             case 'brush':
                 handleDrawBrush(prevPoint, point, ctx, event);
@@ -117,19 +132,23 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     }
 
     const getProps = () => {
-        const lineWidth = Number(sessionStorage.getItem('lineWidth') ?? 1);
-        const opacity = Number(sessionStorage.getItem("opacity") ?? 100);
-        const color = sessionStorage.getItem("color") ?? "#000000";
+        const lineWidth = Number(sessionStorage.getItem(SessionStorageVars.LINE_WIDTH) ?? 1);
+        const opacity = Number(sessionStorage.getItem(SessionStorageVars.OPACITY) ?? 100);
+        const color = sessionStorage.getItem(SessionStorageVars.LINE_COLOR) ?? "#000000";
+        const fillColor = sessionStorage.getItem(SessionStorageVars.FILL_SHAPE_COLOR);
+        const sameColorAsLine = Boolean(sessionStorage.getItem(SessionStorageVars.IS_SAME_COLOR));
 
         return {
             lineWidth,
             opacity,
             color,
+            fillColor,
+            sameColorAsLine,
         }
     }
 
     const getLineWidth = (e: any) => {
-        const {lineWidth} = getProps();
+        const {lineWidth} = options.current;
 
         return (e.pressure) ? (e.pressure * lineWidth) : lineWidth;
         // switch (e.pointerType) {
@@ -156,7 +175,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     ) {
         if(!ctx) return;
 
-        const {lineWidth, opacity, color} = getProps();
+        const {lineWidth, opacity, color} = options.current;
 
         ctx.globalCompositeOperation="source-over";
         start = start ?? end;
@@ -179,7 +198,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     ) {
         if(!ctx) return;
 
-        const {lineWidth, opacity, color} = getProps();
+        const {lineWidth, opacity, color} = options.current;
 
         ctx.globalCompositeOperation="source-over";
         start = start ?? end;
@@ -201,7 +220,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     ) {
         if(!ctx) return;
 
-        const {lineWidth} = getProps();
+        const {lineWidth} = options.current;
 
         ctx.globalCompositeOperation="destination-out";
         start = start ?? end;
@@ -220,13 +239,17 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     ) {
         if(!ctx) return;
 
-        const {lineWidth, color} = getProps();
+        const {lineWidth, color, fillColor, sameColorAsLine, isFillEnabled} = options.current;
+
+        const shapeColor = sameColorAsLine ? color : fillColor;
 
         ctx.lineWidth = lineWidth;
         ctx.strokeStyle = color;
+        if (isFillEnabled) { ctx.fillStyle = shapeColor; }
         ctx.beginPath();
         ctx.rect(start.x, start.y, end.x-start.x, end.y-start.y);
         ctx.stroke();
+        if (isFillEnabled) { ctx.fill(); }
     }
 
     function handleDrawCircle (
@@ -236,16 +259,19 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     ) {
         if(!ctx) return;
 
-        const {lineWidth, color} = getProps();
+        const {lineWidth, color, fillColor, sameColorAsLine, isFillEnabled} = options.current;
+
+        const shapeColor = sameColorAsLine ? color : fillColor;
 
         ctx.globalCompositeOperation = "copy";
         ctx.lineWidth = lineWidth;
         ctx.strokeStyle = color;
+        if (isFillEnabled) { ctx.fillStyle = shapeColor; }
         ctx.beginPath();
         // ctx.arc(start.x, start.y, Math.abs(start.x-end.x), 0, 2 * Math.PI, true) // tb optiune si pt cerc
-        ctx.ellipse(start.x, start.y, Math.abs(start.x-end.x), Math.abs(start.y-end.y), 0, 0, 2 * Math.PI)
-
+        ctx.ellipse(start.x, start.y, Math.abs(start.x-end.x), Math.abs(start.y-end.y), 0, 0, 2 * Math.PI);
         ctx.stroke();
+        if (isFillEnabled) { ctx.fill(); }
     }
 
     /* ********************************************************** */

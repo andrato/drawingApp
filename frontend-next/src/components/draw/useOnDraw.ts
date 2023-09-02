@@ -10,7 +10,7 @@ export type Point = {
     y: number,
 }
 
-const LAYER_SIZE = 700;
+const LAYER_SIZE = 600;
 
 /*
     first ref/canvas => the aux one

@@ -12,3 +12,12 @@ export type CanvasElem = {
     visibility: boolean;
 }
 
+export type OptionsType = {
+    lineWidth: number;
+    opacity: number;
+    color: string;
+    fillColor: string;
+    sameColorAsLine: boolean;
+    isFillEnabled: boolean;
+}
+

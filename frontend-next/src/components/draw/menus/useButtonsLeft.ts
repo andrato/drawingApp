@@ -1,31 +1,5 @@
 import { useState } from "react";
-
-const defaultButtons = [
-{
-    id: "pencil",
-    isSelected: true, 
-},
-{
-    id: "brush",
-    isSelected: false, 
-},
-{
-    id: "pen",
-    isSelected: false, 
-},
-{
-    id: "eraser",
-    isSelected: false, 
-},
-{
-    id: "square",
-    isSelected: false, 
-},
-{
-    id: "circle",
-    isSelected: false, 
-},
-]
+import { defaultButtons } from "./utils";
 
 export function useButtonsLeft() {
     const [buttonsLeft, setButtonsLeft] = useState(defaultButtons);

@@ -1,4 +1,4 @@
-import { ReactNode, createRef, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Box, useTheme } from "@mui/material";
 import { 
     HandleActionsCanvasType,
@@ -10,7 +10,7 @@ import { MenuRight } from "./menus/MenuRight";
 import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import { StartingDialog } from "./utils/StartingDialog";
 import { useRouter } from "next/router";
-import { isUserLoggedIn } from "../common/helpers";
+import { Buttons, SessionStorageVars } from "./menus/utils";
 
 const defaultValues = {
     handleClearCanvas: () => {},
@@ -31,7 +31,6 @@ const DrawingContainer = ({children}: {children: ReactNode}) => (
 export function Draw() {
     const handleActionsCanvas = useRef<HandleActionsCanvasType>(defaultValues);
     const [color, setColor] = useState("#000000");
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const drawAsGuest = useRef<boolean>(false);
     const theme = useTheme();
     const subtractHeight = Number((theme.customSizes.drawTopMenuHeight).slice(0,-2)) +
@@ -39,9 +38,9 @@ export function Draw() {
     const [filename, setFilename] = useState<string | null>(null);
     const forceNavigate = useRef<boolean>(false);
     const router = useRouter();
+    const actionsMenuRight = useRef<{onActionChange: (button: Buttons, color: string) => void}>();
 
     useEffect(() => {
-        setIsLoggedIn(isUserLoggedIn());
         drawAsGuest.current = Boolean(localStorage.getItem(LocalStorageKeys.GUEST_APPROVE));
 
         const warningText =
@@ -75,9 +74,12 @@ export function Draw() {
             router.events.off('routeChangeStart', handleBrowseAway);
             localStorage.removeItem(LocalStorageKeys.FILENAME);
             localStorage.removeItem(LocalStorageKeys.DRAWING_ID);
-            sessionStorage.removeItem("lineWidth");
-            sessionStorage.removeItem("opacity");
-            sessionStorage.removeItem("color");
+
+            // sessionStorage.removeItem(SessionStorageVars.FILL_SHAPE_COLOR);
+            // sessionStorage.removeItem(SessionStorageVars.IS_SAME_COLOR);
+            // sessionStorage.removeItem(SessionStorageVars.OPACITY);
+            // sessionStorage.removeItem(SessionStorageVars.LINE_WIDTH);
+            // sessionStorage.removeItem(SessionStorageVars.LINE_COLOR);
         };
     }, []);
 
@@ -119,6 +121,11 @@ export function Draw() {
         return handleActionsCanvas.current.getDrawingImage();
     }
 
+    const handleButtonChange = (button: Buttons) => {
+        // call change from menu right
+        actionsMenuRight.current?.onActionChange(button, color);
+    }
+
     return (
         <DrawingContainer>
             <Box sx={(theme) => ({
@@ -152,7 +159,7 @@ export function Draw() {
                     position: "relative",
                     zIndex: 1,
                 })}>
-                    <MenuLeft color={color} setColor={setColorForDrawing}/>
+                    <MenuLeft color={color} setColor={setColorForDrawing} onClick={handleButtonChange}/>
                 </Box>
                 <Box sx={(theme) => ({
                     width: `calc(100% - ${theme.customSizes.drawLeftMenuWidth} - ${theme.customSizes.drawRightMenuWidth})`, 
@@ -161,8 +168,8 @@ export function Draw() {
                     overflow: "auto",
                 })}>
                     <DrawContainer 
-                        width={700} 
-                        height={700} 
+                        width={600} 
+                        height={600} 
                         ref={handleActionsCanvas}
                     />
                 </Box>
@@ -171,7 +178,7 @@ export function Draw() {
                     backgroundColor: theme.palette.canvas.menuBg,
                     zIndex: 1,
                 })}>
-                    <MenuRight />
+                    <MenuRight actionsMenuRight={actionsMenuRight}/>
                 </Box>
             </Box>
         </DrawingContainer>
