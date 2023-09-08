@@ -10,6 +10,7 @@ export type CanvasElem = {
     name: string;
     selected: boolean;
     visibility: boolean;
+    opacity: number;
 }
 
 export type OptionsType = {

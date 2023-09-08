@@ -74,12 +74,7 @@ export function Draw() {
             router.events.off('routeChangeStart', handleBrowseAway);
             localStorage.removeItem(LocalStorageKeys.FILENAME);
             localStorage.removeItem(LocalStorageKeys.DRAWING_ID);
-
-            // sessionStorage.removeItem(SessionStorageVars.FILL_SHAPE_COLOR);
-            // sessionStorage.removeItem(SessionStorageVars.IS_SAME_COLOR);
-            // sessionStorage.removeItem(SessionStorageVars.OPACITY);
-            // sessionStorage.removeItem(SessionStorageVars.LINE_WIDTH);
-            // sessionStorage.removeItem(SessionStorageVars.LINE_COLOR);
+            sessionStorage.removeItem(SessionStorageVars.LINE_COLOR);
         };
     }, []);
 
@@ -90,7 +85,7 @@ export function Draw() {
 
     /* Functions */
     function setColorForDrawing (color: string) {
-        sessionStorage.setItem('color', color);
+        sessionStorage.setItem(SessionStorageVars.LINE_COLOR, color);
         setColor(color);
     }
 

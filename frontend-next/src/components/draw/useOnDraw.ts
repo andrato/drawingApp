@@ -3,6 +3,7 @@ import { createRef, useCallback, useEffect, useRef } from "react";
 import { useButtonsLeft } from "./menus/useButtonsLeft";
 import { CanvasRecorder } from "./utils/CanvasRecorder";
 import domtoimage from 'dom-to-image-more';
+import { CanvasElem } from "./types";
 // import { subscribe, unsubscribe } from "./events";
 
 export type Point = {
@@ -230,6 +231,18 @@ export function useOnDraw(onDraw: Function) {
         layer.style.display = visibility ? 'inline-block' : 'none';
     }
 
+    const changeCanvasOrder = useCallback((layers: CanvasElem[]) => {
+        const layer1 = document.getElementById(layers[0].id);
+        const layer2 = document.getElementById(layers[1].id);
+
+        if (layer1 && layer2) {
+            const layer1Zindex = layer1.style.zIndex;
+            // const layer2Zindex = layer1.style.zIndex;
+            layer1.style.zIndex = (layers[0].position).toString();
+            layer2.style.zIndex = layer1Zindex;
+        }
+    }, []);
+
     const setVideoRef = (ref: HTMLCanvasElement) => {
         videoRef.current = ref;
     }
@@ -352,6 +365,7 @@ export function useOnDraw(onDraw: Function) {
         setCurrentLayer,
         addInitialLayer,
         setVisibility,
+        changeCanvasOrder,
         deleteLayer,
         resetLayer,
         onMouseDown,

@@ -1,6 +1,6 @@
 import { Box, IconButton, Typography } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
-import { AddBoxOutlined, DeleteOutline, LayersOutlined, RestartAlt, RestartAltOutlined, VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
+import { AddBoxOutlined, DeleteOutline, KeyboardArrowDown, KeyboardArrowUp, LayersOutlined, RestartAlt, RestartAltOutlined, VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { StyledButton, StyledMenuButton } from "./MenuRight";
 import { NewLayerDialog } from "../utils/NewLayerDialog";
 import { CanvasElem } from "../types";
@@ -15,6 +15,7 @@ export const MenuRightLayers = () => {
         position: 0,
         selected: true,
         visibility: true,
+        opacity: 100,
     }]);
 
     useEffect(() => {
@@ -27,7 +28,7 @@ export const MenuRightLayers = () => {
             selected: layer.name === selectedLayer.name ? true : false,
         }));
 
-        setLayers(newLayers);
+        setLayers([...newLayers]);
 
         const data = [] as CanvasElem[];
         data.push(selectedLayer);
@@ -45,6 +46,7 @@ export const MenuRightLayers = () => {
             position: index,
             selected: true,
             visibility: true,
+            opacity: 100,
         }
 
         const newLayers = layers.map((layer) => ({
@@ -92,6 +94,58 @@ export const MenuRightLayers = () => {
 
     const handleResetCurrentLayer = () => {
         publish("resetLayer", []);
+    }
+
+    // ToDo: handle this
+    const handleOpacity = () => {
+        let layer = layers.find((layer) => layer.selected)
+
+        if (layer) {
+            layer.opacity = 0;
+        }
+
+        publish("setLayerOpacity", []);
+    }
+
+    const swapElems = (index1: number, index2: number): CanvasElem[] => {
+        let newLayers = layers;
+
+        // update position
+        const pos1 = newLayers[index1].position;
+        newLayers[index1].position = newLayers[index2].position;
+        newLayers[index2].position = pos1;
+
+        // swap elems
+        let temp = newLayers[index1];
+        newLayers[index1] = newLayers[index2];
+        newLayers[index2] = temp;
+
+        return newLayers;
+    }
+
+    const handleLayerOrder = (direction: 'up' | 'down') => {
+        let layer = layers.find((layer) => layer.selected);
+
+        if (!layer) {
+            return;
+        }
+
+        if ((direction === 'down' && layer.position === 1) ||
+            (direction === 'up' && layer.position === layers.length - 1)) {
+            return;
+        }
+
+        let newLayers: CanvasElem[] = [];
+        const position = layer.position;
+        if (direction === 'down') {
+            newLayers = swapElems(position, position - 1);
+            publish("newLayerOrder", [newLayers[position], newLayers[position - 1]]);
+        } else if (direction === 'up') {
+            newLayers = swapElems(position, position + 1);
+            publish("newLayerOrder", [newLayers[position + 1], newLayers[position]]);
+        }
+
+        newLayers.length && setLayers([...newLayers]);
     }
 
     return <>
@@ -181,6 +235,18 @@ export const MenuRightLayers = () => {
                 px: 1,
                 gap: 1,
             }}>
+                <StyledButton 
+                    onClick={() => handleLayerOrder('up')}
+                    disabled={layers[0].selected}
+                >
+                    <KeyboardArrowUp fontSize="small" />
+                </StyledButton>
+                <StyledButton 
+                    onClick={() => handleLayerOrder('down')}
+                    disabled={layers[0].selected}
+                    >
+                    <KeyboardArrowDown fontSize="small" />
+                </StyledButton>
                 <StyledButton 
                     onClick={handleResetCurrentLayer}
                 >

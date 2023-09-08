@@ -9,6 +9,7 @@ import {
 } from "./types";
 import { publish, subscribe, unsubscribe } from "./events";
 import { SessionStorageVars } from "./menus/utils";
+import { debounce, isEqual } from "lodash";
 
 export type CanvasProps = {
     width: number, 
@@ -37,10 +38,11 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         setVisibility,
         deleteLayer,
         resetLayer,
+        changeCanvasOrder,
     } = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
-    const containerWidth = width + 64; // 16 = container spacing
-    const containerHeight = height + 64; // 16 = container spacing
+    // const containerWidth = width + 64; // 16 = container spacing
+    // const containerHeight = height + 64; // 16 = container spacing
     const options = useRef<OptionsType>({
         lineWidth: 1,
         opacity: 100,
@@ -49,6 +51,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         fillColor: "#000000",
         isFillEnabled: false,
     });
+    const layers = useRef<CanvasElem[]>([]);
 
     /* ***************************************** */
     /*                For parent                 */
@@ -88,9 +91,28 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
             addLayer(event.detail[0].id);
         });
+        subscribe("newLayerOrder", (event: CustomEvent<CanvasElem[]>) => {
+            if(isEqual(layers.current, event.detail)) {
+                return;
+            }
+
+            layers.current = event.detail;
+            changeCanvasOrder(event.detail);
+        });
 
         subscribe("optionSettings", (event: CustomEvent<OptionsType>) => {
-            options.current = event.detail;
+            const color = options.current.color;
+            options.current = {
+                ...event.detail,
+                color,
+            }
+        });
+
+        subscribe("setColor", (event: CustomEvent<string>) => {
+            options.current = {
+                ...options.current,
+                color: event.detail,
+            };
         });
     
         return () => {
@@ -99,7 +121,9 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             unsubscribe("setVisibility", () => {});
             unsubscribe("setLayers", () => {});
             unsubscribe("addLayer", () => {});
+            unsubscribe("newLayerOrder", () => {});
             unsubscribe("optionSettings", () => {});
+            unsubscribe("setColor", () => {});
         }
       }, []);
 
@@ -249,6 +273,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         ctx.beginPath();
         ctx.rect(start.x, start.y, end.x-start.x, end.y-start.y);
         ctx.stroke();
+
+        // if (isFillEnabled) { ctx.fill(); }
         if (isFillEnabled) { ctx.fill(); }
     }
 

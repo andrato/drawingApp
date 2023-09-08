@@ -12,6 +12,7 @@ import {
     FaPenNib,
 } from "react-icons/fa";
 import { Buttons } from "./utils";
+import { publish } from "../events";
 
 const IconButtonStyled = ({
     children, 
@@ -84,7 +85,10 @@ export function MenuLeft ({color, setColor, onClick} : {color: string, setColor:
                 type="color" 
                 name="favcolor" 
                 value={color} 
-                onChange={(event) => setColor(event.target.value)}
+                onChange={(event) => {
+                    setColor(event.target.value);  
+                    publish('setColor', event.target.value);
+                }}
                 disableUnderline={true}
                 sx={{
                     width: "30px",
