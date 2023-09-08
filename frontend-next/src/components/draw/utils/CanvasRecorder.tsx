@@ -148,24 +148,27 @@ export const CanvasRecorder = (): CanvasRecorder => {
             return null;
         }
 
-        /* add metadata for seek tot the blob */
-        let buggyBlob = new Blob(recordedBlobs, { type: 'video/webm' });
-        let newerBlob: Blob | undefined;
-        try {
-            newerBlob = await injectMetadata(buggyBlob);
-        } catch (err) {
-            console.error("A")
-        }
+        // /* add metadata for seek tot the blob */
+        // let buggyBlob = new Blob(recordedBlobs, { type: supportedType });
+        // let newerBlob: Blob | undefined;
+        // try {
+        //     newerBlob = await injectMetadata(buggyBlob);
+        // } catch (err) {
+        //     console.error("A")
+        // }
 
-        if (!newerBlob) {
-            return null;
-        }
+        // if (!newerBlob) {
+        //     return null;
+        // }
 
         /* create file */
         const filename = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN";
 
-        return new File([buggyBlob], filename, { type: supportedType });
+        // return new File([buggyBlob], filename, { type: supportedType });
+
+        return new File(recordedBlobs, filename, { type: supportedType });
     }
+
 
     return {
         start,
