@@ -127,9 +127,12 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         }
     }, []);
 
+    /* ******************************s**************************** */
+    /*                          DRAW STUFF                        */
+    /* ********************************************************** */
     const getLineWidth = (e: any) => {
         const {lineWidth} = options.current;
-
+    
         return (e.pressure) ? (e.pressure * lineWidth) : lineWidth;
         // switch (e.pointerType) {
         //     case 'touch': {
@@ -146,116 +149,92 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         // }
     }
 
-    const getProps = () => {
-        const lineWidth = Number(sessionStorage.getItem(SessionStorageVars.LINE_WIDTH) ?? 1);
-        const opacity = Number(sessionStorage.getItem(SessionStorageVars.OPACITY) ?? 100);
-        const color = sessionStorage.getItem(SessionStorageVars.LINE_COLOR) ?? "#000000";
-        const fillColor = sessionStorage.getItem(SessionStorageVars.FILL_SHAPE_COLOR);
-        const sameColorAsLine = Boolean(sessionStorage.getItem(SessionStorageVars.IS_SAME_COLOR));
-
-        return {
-            lineWidth,
-            opacity,
-            color,
-            fillColor,
-            sameColorAsLine,
-        }
-    }
-
-    /* ******************************s**************************** */
-    /*                          DRAW STUFF                        */
-    /* ********************************************************** */
-    function onDraw(ctx: CanvasRenderingContext2D | null | undefined, coordList: [number,number][], event?: any) {
+    function onDraw(ctx: CanvasRenderingContext2D | null | undefined, coordList: Point[], event?: any) {
         if(!ctx) return;
 
-        const {lineWidth, opacity, color} = options.current;
-
-        // set styles        
-        switch (getActiveButton()) {
-            case 'pencil': 
-            case 'pen':
-                ctx.globalCompositeOperation="source-over";
-                ctx.lineWidth = lineWidth;
-                ctx.globalAlpha = opacity / 100;
-                ctx.strokeStyle = color;
-                ctx.lineCap = 'round';
-                break;
-            case 'brush':
-                ctx.globalCompositeOperation="source-over";
-                ctx.lineWidth = getLineWidth(event);
-                ctx.globalAlpha = opacity / 100;
-                ctx.strokeStyle = color;
-                ctx.lineCap = 'round';
-                break;
-            case 'eraser':
-                ctx.globalCompositeOperation="destination-out";
-                ctx.lineWidth = lineWidth;
-                break;
-            // case 'square':
-            //     handleDrawSquare(coordList, ctx);
-            //     break;
-            // case 'circle':
-            //     handleDrawCircle(coordList, ctx);
-            //     break;
-            // default: 
-            //     console.log("naspa");
-            //     break;
-        }
+        const start = coordList[coordList.length - 2];
+        const startShape = coordList[0];
+        const end = coordList[coordList.length - 1];
 
         // access function
         switch (getActiveButton()) {
             case 'pencil': 
-            case 'brush':
+            case 'pen':
                 handleDrawLine(coordList, ctx);
                 break;
-            case 'pen':
+            case 'brush':
+                handleDrawBrush(start, end, ctx, event);
                 break;
             case 'eraser':
-                handleDrawLine(coordList, ctx);
+                handleEraser(start, end, ctx);
                 break;
-            // case 'square':
-            //     handleDrawSquare(coordList, ctx);
-            //     break;
-            // case 'circle':
-            //     handleDrawCircle(coordList, ctx);
-            //     break;
-            // default: 
-            //     console.log("naspa");
-            //     break;
+            case 'square':
+                handleDrawSquare(startShape, end, ctx);
+                break;
+            case 'circle':
+                handleDrawCircle(startShape, end, ctx);
+                break;
+            default: 
+                console.log("naspa");
+                break;
         }
     }
 
-    /* function to draw a line */
-    // function handleDrawBrush (
-    //     start: Point, 
-    //     end: Point, 
-    //     ctx: CanvasRenderingContext2D | null | undefined,
-    //     event?: any,
-    // ) {
-    //     const {lineWidth, opacity, color} = options.current;
+    /* function to draw  */
+    function handleDrawBrush (
+        start: Point, 
+        end: Point, 
+        ctx: CanvasRenderingContext2D,
+        event?: any,
+    ) {
 
-    //     ctx.globalCompositeOperation="source-over";
-    //     start = start ?? end;
-    //     ctx.beginPath();
-    //     ctx.globalAlpha = opacity / 100;
-    //     ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-    //     ctx.lineJoin = 'round';
-    //     ctx.lineCap = 'round';
-    //     ctx.moveTo(start.x, start.y);
-    //     ctx.lineTo(end.x, end.y);
-    //     ctx.stroke(); // we don't want our shape to be filled
+        const {lineWidth, opacity, color} = options.current;
+
+        ctx.globalCompositeOperation="source-over";
+        start = start ?? end;
+        ctx.beginPath();
+        ctx.lineWidth = getLineWidth(event);
+        ctx.globalAlpha = opacity / 100;
+        ctx.strokeStyle = color;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke(); // we don't want our shape to be filled
+    }
+
+    /* function to draw a line */
+    // function handleDrawLine (
+    //     coordList: Point[],
+    //     ctx: CanvasRenderingContext2D,
+    // ) {
+    //     if (coordList.length >= 2) {
+    //         ctx.beginPath();
+    //         ctx.moveTo(coordList[0].x, coordList[0].y);
+    //         for (let i = 1 ; i <  coordList.length ; ++i) {
+    //             ctx.lineTo(coordList[i].x, coordList[i].y);
+    //         }
+    //         ctx.stroke();
+    //     }
     // }
 
     /* function to draw a line */
     function handleDrawLine (
-        coordList: [number,number][],
+        coordList: Point[],
         ctx: CanvasRenderingContext2D,
     ) {
+        const {lineWidth, opacity, color} = options.current;
+
+        ctx.globalCompositeOperation="source-over";
+        ctx.lineWidth = lineWidth;
+        ctx.globalAlpha = opacity / 100;
+        ctx.strokeStyle = color;
+
         if (coordList.length >= 2) {
             ctx.beginPath();
-            ctx.moveTo(coordList[0][0], coordList[0][1]);
+            ctx.moveTo(coordList[0].x, coordList[0].y);
             for (let i = 1 ; i <  coordList.length ; ++i) {
-                ctx.lineTo(coordList[i][0], coordList[i][1]);
+                ctx.lineTo(coordList[i].x, coordList[i].y);
             }
             ctx.stroke();
         }
@@ -265,10 +244,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     function handleEraser (
         start: Point, 
         end: Point, 
-        ctx: CanvasRenderingContext2D | null | undefined,
+        ctx: CanvasRenderingContext2D,
     ) {
-        if(!ctx) return;
-
         const {lineWidth} = options.current;
 
         ctx.globalCompositeOperation="destination-out";
@@ -278,16 +255,14 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
         ctx.lineCap = 'round';
-        ctx.stroke(); // we don't want our shape to be filled
+        ctx.stroke(); 
     }
 
     function handleDrawSquare (
         start: Point, 
         end: Point, 
-        ctx: CanvasRenderingContext2D | null | undefined,
+        ctx: CanvasRenderingContext2D,
     ) {
-        if(!ctx) return;
-
         const {lineWidth, color, fillColor, sameColorAsLine, isFillEnabled} = options.current;
 
         const shapeColor = sameColorAsLine ? color : fillColor;
@@ -306,10 +281,8 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     function handleDrawCircle (
         start: Point, 
         end: Point, 
-        ctx: CanvasRenderingContext2D | null | undefined,
+        ctx: CanvasRenderingContext2D,
     ) {
-        if(!ctx) return;
-
         const {lineWidth, color, fillColor, sameColorAsLine, isFillEnabled} = options.current;
 
         const shapeColor = sameColorAsLine ? color : fillColor;

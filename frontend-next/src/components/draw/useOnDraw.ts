@@ -30,7 +30,7 @@ export function useOnDraw(onDraw: Function) {
     const videoRef = useRef<HTMLCanvasElement | null>(null);
     const divRef = useRef<HTMLDivElement | null>(null);
     const saveFrames = useRef<any>(null);
-    const coordList = useRef<[number,number][]>([]);
+    const coordList = useRef<Point[]>([]);
 
     // useEffect(() => {
     //     if (canvasRef.current === null && refsArray.current.length > 1) {
@@ -74,14 +74,18 @@ export function useOnDraw(onDraw: Function) {
             clearLayer(0);
             const point = computePointInCanvas(e.clientX, e.clientY) as Point;
             const ctxAux = refAux?.getContext('2d');
+            const ctx = ref?.getContext('2d');
             const buttonActive = getActiveButton();
-            coordList.current.push([point.x, point.y]);
+            coordList.current.push(point);
 
             if (buttonActive === "circle" || buttonActive === "square") {
                 if (prevPointRef.current === null) {
                     prevPointRef.current = point;
                 }
                 onDraw(ctxAux, coordList.current, e);
+            } else if (buttonActive === "brush" ) {
+                onDraw(ctx, coordList.current, e);
+                prevPointRef.current = point;
             } else {
                 onDraw(ctxAux, coordList.current, e);
                 prevPointRef.current = point;
@@ -105,7 +109,9 @@ export function useOnDraw(onDraw: Function) {
             pauseRecording();
 
             const auxCanvas = getRef(0);
-            if (auxCanvas !== null) {
+            const buttonActive = getActiveButton();
+
+            if (auxCanvas !== null && (buttonActive === "circle" || buttonActive === "square" || buttonActive === "pencil" || buttonActive === "pen")) {
                 const ctx = getRef()?.getContext('2d');
                 ctx?.drawImage(auxCanvas, 0, 0);
                 clearLayer(0);
