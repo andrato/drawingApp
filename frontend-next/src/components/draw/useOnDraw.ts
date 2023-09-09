@@ -30,6 +30,7 @@ export function useOnDraw(onDraw: Function) {
     const videoRef = useRef<HTMLCanvasElement | null>(null);
     const divRef = useRef<HTMLDivElement | null>(null);
     const saveFrames = useRef<any>(null);
+    const coordList = useRef<[number,number][]>([]);
 
     // useEffect(() => {
     //     if (canvasRef.current === null && refsArray.current.length > 1) {
@@ -56,7 +57,6 @@ export function useOnDraw(onDraw: Function) {
     /* ***************************************** */
     function onMouseDown() {
         isDrawingRef.current = true;
-        // console.log("onMouseDown - " + isDrawingRef.current);
         startRecording();
     }
 
@@ -71,26 +71,19 @@ export function useOnDraw(onDraw: Function) {
                 return;
             }
 
-            // console.log("mouseMoveListener - " + isDrawingRef.current);
-
+            clearLayer(0);
             const point = computePointInCanvas(e.clientX, e.clientY) as Point;
-            const ctx = ref?.getContext('2d');
             const ctxAux = refAux?.getContext('2d');
             const buttonActive = getActiveButton();
-
-            // if (refAux && ctx) {
-            //     refAux.style.opacity = "0.5",
-            //     ctx.globalAlpha = 0.5;
-            // }
+            coordList.current.push([point.x, point.y]);
 
             if (buttonActive === "circle" || buttonActive === "square") {
                 if (prevPointRef.current === null) {
                     prevPointRef.current = point;
                 }
-                clearLayer(0);
-                onDraw(ctxAux, point, prevPointRef.current, e);
+                onDraw(ctxAux, coordList.current, e);
             } else {
-                onDraw(ctx, point, prevPointRef.current, e);
+                onDraw(ctxAux, coordList.current, e);
                 prevPointRef.current = point;
             }
         }
@@ -108,15 +101,11 @@ export function useOnDraw(onDraw: Function) {
             // reset values
             isDrawingRef.current = false;
             prevPointRef.current = null;
+            coordList.current = [];
             pauseRecording();
 
-            // console.log("mouseUpListener - l-a pus pe false" + isDrawingRef.current);
-
-            // copy from layer aux to current layer
-            const buttonActive = getActiveButton();
-
             const auxCanvas = getRef(0);
-            if (auxCanvas !== null && (buttonActive === "circle" || buttonActive === "square")) {
+            if (auxCanvas !== null) {
                 const ctx = getRef()?.getContext('2d');
                 ctx?.drawImage(auxCanvas, 0, 0);
                 clearLayer(0);
@@ -305,13 +294,6 @@ export function useOnDraw(onDraw: Function) {
         if (!ctx) return;
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-        // if (pos === 1) {
-        //     ctx.fillStyle = "white";
-        //     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        // }
-        
-        // stopRecording();
     }
 
     const saveImage = () => {
