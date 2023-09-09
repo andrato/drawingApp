@@ -31,6 +31,7 @@ export function useOnDraw(onDraw: Function) {
     const divRef = useRef<HTMLDivElement | null>(null);
     const saveFrames = useRef<any>(null);
     const coordList = useRef<Point[]>([]);
+    const layersIds = useRef<string[]>(["layers0"]);
 
     // useEffect(() => {
     //     if (canvasRef.current === null && refsArray.current.length > 1) {
@@ -71,7 +72,6 @@ export function useOnDraw(onDraw: Function) {
                 return;
             }
 
-            clearLayer(0);
             const point = computePointInCanvas(e.clientX, e.clientY) as Point;
             const ctxAux = refAux?.getContext('2d');
             const ctx = ref?.getContext('2d');
@@ -82,11 +82,13 @@ export function useOnDraw(onDraw: Function) {
                 if (prevPointRef.current === null) {
                     prevPointRef.current = point;
                 }
+                clearLayer(0);
                 onDraw(ctxAux, coordList.current, e);
-            } else if (buttonActive === "brush" ) {
+            } else if (buttonActive !== "pencil" && buttonActive !== "pen") {
                 onDraw(ctx, coordList.current, e);
                 prevPointRef.current = point;
             } else {
+                clearLayer(0);
                 onDraw(ctxAux, coordList.current, e);
                 prevPointRef.current = point;
             }
@@ -111,10 +113,13 @@ export function useOnDraw(onDraw: Function) {
             const auxCanvas = getRef(0);
             const buttonActive = getActiveButton();
 
+            const ctx = getRef()?.getContext('2d');
             if (auxCanvas !== null && (buttonActive === "circle" || buttonActive === "square" || buttonActive === "pencil" || buttonActive === "pen")) {
-                const ctx = getRef()?.getContext('2d');
                 ctx?.drawImage(auxCanvas, 0, 0);
                 clearLayer(0);
+            } else if (ctx){
+                ctx.globalCompositeOperation="source-over";
+                ctx.globalAlpha = 1;
             }
         }
 
@@ -186,9 +191,7 @@ export function useOnDraw(onDraw: Function) {
         }
     }
 
-    function addLayer (id: string) {
-        let length = refsArray.current.length + 1;
-
+    function addLayer (id: string, position: number) {
         /* if we already have an elem with this name => return */
         const elem = document.getElementById(id);
         if (elem !== null) {
@@ -200,10 +203,12 @@ export function useOnDraw(onDraw: Function) {
         newLayer.width=LAYER_SIZE;
         newLayer.height=LAYER_SIZE;
         newLayer.onmousedown=onMouseDown;
-        newLayer.style.cssText = `z-index: ${length}; position: absolute; display: inline-block; width: ${LAYER_SIZE}px; height: ${LAYER_SIZE}px; margin-left: auto; margin-right: auto; left: 0px; right: 0px;`;
+        newLayer.style.cssText = `z-index: ${position}; position: absolute; display: inline-block; width: ${LAYER_SIZE}px; height: ${LAYER_SIZE}px; margin-left: auto; margin-right: auto; left: 0px; right: 0px;`;
         document.getElementById("layersContainers")?.appendChild(newLayer);
         
         canvasRef.current = newLayer;
+
+        layersIds.current.push(id);
     }
 
     function setCurrentLayer (id: string) {
@@ -231,7 +236,7 @@ export function useOnDraw(onDraw: Function) {
         const layer2 = document.getElementById(layers[1].id);
 
         if (layer1 && layer2) {
-            const layer1Zindex = layer1.style.zIndex;
+            const layer1Zindex = (layers[1].position).toString();
             // const layer2Zindex = layer1.style.zIndex;
             layer1.style.zIndex = (layers[0].position).toString();
             layer2.style.zIndex = layer1Zindex;
@@ -292,14 +297,30 @@ export function useOnDraw(onDraw: Function) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
 
-    // TODO: not really used => to delete?
-    function clearLayer(pos?: number) {
+    function clearLayer(pos: number) {
         const ref = getRef(pos);
         const ctx = ref?.getContext('2d');
 
         if (!ctx) return;
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
+    const clearAll = () => {
+        layersIds.current.forEach(layerId => {
+            const layer = document.getElementById(layerId) as HTMLCanvasElement;
+
+            if (!layer) {
+                return;
+            }
+
+            const ctx = layer.getContext('2d');
+
+            if (!ctx) return;
+    
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        });
     }
 
     const saveImage = () => {
@@ -364,5 +385,6 @@ export function useOnDraw(onDraw: Function) {
         saveImage,
         setVideoRef,
         setDivRef,
+        clearAll,
     };
 }

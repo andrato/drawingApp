@@ -39,6 +39,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         deleteLayer,
         resetLayer,
         changeCanvasOrder,
+        clearAll,
     } = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     // const containerWidth = width + 64; // 16 = container spacing
@@ -58,7 +59,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     /* ***************************************** */
     useImperativeHandle(ref, () => ({
         handleClearCanvas() {
-            // clearCanvas();
+            clearAll();
         },
 
         getDrawingVideo () {
@@ -89,7 +90,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             setCurrentLayer(layer.id);
         });
         subscribe("addLayer", (event: CustomEvent<CanvasElem[]>) => {
-            addLayer(event.detail[0].id);
+            addLayer(event.detail[0].id, event.detail[0].position);
         });
         subscribe("newLayerOrder", (event: CustomEvent<CanvasElem[]>) => {
             if(isEqual(layers.current, event.detail)) {
@@ -152,18 +153,55 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     function onDraw(ctx: CanvasRenderingContext2D | null | undefined, coordList: Point[], event?: any) {
         if(!ctx) return;
 
-        const start = coordList[coordList.length - 2];
-        const startShape = coordList[0];
-        const end = coordList[coordList.length - 1];
+        const {lineWidth, opacity, color} = options.current;
 
-        // access function
+        const lastElem = coordList[coordList.length - 1];
+
+        // set styles        
         switch (getActiveButton()) {
             case 'pencil': 
             case 'pen':
-                handleDrawLine(coordList, ctx);
+                ctx.globalCompositeOperation="source-over";
+                ctx.globalAlpha = opacity / 100;
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
                 break;
             case 'brush':
-                handleDrawBrush(start, end, ctx, event);
+                ctx.globalCompositeOperation="source-over";
+                ctx.lineWidth = getLineWidth(event);
+                ctx.globalAlpha = opacity / 100;
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round';
+                break;
+            case 'eraser':
+                ctx.globalCompositeOperation="destination-out";
+                ctx.lineWidth = lineWidth;
+                ctx.globalAlpha = 1;
+                break;
+            case 'square':
+            case 'circle':
+                ctx.lineWidth = lineWidth;
+                ctx.globalAlpha = 1;
+                break;
+            default: 
+                break;
+        }
+
+        const start = coordList.length >= 2 ? coordList[coordList.length - 2] : coordList[0];
+        const startShape = coordList[0];
+        const end = coordList[coordList.length - 1];
+        // access function
+        switch (getActiveButton()) {
+            case 'pencil': 
+                handleDrawLine(coordList, ctx);
+                break;
+            case 'pen':
+                handleDrawBrush(startShape, end, ctx);
+                break;
+            case 'brush':
+                handleDrawBrush(start, end, ctx);
                 break;
             case 'eraser':
                 handleEraser(start, end, ctx);
@@ -185,17 +223,10 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         start: Point, 
         end: Point, 
         ctx: CanvasRenderingContext2D,
-        event?: any,
     ) {
-
-        const {lineWidth, opacity, color} = options.current;
-
-        ctx.globalCompositeOperation="source-over";
         start = start ?? end;
         ctx.beginPath();
-        ctx.lineWidth = getLineWidth(event);
-        ctx.globalAlpha = opacity / 100;
-        ctx.strokeStyle = color;
+
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         ctx.moveTo(start.x, start.y);
@@ -204,32 +235,10 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
     }
 
     /* function to draw a line */
-    // function handleDrawLine (
-    //     coordList: Point[],
-    //     ctx: CanvasRenderingContext2D,
-    // ) {
-    //     if (coordList.length >= 2) {
-    //         ctx.beginPath();
-    //         ctx.moveTo(coordList[0].x, coordList[0].y);
-    //         for (let i = 1 ; i <  coordList.length ; ++i) {
-    //             ctx.lineTo(coordList[i].x, coordList[i].y);
-    //         }
-    //         ctx.stroke();
-    //     }
-    // }
-
-    /* function to draw a line */
     function handleDrawLine (
         coordList: Point[],
         ctx: CanvasRenderingContext2D,
     ) {
-        const {lineWidth, opacity, color} = options.current;
-
-        ctx.globalCompositeOperation="source-over";
-        ctx.lineWidth = lineWidth;
-        ctx.globalAlpha = opacity / 100;
-        ctx.strokeStyle = color;
-
         if (coordList.length >= 2) {
             ctx.beginPath();
             ctx.moveTo(coordList[0].x, coordList[0].y);
@@ -255,7 +264,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
         ctx.lineCap = 'round';
-        ctx.stroke(); 
+        ctx.stroke(); // we don't want our shape to be filled
     }
 
     function handleDrawSquare (

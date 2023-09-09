@@ -21,15 +21,16 @@ export const StyledMenuButton = ({
 } & BoxProps) => {
     const { getActiveButtonSettings, getActiveButtonLayers } = useButtonsRight();
     const getActiveButtons = isLayersButton ? getActiveButtonLayers : getActiveButtonSettings;
-    const theme = useTheme();
     const isSelected = getActiveButtons() === id;
+    // const theme = useTheme();
 
-    const border = isSelected ? {
-        border: `1px solid ${theme.palette.canvas.menuBtnActive}`,
-        borderBottom: "0px",
-    } : {
-        border: `0.5px solid ${theme.palette.canvas.menuBtnActive}`
-    }
+
+    // const border = isSelected ? {
+    //     border: `1px solid ${theme.palette.canvas.menuBtnActive}`,
+    //     borderBottom: "0px",
+    // } : {
+    //     border: `0.5px solid ${theme.palette.canvas.menuBtnActive}`
+    // }
 
     return (<Box 
         {...props}
@@ -38,7 +39,7 @@ export const StyledMenuButton = ({
         sx={(theme) => ({
             width: width,
             backgroundColor: isSelected ? theme.palette.canvas.menuBg : theme.palette.canvas.menuBtnHover,
-            ...border,
+            // ...border,
             borderTop: "0px",
         })}
     >
