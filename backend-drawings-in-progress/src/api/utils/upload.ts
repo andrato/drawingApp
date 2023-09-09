@@ -2,9 +2,7 @@ import { Request} from "express";
 import multer from "multer";
 import multerS3 from 'multer-s3';
 import { IMAGE_EXT, VIDEO_EXT, generateFilename } from "./helpers";
-import { S3Client, DeleteObjectCommand, PutObjectCommand, GetObjectAclCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import Ffmpeg from "fluent-ffmpeg";
-import { PassThrough, Readable } from "stream";
+import { S3Client, DeleteObjectCommand} from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({
     endpoint: 'https://drawings-media.fra1.digitaloceanspaces.com',
@@ -56,96 +54,3 @@ export const deleteFile = async (key: string, bucket: "videos" | "images") => {
         throw(err);
     }
 }
-
-const getVideoCommand = (key: string) => new GetObjectCommand({
-    Bucket: 'video',
-    Key: key,
-});
-
-// ToDo: remove this at some point
-export const updateBucketFile = async (key: string) => {
-    const params = {
-        Bucket: "videos",
-        Key: key,
-    };
-
-    let stream: Readable;
-    try {
-        const file = await s3.send(new GetObjectAclCommand(params));
-
-        if (!file) {
-            return null;
-        }
-
-        stream = new Readable({
-            read() {
-                this.push(file);
-                this.push(null);
-            }
-        });
-    } catch (err) {
-        throw("Error retrieving object");
-    }
-
-    const passthroughStream = new PassThrough();
-
-    // Set up the ffmpeg process
-    try {
-        // let process = Ffmpeg(stream); 
-
-        Ffmpeg(stream.read())
-            .addOptions([
-                '-i ',
-            ])
-            .output(passthroughStream, { end: true })
-            .on('progress', (p) => {
-                console.log(p);
-            })
-            .on('error', (err) => {
-                console.log(err); 
-            })
-            .on('end', () => {
-                const bucketStreamParams = {
-                    ...params,
-                    Body: passthroughStream,
-                }
-        
-                try {
-                    s3.send(new PutObjectCommand(bucketStreamParams));
-                } catch(err) {
-                    console.log(err);
-                }
-            })
-            .run()
-
-        // const bucketStreamParams = {
-        //     ...params,
-        //     Body: passthroughStream,
-        // }
-
-        // try {
-        //     s3.send(new PutObjectCommand(bucketStreamParams));
-        // } catch(err) {
-        //     console.log(err);
-        // }
-
-        // const s3Response = await s3.upload(bucketStreamParams).promise()
-
-        // process
-        //     .addOptions([
-        //         '-i ',
-        //     ])
-        //     .output(key)
-        //     .on('end', (newStream) => {
-        //         try {
-        //             s3.send(new PutObjectCommand({...params, Body: newStream}))
-        //         } catch(err) {
-        //             console.log(err);
-        //         }
-        //     })
-        //     .run();
-    } catch (e) {
-        console.error(e);
-        throw e;
-    }
-};

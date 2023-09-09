@@ -92,7 +92,7 @@ export function MenuTop ({
             formData.append('files', drawingVideoFile, name);
             formData.append('files', drawingImageFile, name);
         } catch (err) {
-            console.log("error on forma data");
+            console.log("error on form data");
         }
 
         return formData;

@@ -60,9 +60,9 @@ export const CanvasRecorder = (): CanvasRecorder => {
         }
 
         let types = [
-            'video/webm',
             'video/webm,codecs=vp9',
             'video/webm;codecs=vp8',
+            'video/webm',
             'video/webm;codecs=h264',
             'video/webm;codecs=daala',
             'video/vp8',
@@ -129,7 +129,7 @@ export const CanvasRecorder = (): CanvasRecorder => {
         
 
         // Save the file
-        const url = window.URL.createObjectURL(newerBlob);
+        const url = window.URL.createObjectURL(buggyBlob);
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
@@ -164,7 +164,7 @@ export const CanvasRecorder = (): CanvasRecorder => {
         /* create file */
         const filename = localStorage.getItem(LocalStorageKeys.FILENAME) ?? "UNKNOWN";
 
-        // return new File([buggyBlob], filename, { type: supportedType });
+        // return new File([newerBlob], filename, { type: supportedType });
 
         return new File(recordedBlobs, filename, { type: supportedType });
     }

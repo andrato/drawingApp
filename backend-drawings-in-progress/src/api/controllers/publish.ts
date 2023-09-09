@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { DrawingType } from "../utils/types";
 import { modelDrawing, modelDrawingInProgress } from "../../mongo_schema";
 import axios from "axios";
+import {downloadVideo} from "../utils/transformVideo";
 
 export const publishSchema = {
     drawingId: {
@@ -75,11 +76,14 @@ export const publish = async (req: Request, res: Response) => {
         })
     }
 
-    // make drawing
     // try {
-    //     await updateBucketFile(existingDrawing.video.filename);
+    //     await downloadVideo(existingDrawing.video.filename);
     // } catch (err) {
     //     console.log(err);
+    //     // return res.status(200).json({
+    //     //     status: 0, 
+    //     //     error: "Error while deleting from modelDrawingInProgress",
+    //     // })
     // }
 
     // add drawing in Drawing and remove it from DrawingsInProgress
