@@ -43,12 +43,12 @@ export const ActionBar = ({
                 >
                     Edit
                 </ActionButton>
-                <ActionButton 
+                {/* <ActionButton 
                     startIcon={<DeleteOutline fontSize="small"/>}
                     onClick={onClickEdit}
                 >
                     Delete
-                </ActionButton>
+                </ActionButton> */}
             </>}
             {/* <ActionButton startIcon={<ThumbUpOutlined fontSize="small"/>}>
                 Like

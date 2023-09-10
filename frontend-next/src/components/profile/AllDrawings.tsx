@@ -7,6 +7,7 @@ import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { useRouter } from "next/router";
 import { categories } from "../common/constants";
 import { modifyDrawingAdmin } from "@/services/Drawings";
+import Link from "next/link";
 
 const headCellsSort: HeadCellDrawing[] = [
     {
@@ -306,7 +307,9 @@ export const AllDrawings = ({userId}: {userId: string}) => {
                                 }
                             })}>
                                 {columnsDisplay._id && <TableCell align="center" component="th" scope="row">
-                                    {drawing._id}
+                                    <Link href={`/gallery/${drawing._id}`} target="_blank">
+                                        {drawing._id}
+                                    </Link>
                                 </TableCell>}
                                 {columnsDisplay.name && <TableCell align="center">{drawing.name}</TableCell>}
                                 {columnsDisplay.userId && <TableCell align="center">{drawing.userId}</TableCell>}

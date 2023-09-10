@@ -46,11 +46,9 @@ export const UserQueryFields = ({
     };
 
     const handleReset = () => {
-        () => {
-            router.replace({
-                query: {},
-            });
-        }
+        router.replace({
+            query: {[QueryParams.SORT_BY]: "newest"},
+        });
     }
 
     const debouncedOnChange = debounce(onChangeSearch, 500);
@@ -131,7 +129,7 @@ export const UserQueryFields = ({
             variant="outlined" 
             size="small"
             color="info"
-            defaultValue={search}
+            defaultValue={search ?? ''}
             onChange={debouncedOnChange}
         />
         {isMdScreenUp ? <Button 

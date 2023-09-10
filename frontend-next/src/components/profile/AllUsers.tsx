@@ -5,6 +5,7 @@ import { LoadingsAndErrors } from "../utils/helpers/LoadingsAndErrors";
 import { ADMIN_USERS_API, deleteUser, getUsers, modifyUser } from "@/services/User";
 import { DrawingDialog } from "../utils/helpers/DrawingDialog";
 import { HeadCell, Order, SortData, getComparator, mapUsersToTableData, stableSort } from "./helpers";
+import Link from "next/link";
 
 const DEFAULT_VALUES_DIALOG = {
     isOpen: false,
@@ -269,7 +270,9 @@ export const AllUsers = ({userId}: {userId: string}) => {
                         }
                     })}>
                         <TableCell align="center" component="th" scope="row">
-                            {user._id}
+                            <Link href={`/users/${user._id}`} target="_blank">
+                                {user._id}
+                            </Link>
                         </TableCell>
                         <TableCell align="center">{user.name}</TableCell>
                         <TableCell align="center">{dateCreated}</TableCell>
