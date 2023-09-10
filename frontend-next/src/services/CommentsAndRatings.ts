@@ -1,4 +1,5 @@
 import { getUserInfo } from "@/components/common/helpers";
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import axios from "axios"
 
 export const HOST_REVIEWS = "http://localhost:8080/review";
@@ -29,28 +30,37 @@ export type ReviewType = {
     replies?: number;
 };
 
-const config = {
-    headers:{
-        'Content-Type': 'application/json',
+const config = () => {
+    const token = localStorage.getItem(LocalStorageKeys.USER_TOKEN);
+
+    return token ? {
+        headers:{
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + token,
+        }
+    } : {
+        headers:{
+            'Content-Type': 'application/json',
+        }
     }
 };
 
 export const postReview = (data: {comment: string | null, rating: number, drawingId: string}) => {
     const userInfo = getUserInfo();
     const commentWithUser = {...data, userId: userInfo.id};
-    return axios.post<{review: ReviewType}>(HOST_REVIEWS + "/", commentWithUser, {...config});
+    return axios.post<{review: ReviewType}>(HOST_REVIEWS + "/", commentWithUser, {...config()});
 }
 export const getReviews = (drawingId: string) => {
     const userInfo = getUserInfo();
-    return axios.get<Reviews>(HOST_REVIEWS + "/", {...config, params: {drawingId, userId: userInfo?.id ?? undefined}});
+    return axios.get<Reviews>(HOST_REVIEWS + "/", {...config(), params: {drawingId, userId: userInfo?.id ?? undefined}});
 }
 
 
 export const postComment = (commentData: {comment: string, drawingId: string}) => {
     const userInfo = getUserInfo();
     const commentWithUser = {...commentData, userId: userInfo.id};
-    return axios.post<{comment: ReplyType}>(HOST_REVIEWS + "/reply", commentWithUser, {...config});
+    return axios.post<{comment: ReplyType}>(HOST_REVIEWS + "/reply", commentWithUser, {...config()});
 }
 export const getComments = (drawingId: string) => {
-    return axios.get<{comments: ReplyType[]}>(HOST_REVIEWS + "/reply", {...config, params: {drawingId}});
+    return axios.get<{comments: ReplyType[]}>(HOST_REVIEWS + "/reply", {...config(), params: {drawingId}});
 }

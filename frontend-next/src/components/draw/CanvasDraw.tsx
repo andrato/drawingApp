@@ -40,6 +40,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
         resetLayer,
         changeCanvasOrder,
         clearAll,
+        changeCanvasOpacity,
     } = useOnDraw(onDraw);
     const {getActiveButton} = useButtonsLeft();
     // const containerWidth = width + 64; // 16 = container spacing
@@ -115,7 +116,11 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
                 color: event.detail,
             };
         });
-    
+
+        subscribe("setLayerOpacity", (event: CustomEvent<CanvasElem[]>) => {
+            changeCanvasOpacity(event.detail[0]);
+        });
+        
         return () => {
             unsubscribe("resetLayer", () => {});
             unsubscribe("deleteLayer", () => {});
@@ -125,6 +130,7 @@ export const CanvasDraw = forwardRef((props: CanvasProps, ref: React.Ref<HandleA
             unsubscribe("newLayerOrder", () => {});
             unsubscribe("optionSettings", () => {});
             unsubscribe("setColor", () => {});
+            unsubscribe("setLayerOpacity", () => {});
         }
     }, []);
 

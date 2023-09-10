@@ -243,6 +243,20 @@ export function useOnDraw(onDraw: Function) {
         }
     }, []);
 
+    const changeCanvasOpacity = useCallback((layer: CanvasElem) => {
+        const layerCurrent = document.getElementById(layer.id) as HTMLCanvasElement | null | undefined;
+
+        if (!layerCurrent || !canvasRef.current) {
+            return null;
+        }
+
+        if(!canvasRef.current.isSameNode(layerCurrent)) {
+            return null;
+        }
+
+        canvasRef.current.style.opacity = (layer.opacity / 100).toString();
+    }, []);
+
     const setVideoRef = (ref: HTMLCanvasElement) => {
         videoRef.current = ref;
     }
@@ -386,5 +400,6 @@ export function useOnDraw(onDraw: Function) {
         setVideoRef,
         setDivRef,
         clearAll,
+        changeCanvasOpacity
     };
 }

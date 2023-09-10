@@ -1,10 +1,12 @@
-import { Box, IconButton, Typography } from "@mui/material";
-import { MouseEvent, useEffect, useState } from "react";
+import { Box, IconButton, Slider, Typography } from "@mui/material";
+import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { AddBoxOutlined, DeleteOutline, KeyboardArrowDown, KeyboardArrowUp, LayersOutlined, RestartAlt, RestartAltOutlined, VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { StyledButton, StyledMenuButton } from "./MenuRight";
 import { NewLayerDialog } from "../utils/NewLayerDialog";
 import { CanvasElem } from "../types";
 import { publish } from "../events";
+import { debounce } from "lodash";
+
 
 export const MenuRightLayers = () => {
     const [open, setOpen] = useState<boolean>(false);
@@ -17,6 +19,9 @@ export const MenuRightLayers = () => {
         visibility: true,
         opacity: 100,
     }]);
+    const currentLayer = useMemo(() => {
+        return layers.find((layer) => layer.selected);
+    }, [layers])
 
     useEffect(() => {
         sessionStorage.setItem("counterLayers", "0");
@@ -96,15 +101,33 @@ export const MenuRightLayers = () => {
         publish("resetLayer", []);
     }
 
-    // ToDo: handle this
-    const handleOpacity = () => {
-        let layer = layers.find((layer) => layer.selected)
-
-        if (layer) {
-            layer.opacity = 0;
+    /* layer opacity */
+    const sendLayerOpacity = (layer?: CanvasElem) => {
+        if (!layer) {
+            return;
         }
 
-        publish("setLayerOpacity", []);
+        publish("setLayerOpacity", [layer]);
+    }
+    
+    const debouncedChangeHandler = useCallback(debounce((layer?: CanvasElem) => sendLayerOpacity(layer), 300), []);
+
+    function handleOpacityChange(e: any) {
+        const opacity = e.target.value;
+
+        let updatedLayers = layers.map((layer) => {
+            if (layer.selected) {
+                layer.opacity = opacity;
+            }
+
+            return layer;
+        })
+
+        setLayers(updatedLayers);
+
+        let layer = updatedLayers.find((layer) => layer.selected);
+
+        debouncedChangeHandler(layer);
     }
 
     const swapElems = (index1: number, index2: number): CanvasElem[] => {
@@ -164,12 +187,44 @@ export const MenuRightLayers = () => {
         </Box>
         <Box sx={(theme) => ({
             borderBottom: `1px solid ${theme.palette.canvas.bgColor}`,
-            height: "28px",
+            height: "6px",
+            ml: 2,
+            mr: 1,
+            pb: "18px",
+            mt: "6px",
+            display: "flex",
+            alignItems: "center",
+            overflowY: "visible",
         })}>
-            
+            <Typography sx={(theme) => ({
+                fontSize: theme.customSizes.drawFontSizeMenuText,
+                color: theme.palette.textCustom.primary,
+                mr: 1,
+                display: "flex",
+                alignItems: "center",
+            })}>
+                Opacity
+            </Typography>
+            <Slider
+                disabled={currentLayer?.position === 0}
+                value={currentLayer?.opacity ?? 100}
+                // onBlur={handleOpacityBlur}
+                onChange={handleOpacityChange}
+                valueLabelDisplay="auto"
+                aria-labelledby="input-slider"
+                sx={(theme) => ({
+                    mr: 2,
+                    color: theme.palette.canvas.slider,
+                    '& .MuiSlider-thumb': {
+                        width: "12px",
+                        height: "12px",
+                    },
+                    zIndex: 10,
+                })}
+            />
         </Box>
         <Box sx={(theme) => ({
-            height: "calc(100% - 8px - 73px)",
+            height: "calc(100% - 8px - 75px)",
         })}>
             {[...layers].reverse().map((layer) => {
                 return <Box 

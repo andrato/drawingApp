@@ -1,3 +1,4 @@
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import axios from "axios"
 
 export const HOST_USER = "http://localhost:8080";
@@ -44,30 +45,39 @@ export type UserResponseErrorType = {
     errors?: ErrorType[],
 };
 
-const config = {
-    headers:{
-        'Content-Type': 'application/json',
+const config = () => {
+    const token = localStorage.getItem(LocalStorageKeys.USER_TOKEN);
+
+    return token ? {
+        headers:{
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + token,
+        }
+    } : {
+        headers:{
+            'Content-Type': 'application/json',
+        }
     }
 };
 
 export const getUser = (userId: string) => {
-    return axios.get<UserResponseSuccessType>(USER_INFO_API, {...config, params: {userId: userId}});
+    return axios.get<UserResponseSuccessType>(USER_INFO_API, {...config(), params: {userId: userId}});
 }
 
 export const getUsers = () => {
-    return axios.get<{users: UserType[]}>(ADMIN_USERS_API, {...config});
+    return axios.get<{users: UserType[]}>(ADMIN_USERS_API, {...config()});
 }
 
 export const getUsersFilters = () => {
-    return axios.get<{users: UserType[]}>(USERS_FILTERS_API, {...config});
+    return axios.get<{users: UserType[]}>(USERS_FILTERS_API, {...config()});
 }
 
 export const modifyUser = (userId: string) => {
-    return axios.get(ADMIN_MODIFY_USER_RIGHTS, {...config, params: {userId: userId}});
+    return axios.get(ADMIN_MODIFY_USER_RIGHTS, {...config(), params: {userId: userId}});
 }
 
 export const deleteUser = (userId: string) => {
-    return axios.get(ADMIN_DELETE_USER_RIGHTS, {...config, params: {userId: userId}});
+    return axios.get(ADMIN_DELETE_USER_RIGHTS, {...config(), params: {userId: userId}});
 }
 
 export const modifyProfile = (props : {
@@ -76,5 +86,5 @@ export const modifyProfile = (props : {
     lastName?: string;
     about?: string;
 }) => {
-    return axios.post(PROFILE_MODIFY, props, {...config});
+    return axios.post(PROFILE_MODIFY, props, {...config()});
 }

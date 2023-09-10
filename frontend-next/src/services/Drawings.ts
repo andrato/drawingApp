@@ -1,5 +1,6 @@
 import { getUserInfo } from "@/components/common/helpers";
 import { Category } from "@/components/profile/helpers";
+import { LocalStorageKeys } from "@/components/utils/constants/LocalStorage";
 import axios from "axios"
 
 export const HOST = "http://localhost:8080/drawing";
@@ -79,14 +80,23 @@ export type DrawingResponseErrorType = {
     errors?: ErrorType[],
 };
 
-const config = {
-    headers:{
-        'Content-Type': 'application/json',
+const config = () => {
+    const token = localStorage.getItem(LocalStorageKeys.USER_TOKEN);
+
+    return token ? {
+        headers:{
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + token,
+        }
+    } : {
+        headers:{
+            'Content-Type': 'application/json',
+        }
     }
 };
 
 export const getDrawings = () => {
-    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWINGS, {...config});
+    return axios.get<DrawingsResponseSuccessType>(HOST_DRAWINGS, {...config()});
 }
 
 const computeCategory = (category?: string | null) => {
@@ -138,7 +148,7 @@ export const getDrawingByCategory = ({
 }) => {
     const computedCateg = computeCategory(category);
 
-    return axios.get<DrawingsResponseSuccessType>(HOST_CATEGORY_DRAWINGS, {...config, params: {
+    return axios.get<DrawingsResponseSuccessType>(HOST_CATEGORY_DRAWINGS, {...config(), params: {
         category: computedCateg ?? undefined,
         sortBy: sortBy ?? undefined,
         search: search ?? undefined,
@@ -151,11 +161,11 @@ export const getDrawingByCategory = ({
 }
 
 export const getDrawingByUser = (userId: string) => {
-    return axios.get<DrawingsResponseSuccessType>(HOST_USER_DRAWINGS, {...config, params: {userId}});
+    return axios.get<DrawingsResponseSuccessType>(HOST_USER_DRAWINGS, {...config(), params: {userId}});
 }
 
 export const getDrawing = (id: string) => {
-    return axios.get<DrawingResponseSuccessType>(HOST_DRAWING, {...config, params: {drawingId: id}});
+    return axios.get<DrawingResponseSuccessType>(HOST_DRAWING, {...config(), params: {drawingId: id}});
 }
 
 export const modifyDrawingAdmin = ({
@@ -170,7 +180,7 @@ export const modifyDrawingAdmin = ({
     return axios.post<DrawingResponseSuccessType>(
         HOST_MODIFY_ADMIN, 
         {category: computedCateg, drawingId: id},
-        {...config}
+        {...config()}
     );
 }
 
@@ -189,7 +199,7 @@ export const getDrawingsAdmin = ({
 }) => {
     const computedCateg = computeCategory(category);
 
-    return axios.get<{drawings: DrawingAdminType}>(HOST_DRAWINGS_ADMIN, {...config, params: {
+    return axios.get<{drawings: DrawingAdminType}>(HOST_DRAWINGS_ADMIN, {...config(), params: {
         category: computedCateg ?? undefined,
         search: search ?? undefined,
         startDate: startDate ?? undefined,
@@ -205,7 +215,7 @@ export const deleteDrawing = (drawingId: string) => {
     return axios.post(
         HOST_DELETE_DRAWING, 
         {},
-        {...config, params: drawingWithUser}
+        {...config(), params: drawingWithUser}
     );
 }
 
@@ -218,6 +228,6 @@ export const modifyDrawing = (props: {
     return axios.post<DrawingResponseSuccessType>(
         HOST_MODIFY_DRAWING, 
         props,
-        {...config}
+        {...config()}
     );
 }

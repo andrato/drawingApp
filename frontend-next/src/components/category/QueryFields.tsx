@@ -63,11 +63,9 @@ export const QueryFields = ({
     };
 
     const handleReset = () => {
-        () => {
-            router.replace({
-                query: {},
-            });
-        }
+        router.replace({
+            query: {[QueryParams.SORT_BY]: "newest"},
+        });
     }
 
     const debouncedOnChange = debounce(onChangeSearch, 500);
