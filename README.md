@@ -11,21 +11,23 @@ Drawings done with the app:
 App presentation
 
 1. Drawing module:
-<img width="553" alt="Screenshot 2024-12-19 at 16 57 57" src="https://github.com/user-attachments/assets/3640d088-5205-4948-a409-b95fcce27a89" />
-![image](https://github.com/user-attachments/assets/1a7fad25-1b7c-46d1-b9e8-18ef993436d6)
-![image](https://github.com/user-attachments/assets/359db1b7-b68d-4a39-a989-66f04544c9ab)
+<br>
+<img width="400" alt="Screenshot 2024-12-19 at 16 57 57" src="https://github.com/user-attachments/assets/3640d088-5205-4948-a409-b95fcce27a89" />
+<img width="400" src="https://github.com/user-attachments/assets/1a7fad25-1b7c-46d1-b9e8-18ef993436d6" />
+<img width="400" src="https://github.com/user-attachments/assets/359db1b7-b68d-4a39-a989-66f04544c9ab" />
 
 2. Home, drawings per category (+ filters), drawing page:
-![image](https://github.com/user-attachments/assets/f71153ac-f2d7-42ef-9bd7-6c6e95f84d4a)
-![image](https://github.com/user-attachments/assets/db497455-36ef-48bf-a49e-d1ce461cb6cf)
-![image](https://github.com/user-attachments/assets/308711b7-f3dc-4376-a455-801236cc74ad)
+<br>
+<img width="400" src="https://github.com/user-attachments/assets/f71153ac-f2d7-42ef-9bd7-6c6e95f84d4a" />
+<img width="400" src="https://github.com/user-attachments/assets/db497455-36ef-48bf-a49e-d1ce461cb6cf" />
+<img width="400" src="https://github.com/user-attachments/assets/308711b7-f3dc-4376-a455-801236cc74ad" />
 
-3. Users, user page:
+5. Users, user page:
 ![image](https://github.com/user-attachments/assets/cfd45e6e-7202-4a58-8077-66854438262d)
 ![image](https://github.com/user-attachments/assets/ebae69f4-6647-4155-b46b-a87f2def5ce4)
 
 
-4. User Profile
+6. User Profile
 <img width="513" alt="Screenshot 2024-12-19 at 17 01 46" src="https://github.com/user-attachments/assets/5695a6ce-6743-4bb7-b0b1-b1476042962b" />
 ![image](https://github.com/user-attachments/assets/310cfbcc-6321-4ad8-953b-6427216fa799)
 ![image](https://github.com/user-attachments/assets/13782d6e-31ac-4c29-8140-6105eff46102)
