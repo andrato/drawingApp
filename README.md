@@ -4,8 +4,8 @@ The application has a drawing module which can be used for free. The users can a
 The backend was developed using microservices. The communication with the client side is done through an API Gateway.
 
 Drawings done with the app:
-![image](https://github.com/user-attachments/assets/1f8022ea-858e-4bcb-a8c1-4beccb35083b | width=100)
-![image](https://github.com/user-attachments/assets/8dba1fb8-bcb2-48b3-824c-f4d5cd995cbf | width=100)
+<img src="https://github.com/user-attachments/assets/1f8022ea-858e-4bcb-a8c1-4beccb35083b" width="100">
+<img src="https://github.com/user-attachments/assets/8dba1fb8-bcb2-48b3-824c-f4d5cd995cbf" width="100">
 
 App presentation
 
